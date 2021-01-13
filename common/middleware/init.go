@@ -2,7 +2,6 @@ package middleware
 
 import (
 	"github.com/gin-gonic/gin"
-	"fiy/common/middleware"
 )
 
 func InitMiddleware(r *gin.Engine) {
@@ -17,5 +16,5 @@ func InitMiddleware(r *gin.Engine) {
 	// Secure is a middleware function that appends security
 	r.Use(Secure)
 	// 链路追踪
-	r.Use(middleware.Trace())
+	r.Use(Trace())
 }

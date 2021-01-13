@@ -3,7 +3,7 @@ package middleware
 import (
 	"time"
 
-	"fiy/app/admin/middleware/handler"
+	"fiy/common/middleware/handler"
 	jwt "fiy/pkg/jwtauth"
 	"fiy/tools/config"
 )

@@ -3,11 +3,10 @@ package router
 import (
 	"os"
 
-	"fiy/app/admin/middleware"
-	"fiy/app/admin/middleware/handler"
 	"fiy/common/global"
 	"fiy/common/log"
-	common "fiy/common/middleware"
+	"fiy/common/middleware"
+	"fiy/common/middleware/handler"
 	_ "fiy/pkg/jwtauth"
 	"fiy/tools"
 	"fiy/tools/config"
@@ -34,7 +33,7 @@ func InitRouter() {
 	}
 	r.Use(middleware.WithContextDb(middleware.GetGormFromConfig(global.Cfg)))
 
-	r.Use(common.Sentinel())
+	r.Use(middleware.Sentinel())
 	middleware.InitMiddleware(r)
 	// the jwt middleware
 	var err error
@@ -45,8 +44,6 @@ func InitRouter() {
 	InitSysRouter(r, authMiddleware)
 
 	// 注册业务路由
-	// TODO: 这里可存放业务路由，里边并无实际路由只有演示代码
-	InitExamplesRouter(r, authMiddleware)
 
 	//return r
 }

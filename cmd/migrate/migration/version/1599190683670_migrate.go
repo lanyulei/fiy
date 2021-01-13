@@ -49,12 +49,10 @@ func _1599190683670Test(db *gorm.DB, version string) error {
 			{DictId: 2, DictName: "用户性别", DictType: "sys_user_sex", Status: "0", CreateBy: "1", UpdateBy: "", Remark: "用户性别列表", BaseModel: models.BaseModel{CreatedAt: time.Now(), UpdatedAt: time.Now()}},
 			{DictId: 3, DictName: "菜单状态", DictType: "sys_show_hide", Status: "0", CreateBy: "1", UpdateBy: "", Remark: "菜单状态列表", BaseModel: models.BaseModel{CreatedAt: time.Now(), UpdatedAt: time.Now()}},
 			{DictId: 4, DictName: "系统是否", DictType: "sys_yes_no", Status: "0", CreateBy: "1", UpdateBy: "", Remark: "系统是否列表", BaseModel: models.BaseModel{CreatedAt: time.Now(), UpdatedAt: time.Now()}},
-			{DictId: 5, DictName: "任务状态", DictType: "sys_job_status", Status: "0", CreateBy: "1", UpdateBy: "", Remark: "任务状态列表", BaseModel: models.BaseModel{CreatedAt: time.Now(), UpdatedAt: time.Now()}},
-			{DictId: 6, DictName: "任务分组", DictType: "sys_job_group", Status: "0", CreateBy: "1", UpdateBy: "", Remark: "任务分组列表", BaseModel: models.BaseModel{CreatedAt: time.Now(), UpdatedAt: time.Now()}},
-			{DictId: 7, DictName: "通知类型", DictType: "sys_notice_type", Status: "0", CreateBy: "1", UpdateBy: "", Remark: "通知类型列表", BaseModel: models.BaseModel{CreatedAt: time.Now(), UpdatedAt: time.Now()}},
-			{DictId: 8, DictName: "系统状态", DictType: "sys_common_status", Status: "0", CreateBy: "1", UpdateBy: "", Remark: "登录状态列表", BaseModel: models.BaseModel{CreatedAt: time.Now(), UpdatedAt: time.Now()}},
-			{DictId: 9, DictName: "操作类型", DictType: "sys_oper_type", Status: "0", CreateBy: "1", UpdateBy: "", Remark: "操作类型列表", BaseModel: models.BaseModel{CreatedAt: time.Now(), UpdatedAt: time.Now()}},
-			{DictId: 10, DictName: "通知状态", DictType: "sys_notice_status", Status: "0", CreateBy: "1", UpdateBy: "", Remark: "通知状态列表", BaseModel: models.BaseModel{CreatedAt: time.Now(), UpdatedAt: time.Now()}},
+			{DictId: 5, DictName: "通知类型", DictType: "sys_notice_type", Status: "0", CreateBy: "1", UpdateBy: "", Remark: "通知类型列表", BaseModel: models.BaseModel{CreatedAt: time.Now(), UpdatedAt: time.Now()}},
+			{DictId: 6, DictName: "系统状态", DictType: "sys_common_status", Status: "0", CreateBy: "1", UpdateBy: "", Remark: "登录状态列表", BaseModel: models.BaseModel{CreatedAt: time.Now(), UpdatedAt: time.Now()}},
+			{DictId: 7, DictName: "操作类型", DictType: "sys_oper_type", Status: "0", CreateBy: "1", UpdateBy: "", Remark: "操作类型列表", BaseModel: models.BaseModel{CreatedAt: time.Now(), UpdatedAt: time.Now()}},
+			{DictId: 8, DictName: "通知状态", DictType: "sys_notice_status", Status: "0", CreateBy: "1", UpdateBy: "", Remark: "通知状态列表", BaseModel: models.BaseModel{CreatedAt: time.Now(), UpdatedAt: time.Now()}},
 		}
 
 		list8 := []models.SysUser{
@@ -71,10 +69,6 @@ func _1599190683670Test(db *gorm.DB, version string) error {
 			{DictCode: 7, DictSort: 0, DictLabel: "隐藏", DictValue: "1", DictType: "sys_show_hide", CssClass: "", ListClass: "", IsDefault: "", Status: "0", Default: "", CreateBy: "1", UpdateBy: "", Remark: "隐藏菜单", BaseModel: models.BaseModel{CreatedAt: time.Now(), UpdatedAt: time.Now()}},
 			{DictCode: 8, DictSort: 0, DictLabel: "是", DictValue: "Y", DictType: "sys_yes_no", CssClass: "", ListClass: "", IsDefault: "", Status: "0", Default: "", CreateBy: "1", UpdateBy: "", Remark: "系统默认是", BaseModel: models.BaseModel{CreatedAt: time.Now(), UpdatedAt: time.Now()}},
 			{DictCode: 9, DictSort: 0, DictLabel: "否", DictValue: "N", DictType: "sys_yes_no", CssClass: "", ListClass: "", IsDefault: "", Status: "0", Default: "", CreateBy: "1", UpdateBy: "", Remark: "系统默认否", BaseModel: models.BaseModel{CreatedAt: time.Now(), UpdatedAt: time.Now()}},
-			{DictCode: 10, DictSort: 0, DictLabel: "正常", DictValue: "2", DictType: "sys_job_status", CssClass: "", ListClass: "", IsDefault: "", Status: "0", Default: "", CreateBy: "1", UpdateBy: "", Remark: "正常状态", BaseModel: models.BaseModel{CreatedAt: time.Now(), UpdatedAt: time.Now()}},
-			{DictCode: 11, DictSort: 0, DictLabel: "停用", DictValue: "1", DictType: "sys_job_status", CssClass: "", ListClass: "", IsDefault: "", Status: "0", Default: "", CreateBy: "1", UpdateBy: "", Remark: "停用状态", BaseModel: models.BaseModel{CreatedAt: time.Now(), UpdatedAt: time.Now()}},
-			{DictCode: 12, DictSort: 0, DictLabel: "默认", DictValue: "DEFAULT", DictType: "sys_job_group", CssClass: "", ListClass: "", IsDefault: "", Status: "0", Default: "", CreateBy: "1", UpdateBy: "", Remark: "默认分组", BaseModel: models.BaseModel{CreatedAt: time.Now(), UpdatedAt: time.Now()}},
-			{DictCode: 13, DictSort: 0, DictLabel: "系统", DictValue: "SYSTEM", DictType: "sys_job_group", CssClass: "", ListClass: "", IsDefault: "", Status: "0", Default: "", CreateBy: "1", UpdateBy: "", Remark: "系统分组", BaseModel: models.BaseModel{CreatedAt: time.Now(), UpdatedAt: time.Now()}},
 			{DictCode: 14, DictSort: 0, DictLabel: "通知", DictValue: "1", DictType: "sys_notice_type", CssClass: "", ListClass: "", IsDefault: "", Status: "0", Default: "", CreateBy: "1", UpdateBy: "", Remark: "通知", BaseModel: models.BaseModel{CreatedAt: time.Now(), UpdatedAt: time.Now()}},
 			{DictCode: 15, DictSort: 0, DictLabel: "公告", DictValue: "2", DictType: "sys_notice_type", CssClass: "", ListClass: "", IsDefault: "", Status: "0", Default: "", CreateBy: "1", UpdateBy: "", Remark: "公告", BaseModel: models.BaseModel{CreatedAt: time.Now(), UpdatedAt: time.Now()}},
 			{DictCode: 16, DictSort: 0, DictLabel: "正常", DictValue: "0", DictType: "sys_common_status", CssClass: "", ListClass: "", IsDefault: "", Status: "0", Default: "", CreateBy: "1", UpdateBy: "", Remark: "正常状态", BaseModel: models.BaseModel{CreatedAt: time.Now(), UpdatedAt: time.Now()}},
@@ -97,11 +91,6 @@ func _1599190683670Test(db *gorm.DB, version string) error {
 
 		list10 := []models.SysSetting{
 			{1, "fiy管理系统", "", models.BaseModel{CreatedAt: time.Now(), UpdatedAt: time.Now()}},
-		}
-
-		list11 := []models.SysJob{
-			{1, "接口测试", "DEFAULT", 1, "0/5 * * * * ", "http://localhost:8000", "", 1, 1, 1, 0, "", "", models.BaseModel{CreatedAt: time.Now(), UpdatedAt: time.Now()}, ""},
-			{2, "函数测试", "DEFAULT", 2, "0/5 * * * * ", "ExamplesOne", "参数", 1, 1, 1, 0, "", "", models.BaseModel{CreatedAt: time.Now(), UpdatedAt: time.Now()}, ""},
 		}
 
 		err := tx.Create(list3).Error
@@ -140,11 +129,6 @@ func _1599190683670Test(db *gorm.DB, version string) error {
 		}
 
 		err = tx.Create(list10).Error
-		if err != nil {
-			return err
-		}
-
-		err = tx.Create(list11).Error
 		if err != nil {
 			return err
 		}

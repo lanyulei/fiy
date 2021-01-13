@@ -1,6 +1,7 @@
 package router
 
 import (
+	adminRouter "fiy/app/admin/router"
 	"mime"
 
 	"fiy/app/admin/apis/monitor"
@@ -8,8 +9,8 @@ import (
 	"fiy/app/admin/apis/system"
 	"fiy/app/admin/apis/system/dict"
 	. "fiy/app/admin/apis/tools"
-	"fiy/app/admin/middleware"
-	"fiy/app/admin/middleware/handler"
+	"fiy/common/middleware"
+	"fiy/common/middleware/handler"
 	_ "fiy/docs"
 	jwt "fiy/pkg/jwtauth"
 	"fiy/pkg/ws"
@@ -44,7 +45,7 @@ func sysBaseRouter(r *gin.RouterGroup) {
 }
 
 func sysStaticFileRouter(r *gin.RouterGroup) {
-	mime.AddExtensionType(".js", "application/javascript")
+	_ = mime.AddExtensionType(".js", "application/javascript")
 	r.Static("/static", "./static")
 	r.Static("/form-generator", "./static/form-generator")
 }
@@ -111,6 +112,10 @@ func sysCheckRoleRouterInit(r *gin.RouterGroup, authMiddleware *jwt.GinJWTMiddle
 	registerUserCenterRouter(v1, authMiddleware)
 	registerPostRouter(v1, authMiddleware)
 	registerMenuRouter(v1, authMiddleware)
+
+	adminRouter.RegisterSysConfigRouter(v1, authMiddleware)
+	adminRouter.RegisterSysLoginLogRouter(v1, authMiddleware)
+	adminRouter.RegisterSysOperaLogRouter(v1, authMiddleware)
 }
 
 func registerBaseRouter(v1 *gin.RouterGroup, authMiddleware *jwt.GinJWTMiddleware) {

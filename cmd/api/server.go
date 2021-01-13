@@ -2,8 +2,9 @@ package api
 
 import (
 	"context"
-	"fmt"
+	router "fiy/common/router"
 	"fiy/tools/trace"
+	"fmt"
 	"net/http"
 	"os"
 	"os/signal"
@@ -13,12 +14,10 @@ import (
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 
-	"fiy/app/admin/router"
-	"fiy/app/jobs"
 	"fiy/common/database"
 	"fiy/common/global"
 	"fiy/common/log"
-	mycasbin "fiy/pkg/casbin"
+	myCasbin "fiy/pkg/casbin"
 	"fiy/pkg/logger"
 	"fiy/tools"
 	"fiy/tools/config"
@@ -66,7 +65,7 @@ func setup() {
 	//3. 初始化数据库链接
 	database.Setup(config.DatabaseConfig.Driver)
 	//4. 接口访问控制加载
-	global.CasbinEnforcer = mycasbin.Setup(global.Eloquent, "sys_")
+	global.CasbinEnforcer = myCasbin.Setup(global.Eloquent, "sys_")
 
 	usageStr := `starting api server`
 	log.Info(usageStr)
@@ -95,11 +94,6 @@ func run() error {
 		Addr:    config.ApplicationConfig.Host + ":" + config.ApplicationConfig.Port,
 		Handler: global.Cfg.GetEngine(),
 	}
-	go func() {
-		jobs.InitJob()
-		jobs.Setup()
-
-	}()
 
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()

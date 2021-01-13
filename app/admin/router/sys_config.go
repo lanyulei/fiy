@@ -1,21 +1,18 @@
 package router
 
 import (
-	"github.com/gin-gonic/gin"
 	"fiy/app/admin/apis/system/sys_config"
-	"fiy/app/admin/middleware"
 	"fiy/app/admin/models/system"
 	"fiy/app/admin/service/dto"
 	"fiy/common/actions"
+	"fiy/common/middleware"
 	jwt "fiy/pkg/jwtauth"
+
+	"github.com/gin-gonic/gin"
 )
 
-func init() {
-	routerCheckRole = append(routerCheckRole, registerSysConfigRouter)
-}
-
 // 需认证的路由代码
-func registerSysConfigRouter(v1 *gin.RouterGroup, authMiddleware *jwt.GinJWTMiddleware) {
+func RegisterSysConfigRouter(v1 *gin.RouterGroup, authMiddleware *jwt.GinJWTMiddleware) {
 	r := v1.Group("/config").Use(authMiddleware.MiddlewareFunc()).Use(middleware.AuthCheckRole())
 	{
 		model := &system.SysConfig{}
