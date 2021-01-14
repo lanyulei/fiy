@@ -8,7 +8,7 @@ settings:
     mode: dev  # dev开发环境 test测试环境 prod线上环境；
     host: 0.0.0.0  # 主机ip 或者域名，默认0.0.0.0
     # 服务名称
-    name: go-admin   
+    name: fiy   
     # 服务端口
     port: 8000   
     readtimeout: 1   
@@ -18,7 +18,7 @@ settings:
     dir: temp/logs
   jwt:
     # JWT加密字符串
-    secret: go-admin
+    secret: fiy
     # 过期时间单位：秒
     timeout: 3600
   database:

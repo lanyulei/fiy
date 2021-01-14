@@ -35,7 +35,6 @@ func _1599190683659Tables(db *gorm.DB, version string) error {
 		new(models.Post),
 		new(models.DictData),
 		new(models.DictType),
-		new(system.SysConfig),
 		new(models.SysSetting),
 	)
 	if err != nil {

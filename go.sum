@@ -182,8 +182,6 @@ github.com/git-chglog/git-chglog v0.0.0-20190923122001-6050f20bcdb0 h1:rdQovo0Jt
 github.com/git-chglog/git-chglog v0.0.0-20190923122001-6050f20bcdb0/go.mod h1:Dcsy1kii/xFyNad5JqY/d0GO5mu91sungp5xotbm3Yk=
 github.com/gliderlabs/ssh v0.2.2/go.mod h1:U7qILu1NlMHj9FlMhZLlkCdDnU1DBEAqr0aevW3Awn0=
 github.com/go-acme/lego/v3 v3.4.0/go.mod h1:xYbLDuxq3Hy4bMUT1t9JIuz6GWIWb3m5X+TeTHYaT7M=
-github.com/go-admin-team/go-admin-core v1.2.2 h1:TMR5ga2vTQGRMR+zZ9XrOO2Zpvl5+AOFN4bnfJfimKw=
-github.com/go-admin-team/go-admin-core v1.2.2/go.mod h1:F+wumLm6Tw9Y9usOy45vdvQ9kbbCgSJKseKWzjvd/BQ=
 github.com/go-cmd/cmd v1.0.5/go.mod h1:y8q8qlK5wQibcw63djSl/ntiHUHXHGdCkPk0j4QeW4s=
 github.com/go-errors/errors v1.0.1/go.mod h1:f4zRHt4oKfwPJE5k8C9vpYG+aDHdBFUsgrm6/TyX73Q=
 github.com/go-git/gcfg v1.5.0/go.mod h1:5m20vg6GwYabIxaOonVkTdrILxQMpEShl1xiMF4ua+E=

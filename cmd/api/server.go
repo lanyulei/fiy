@@ -140,5 +140,5 @@ func run() error {
 
 func tip() {
 	usageStr := `欢迎使用 ` + tools.Green(`fiy `+global.Version) + ` 可以使用 ` + tools.Red(`-h`) + ` 查看命令`
-	fmt.Printf("%s \n\n", usageStr)
+	fmt.Printf(" \n%s\n\n", usageStr)
 }
