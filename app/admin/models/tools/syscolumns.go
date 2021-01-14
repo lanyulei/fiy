@@ -1,8 +1,8 @@
 package tools
 
 import (
-	"fiy/app/admin/models"
 	orm "fiy/common/global"
+	"fiy/common/models"
 )
 
 type SysColumns struct {

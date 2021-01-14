@@ -2,6 +2,7 @@ package models
 
 import (
 	"errors"
+	"fiy/common/models"
 
 	orm "fiy/common/global"
 	"fiy/tools"
@@ -21,7 +22,7 @@ type DictData struct {
 	CreateBy  string `gorm:"size:64;" json:"createBy"`                                //
 	UpdateBy  string `gorm:"size:64;" json:"updateBy"`                                //
 	Remark    string `gorm:"size:255;" json:"remark"`                                 //备注
-	BaseModel
+	models.BaseModel
 
 	Params    string `gorm:"-" json:"params"`
 	DataScope string `gorm:"-" json:"dataScope"`

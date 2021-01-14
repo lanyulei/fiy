@@ -2,6 +2,8 @@ package models
 
 import (
 	"errors"
+	"fiy/common/models"
+
 	"gorm.io/gorm"
 
 	orm "fiy/common/global"
@@ -32,7 +34,7 @@ type Menu struct {
 	RoleId     int    `gorm:"-"`
 	Children   []Menu `json:"children" gorm:"-"`
 	IsSelect   bool   `json:"is_select" gorm:"-"`
-	BaseModel
+	models.BaseModel
 }
 
 func (Menu) TableName() string {
@@ -67,7 +69,7 @@ type Menus struct {
 	UpdateBy  string `json:"updateBy" gorm:"column:update_by"`
 	DataScope string `json:"dataScope" gorm:"-"`
 	Params    string `json:"params" gorm:"-"`
-	BaseModel
+	models.BaseModel
 }
 
 func (Menus) TableName() string {

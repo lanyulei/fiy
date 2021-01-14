@@ -2,6 +2,7 @@ package models
 
 import (
 	"errors"
+	"fiy/common/models"
 
 	"gorm.io/gorm"
 
@@ -21,7 +22,7 @@ type SysRole struct {
 	Remark    string `json:"remark" gorm:"size:255;"`                  //备注
 	Admin     bool   `json:"admin" gorm:"size:4;"`
 	DataScope string `json:"dataScope" gorm:"size:128;"`
-	BaseModel
+	models.BaseModel
 
 	Params  string `json:"params" gorm:"-"`
 	MenuIds []int  `json:"menuIds" gorm:"-"`
@@ -125,7 +126,7 @@ func (role *SysRole) GetRoleMeunId() ([]int, error) {
 	if err := orm.Eloquent.Table("sys_role_menu").
 		Select("sys_role_menu.menu_id").
 		Where("role_id = ? ", role.RoleId).
-		Where(" sys_role_menu.menu_id not in(select sys_menu.parent_id from sys_role_menu " +
+		Where(" sys_role_menu.menu_id not in(select sys_menu.parent_id from sys_role_menu "+
 			"LEFT JOIN sys_menu on sys_menu.menu_id=sys_role_menu.menu_id where role_id =?  and parent_id is not null)", role.RoleId).
 		Find(&menuList).Error; err != nil {
 		return nil, err

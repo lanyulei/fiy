@@ -1,9 +1,9 @@
 package tools
 
 import (
+	"fiy/common/models"
 	"strings"
 
-	"fiy/app/admin/models"
 	orm "fiy/common/global"
 )
 
