@@ -1,6 +1,6 @@
 -- 开始初始化数据 ;
 BEGIN;
-INSERT INTO sys_menu VALUES (2, 'Upms', '系统管理', 'example', '/upms', '/0/2', 'M', '无', '', 0, 1, '', 'Layout', 1, '0', '1', '1', '0', '2020-04-11 15:52:48', NULL, NULL);
+INSERT INTO sys_menu VALUES (2, 'Upms', '系统管理', 'example', '/upms', '/0/2', 'M', '无', '', 0, 1, '', 'Layout', 2, '0', '1', '1', '0', '2020-04-11 15:52:48', '2021-01-15 11:51:12.913', null);
 INSERT INTO sys_menu VALUES (3, 'Sysuser', '用户管理', 'user', 'sysuser', '/0/2/3', 'C', '无', 'system:sysuser:list', 2, NULL, NULL, '/sysuser/index', 1, '0', '1', '1', '0', '2020-04-11 15:52:48', '2020-04-12 11:10:42', NULL);
 INSERT INTO sys_menu VALUES (43, '', '新增用户', '', '/api/v1/sysuser', '/0/2/3/43', 'F', 'POST', 'system:sysuser:add', 3, NULL, NULL, NULL, 0, '0', '1', '1', '0', '2020-04-11 15:52:48', NULL, NULL);
 INSERT INTO sys_menu VALUES (44, '', '查询用户', '', '/api/v1/sysuser', '/0/2/3/44', 'F', 'GET', 'system:sysuser:query', 3, NULL, NULL, NULL, 0, '0', '1', '1', '0', '2020-04-11 15:52:48', NULL, NULL);
