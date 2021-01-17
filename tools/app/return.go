@@ -1,6 +1,7 @@
 package app
 
 import (
+	"fmt"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
@@ -11,10 +12,11 @@ import (
 // 失败数据处理
 func Error(c *gin.Context, code int, err error, msg string) {
 	var res Response
-	if err != nil {
+	if err != nil && msg != "" {
+		res.Msg = fmt.Sprintf("%s, error: %s", msg, err.Error())
+	} else if err != nil {
 		res.Msg = err.Error()
-	}
-	if msg != "" {
+	} else if msg != "" {
 		res.Msg = msg
 	}
 	res.RequestId = tools.GenerateMsgIDFromContext(c)

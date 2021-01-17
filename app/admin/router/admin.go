@@ -1,0 +1,139 @@
+package router
+
+import (
+	"fiy/app/admin/apis/monitor"
+	"fiy/app/admin/apis/public"
+	"fiy/app/admin/apis/system"
+	"fiy/app/admin/apis/system/dict"
+	"fiy/common/middleware"
+	"fiy/common/middleware/handler"
+	jwt "fiy/pkg/jwtauth"
+
+	"github.com/gin-gonic/gin"
+)
+
+/*
+  @Author : lanyulei
+*/
+
+func RegisterBaseRouter(v1 *gin.RouterGroup, authMiddleware *jwt.GinJWTMiddleware) {
+	v1auth := v1.Group("").Use(authMiddleware.MiddlewareFunc()).Use(middleware.AuthCheckRole())
+	{
+		v1auth.GET("/getinfo", system.GetInfo)
+		v1auth.GET("/menurole", system.GetMenuRole)
+		v1auth.PUT("/roledatascope", system.UpdateRoleDataScope)
+		v1auth.GET("/roleMenuTreeselect/:roleId", system.GetMenuTreeRoleselect)
+		v1auth.GET("/roleDeptTreeselect/:roleId", system.GetDeptTreeRoleselect)
+
+		v1auth.POST("/logout", handler.LogOut)
+		v1auth.GET("/menuids", system.GetMenuIDS)
+	}
+}
+
+func RegisterPageRouter(v1 *gin.RouterGroup, authMiddleware *jwt.GinJWTMiddleware) {
+	v1auth := v1.Group("").Use(authMiddleware.MiddlewareFunc()).Use(middleware.AuthCheckRole())
+	{
+		v1auth.GET("/deptList", system.GetDeptList)
+		v1auth.GET("/deptTree", system.GetDeptTree)
+		v1auth.GET("/sysUserList", system.GetSysUserList)
+		v1auth.GET("/rolelist", system.GetRoleList)
+		//v1auth.GET("/configList", system.GetConfigList)
+		v1auth.GET("/postlist", system.GetPostList)
+		v1auth.GET("/menulist", system.GetMenuList)
+	}
+}
+
+func RegisterUserCenterRouter(v1 *gin.RouterGroup, authMiddleware *jwt.GinJWTMiddleware) {
+	user := v1.Group("/user").Use(authMiddleware.MiddlewareFunc()).Use(middleware.AuthCheckRole())
+	{
+		user.GET("/profile", system.GetSysUserProfile)
+		user.POST("/avatar", system.InsetSysUserAvatar)
+		user.PUT("/pwd", system.SysUserUpdatePwd)
+	}
+}
+
+func RegisterPostRouter(v1 *gin.RouterGroup, authMiddleware *jwt.GinJWTMiddleware) {
+	post := v1.Group("/post").Use(authMiddleware.MiddlewareFunc()).Use(middleware.AuthCheckRole())
+	{
+		post.GET("/:postId", system.GetPost)
+		post.POST("", system.InsertPost)
+		post.PUT("", system.UpdatePost)
+		post.DELETE("/:postId", system.DeletePost)
+	}
+}
+
+func RegisterMenuRouter(v1 *gin.RouterGroup, authMiddleware *jwt.GinJWTMiddleware) {
+	menu := v1.Group("/menu").Use(authMiddleware.MiddlewareFunc()).Use(middleware.AuthCheckRole())
+	{
+		menu.GET("/:id", system.GetMenu)
+		menu.POST("", system.InsertMenu)
+		menu.PUT("", system.UpdateMenu)
+		menu.DELETE("/:id", system.DeleteMenu)
+	}
+}
+
+func RegisterRoleRouter(v1 *gin.RouterGroup, authMiddleware *jwt.GinJWTMiddleware) {
+	role := v1.Group("/role").Use(authMiddleware.MiddlewareFunc()).Use(middleware.AuthCheckRole())
+	{
+		role.GET("/:roleId", system.GetRole)
+		role.POST("", system.InsertRole)
+		role.PUT("", system.UpdateRole)
+		role.DELETE("/:roleId", system.DeleteRole)
+	}
+}
+
+func RegisterSysUserRouter(v1 *gin.RouterGroup, authMiddleware *jwt.GinJWTMiddleware) {
+	sysuser := v1.Group("/sysUser").Use(authMiddleware.MiddlewareFunc()).Use(middleware.AuthCheckRole())
+	{
+		sysuser.GET("/:userId", system.GetSysUser)
+		sysuser.GET("/", system.GetSysUserInit)
+		sysuser.POST("", system.InsertSysUser)
+		sysuser.PUT("", system.UpdateSysUser)
+		sysuser.DELETE("/:userId", system.DeleteSysUser)
+	}
+}
+
+func RegisterDictRouter(v1 *gin.RouterGroup, authMiddleware *jwt.GinJWTMiddleware) {
+	dicts := v1.Group("/dict").Use(authMiddleware.MiddlewareFunc()).Use(middleware.AuthCheckRole())
+	{
+		dicts.GET("/datalist", dict.GetDictDataList)
+		dicts.GET("/typelist", dict.GetDictTypeList)
+		dicts.GET("/typeoptionselect", dict.GetDictTypeOptionSelect)
+
+		dicts.GET("/data/:dictCode", dict.GetDictData)
+		dicts.POST("/data", dict.InsertDictData)
+		dicts.PUT("/data/", dict.UpdateDictData)
+		dicts.DELETE("/data/:dictCode", dict.DeleteDictData)
+
+		dicts.GET("/type/:dictId", dict.GetDictType)
+		dicts.POST("/type", dict.InsertDictType)
+		dicts.PUT("/type", dict.UpdateDictType)
+		dicts.DELETE("/type/:dictId", dict.DeleteDictType)
+	}
+}
+
+func RegisterDeptRouter(v1 *gin.RouterGroup, authMiddleware *jwt.GinJWTMiddleware) {
+	dept := v1.Group("/dept").Use(authMiddleware.MiddlewareFunc()).Use(middleware.AuthCheckRole())
+	{
+		dept.GET("/:deptId", system.GetDept)
+		dept.POST("", system.InsertDept)
+		dept.PUT("", system.UpdateDept)
+		dept.DELETE("/:id", system.DeleteDept)
+	}
+}
+
+func RegisterSysSettingRouter(v1 *gin.RouterGroup) {
+	setting := v1.Group("/setting")
+	{
+		setting.GET("", system.GetSetting)
+		setting.POST("", system.CreateSetting)
+		setting.GET("/serverInfo", monitor.ServerInfo)
+	}
+}
+
+func RegisterPublicRouter(v1 *gin.RouterGroup) {
+	p := v1.Group("/public")
+	{
+		p.POST("/uploadFile", public.UploadFile)
+	}
+}
