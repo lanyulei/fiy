@@ -50,3 +50,12 @@ func CreateModelInfo(c *gin.Context) {
 
 	app.OK(c, nil, "")
 }
+
+// 查询模型详情
+func GetModelDetails(c *gin.Context) {
+	//var (
+	//	err error
+	//)
+
+	app.OK(c, nil, "")
+}
