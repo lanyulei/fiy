@@ -12,7 +12,7 @@ import (
   @Author : lanyulei
 */
 
-// 创建模型分组
+// 创建模型
 func CreateModelInfo(c *gin.Context) {
 	var (
 		err       error
@@ -51,11 +51,69 @@ func CreateModelInfo(c *gin.Context) {
 	app.OK(c, nil, "")
 }
 
-// 查询模型详情
-func GetModelDetails(c *gin.Context) {
-	//var (
-	//	err error
-	//)
+// 创建模型字段分组
+func CreateModelFieldGroup(c *gin.Context) {
+	var (
+		err             error
+		fieldGroup      model.FieldGroup
+		fieldGroupCount int64
+	)
+
+	err = c.ShouldBind(&fieldGroup)
+	if err != nil {
+		app.Error(c, -1, err, "参数绑定失败")
+		return
+	}
+
+	// 验证字段分组是否存在
+	err = orm.Eloquent.Model(&fieldGroup).Where("name = ?", fieldGroup.Name).Count(&fieldGroupCount).Error
+	if err != nil {
+		app.Error(c, -1, err, "查询字段分组是否存在失败")
+		return
+	}
+	if fieldGroupCount > 0 {
+		app.Error(c, -1, nil, "字段分组名称已存在，请确认")
+		return
+	}
+
+	// 创建字段分组
+	err = orm.Eloquent.Create(&fieldGroup).Error
+	if err != nil {
+		app.Error(c, -1, err, "创建字段分组失败")
+		return
+	}
 
 	app.OK(c, nil, "")
+}
+
+func GetModelDetails(c *gin.Context) {
+	var (
+		err          error
+		fieldDetails struct {
+			model.Info
+			FieldGroups []struct {
+				model.FieldGroup
+				Fields []model.Fields `json:"fields"`
+			} `json:"field_groups"`
+		}
+		modelId string
+	)
+
+	modelId = c.Param("id")
+
+	// 查询模型信息
+	err = orm.Eloquent.Model(&model.Info{}).Where("id = ?", modelId).Find(&fieldDetails).Error
+	if err != nil {
+		app.Error(c, -1, err, "查询模型信息失败")
+		return
+	}
+
+	// 查询模型分组
+	err = orm.Eloquent.Model(&model.FieldGroup{}).Where("info_id = ?", modelId).Find(&fieldDetails.FieldGroups).Error
+	if err != nil {
+		app.Error(c, -1, err, "查询模型信息失败")
+		return
+	}
+
+	app.OK(c, fieldDetails, "")
 }
