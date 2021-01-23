@@ -4,6 +4,7 @@ import (
 	"fiy/tools/config"
 
 	"fiy/pkg/core/search"
+
 	"gorm.io/gorm"
 )
 

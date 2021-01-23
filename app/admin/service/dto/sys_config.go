@@ -1,8 +1,9 @@
 package dto
 
 import (
-	"github.com/gin-gonic/gin"
 	"fiy/app/admin/models/system"
+
+	"github.com/gin-gonic/gin"
 	"gorm.io/gorm"
 
 	"fiy/common/dto"

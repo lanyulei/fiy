@@ -11,9 +11,9 @@ import (
 	"gorm.io/gorm/logger"
 	"gorm.io/gorm/schema"
 
-	goAdminLogger "fiy/pkg/core/logger"
 	"fiy/common/config"
 	"fiy/common/global"
+	goAdminLogger "fiy/pkg/core/logger"
 	"fiy/tools"
 	toolsConfig "fiy/tools/config"
 )
