@@ -190,11 +190,30 @@ func EditModelField(c *gin.Context) {
 		"type":          field.Type,
 		"is_edit":       field.IsEdit,
 		"is_unique":     field.IsUnique,
+		"required":      field.Required,
 		"prompt":        field.Prompt,
 		"configuration": field.Configuration,
 	}).Error
 	if err != nil {
 		app.Error(c, -1, err, "参数绑定失败")
+		return
+	}
+
+	app.OK(c, nil, "")
+}
+
+// 删除模型字段
+func DeleteModelField(c *gin.Context) {
+	var (
+		err     error
+		fieldId string
+	)
+
+	fieldId = c.Param("id")
+
+	err = orm.Eloquent.Delete(&model.Fields{}, fieldId).Error
+	if err != nil {
+		app.Error(c, -1, err, "删除模型字段失败")
 		return
 	}
 
@@ -255,6 +274,66 @@ func EditFieldGroup(c *gin.Context) {
 	}).Error
 	if err != nil {
 		app.Error(c, -1, err, "更新字段分组失败")
+		return
+	}
+
+	app.OK(c, nil, "")
+}
+
+// 编辑模型
+func EditModelInfo(c *gin.Context) {
+	var (
+		err    error
+		info   model.Info
+		infoId string
+	)
+
+	infoId = c.Param("id")
+
+	err = c.ShouldBind(&info)
+	if err != nil {
+		app.Error(c, -1, err, "参数绑定失败")
+		return
+	}
+
+	err = orm.Eloquent.Model(&info).Where("id = ?", infoId).Updates(map[string]interface{}{
+		"identifies": info.Identifies,
+		"name":       info.Name,
+		"icon":       info.Icon,
+		"group_id":   info.GroupId,
+	}).Error
+
+	if err != nil {
+		app.Error(c, -1, err, "更新模型数据失败")
+		return
+	}
+
+	app.OK(c, nil, "")
+}
+
+// 停用模型
+func StopModelInfo(c *gin.Context) {
+	var (
+		err     error
+		modelId string
+		params  struct {
+			IsUsable bool `json:"is_usable"`
+		}
+	)
+
+	modelId = c.Param("id")
+
+	err = c.ShouldBind(&params)
+	if err != nil {
+		app.Error(c, -1, err, "参数绑定失败")
+		return
+	}
+
+	err = orm.Eloquent.Model(&model.Info{}).
+		Where("id = ?", modelId).
+		Update("is_usable", params.IsUsable).Error
+	if err != nil {
+		app.Error(c, -1, err, "更新模型状态")
 		return
 	}
 

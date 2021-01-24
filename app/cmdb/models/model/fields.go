@@ -18,6 +18,7 @@ type Fields struct {
 	Type          string         `gorm:"column:type; type:varchar(45)" json:"type" binding:"required"`                 // 字段类型(英文)。字符，数字...
 	IsEdit        bool           `gorm:"column:is_edit; type:tinyint(1)" json:"is_edit"`                               // 是否可编辑
 	IsUnique      bool           `gorm:"column:is_unique; type:tinyint(1)" json:"is_unique"`                           // 是否唯一
+	Required      bool           `gorm:"column:required; type:tinyint(1)" json:"required"`                             // 是否必填
 	IsInternal    bool           `gorm:"column:is_internal; type:tinyint(1)" json:"is_internal"`                       // 是否内置
 	Prompt        string         `gorm:"column:prompt; type:varchar(1024)" json:"prompt"`                              // 用户提示
 	Configuration datatypes.JSON `gorm:"column:configuration; type:json" json:"configuration"`                         // 字段配置相关的，例如数字的最大，最小，步长，单位等数据

@@ -130,3 +130,19 @@ func DeleteGroup(c *gin.Context) {
 
 	app.OK(c, nil, "")
 }
+
+// 获取模型分组列表
+func GetModelGroupList(c *gin.Context) {
+	var (
+		err       error
+		groupList []model.Group
+	)
+
+	err = orm.Eloquent.Model(&model.Group{}).Find(&groupList).Error
+	if err != nil {
+		app.Error(c, -1, err, "查询模型分组失败")
+		return
+	}
+
+	app.OK(c, groupList, "")
+}
