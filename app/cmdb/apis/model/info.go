@@ -339,3 +339,25 @@ func StopModelInfo(c *gin.Context) {
 
 	app.OK(c, nil, "")
 }
+
+// 获模型中唯一校验的列
+func GetModelUniqueFields(c *gin.Context) {
+	var (
+		err     error
+		modelId string
+		fields  []model.Fields
+	)
+
+	modelId = c.Param("id")
+
+	err = orm.Eloquent.Model(&model.Fields{}).
+		Select("id, identifies, name").
+		Where("info_id = ? and is_unique = 1", modelId).
+		Find(&fields).Error
+	if err != nil {
+		app.Error(c, -1, err, "查询字段数据失败")
+		return
+	}
+
+	app.OK(c, fields, "")
+}

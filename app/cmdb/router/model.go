@@ -35,5 +35,6 @@ func RegisterCmdbModelRouter(v1 *gin.RouterGroup, authMiddleware *jwt.GinJWTMidd
 		r.DELETE("/field/:id", model.DeleteModelField)
 		r.DELETE("/field-group/:id", model.DeleteFieldGroup)
 		r.PUT("/field-group/:id", model.EditFieldGroup)
+		r.GET("/unique-field/:id", model.GetModelUniqueFields)
 	}
 }
