@@ -4,6 +4,7 @@ import (
 	"fiy/app/cmdb/models/model"
 	orm "fiy/common/global"
 	"fiy/tools/app"
+
 	"github.com/gin-gonic/gin"
 )
 
@@ -44,41 +45,6 @@ func CreateModelInfo(c *gin.Context) {
 	err = orm.Eloquent.Create(&info).Error
 	if err != nil {
 		app.Error(c, -1, err, "创建模型失败")
-		return
-	}
-
-	app.OK(c, nil, "")
-}
-
-// 创建模型字段分组
-func CreateModelFieldGroup(c *gin.Context) {
-	var (
-		err             error
-		fieldGroup      model.FieldGroup
-		fieldGroupCount int64
-	)
-
-	err = c.ShouldBind(&fieldGroup)
-	if err != nil {
-		app.Error(c, -1, err, "参数绑定失败")
-		return
-	}
-
-	// 验证字段分组是否存在
-	err = orm.Eloquent.Model(&fieldGroup).Where("name = ?", fieldGroup.Name).Count(&fieldGroupCount).Error
-	if err != nil {
-		app.Error(c, -1, err, "查询字段分组是否存在失败")
-		return
-	}
-	if fieldGroupCount > 0 {
-		app.Error(c, -1, nil, "字段分组名称已存在，请确认")
-		return
-	}
-
-	// 创建字段分组
-	err = orm.Eloquent.Create(&fieldGroup).Error
-	if err != nil {
-		app.Error(c, -1, err, "创建字段分组失败")
 		return
 	}
 
@@ -127,156 +93,6 @@ func GetModelDetails(c *gin.Context) {
 	}
 
 	app.OK(c, fieldDetails, "")
-}
-
-// 创建模型字段
-func CreateModelField(c *gin.Context) {
-	var (
-		err        error
-		fieldValue model.Fields
-		fieldCount int64
-	)
-
-	err = c.ShouldBind(&fieldValue)
-	if err != nil {
-		app.Error(c, -1, err, "参数绑定失败")
-		return
-	}
-
-	// 判断唯一标识及名称是否唯一
-	err = orm.Eloquent.
-		Model(&model.Fields{}).
-		Where("info_id = ? and (identifies = ? or name = ?)", fieldValue.InfoId, fieldValue.Identifies, fieldValue.Name).
-		Count(&fieldCount).Error
-	if err != nil {
-		app.Error(c, -1, err, "验证唯一标识或者名称的唯一性失败")
-		return
-	}
-	if fieldCount > 0 {
-		app.Error(c, -1, nil, "唯一标识或者名称出现重复，请确认。")
-		return
-	}
-
-	// 创建字段
-	err = orm.Eloquent.Create(&fieldValue).Error
-	if err != nil {
-		app.Error(c, -1, err, "创建字段失败")
-		return
-	}
-
-	app.OK(c, nil, "")
-}
-
-// 更新模型字段
-func EditModelField(c *gin.Context) {
-	var (
-		err     error
-		field   model.Fields
-		fieldId string
-	)
-
-	fieldId = c.Param("id")
-
-	err = c.ShouldBind(&field)
-	if err != nil {
-		app.Error(c, -1, err, "参数绑定失败")
-		return
-	}
-
-	err = orm.Eloquent.Model(&field).Where("id = ?", fieldId).Updates(map[string]interface{}{
-		"identifies":    field.Identifies,
-		"name":          field.Name,
-		"type":          field.Type,
-		"is_edit":       field.IsEdit,
-		"is_unique":     field.IsUnique,
-		"required":      field.Required,
-		"prompt":        field.Prompt,
-		"configuration": field.Configuration,
-	}).Error
-	if err != nil {
-		app.Error(c, -1, err, "参数绑定失败")
-		return
-	}
-
-	app.OK(c, nil, "")
-}
-
-// 删除模型字段
-func DeleteModelField(c *gin.Context) {
-	var (
-		err     error
-		fieldId string
-	)
-
-	fieldId = c.Param("id")
-
-	err = orm.Eloquent.Delete(&model.Fields{}, fieldId).Error
-	if err != nil {
-		app.Error(c, -1, err, "删除模型字段失败")
-		return
-	}
-
-	app.OK(c, nil, "")
-}
-
-// 删除模型分组
-func DeleteFieldGroup(c *gin.Context) {
-	var (
-		err          error
-		fieldGroupId string
-		fieldCount   int64
-	)
-
-	fieldGroupId = c.Param("id")
-
-	// 如果分组下有对应字段，则无法删除
-	err = orm.Eloquent.Model(&model.Fields{}).Where("field_group_id = ?", fieldGroupId).Count(&fieldCount).Error
-	if err != nil {
-		app.Error(c, -1, err, "查询字段列表失败")
-		return
-	}
-	if fieldCount > 0 {
-		app.Error(c, -1, err, "无法删除分组，因分组下有对应的字段数据")
-		return
-	}
-
-	// 删除字段分组
-	err = orm.Eloquent.Delete(&model.FieldGroup{}, fieldGroupId).Error
-	if err != nil {
-		app.Error(c, -1, err, "删除字段分组失败")
-		return
-	}
-
-	app.OK(c, nil, "")
-}
-
-// 编辑字段分组
-func EditFieldGroup(c *gin.Context) {
-	var (
-		err          error
-		fieldGroup   model.FieldGroup
-		fieldGroupId string
-	)
-
-	fieldGroupId = c.Param("id")
-
-	err = c.ShouldBind(&fieldGroup)
-	if err != nil {
-		app.Error(c, -1, err, "参数绑定失败")
-		return
-	}
-
-	err = orm.Eloquent.Model(&fieldGroup).Where("id = ?", fieldGroupId).Updates(map[string]interface{}{
-		"name":     fieldGroup.Name,
-		"sequence": fieldGroup.Sequence,
-		"is_fold":  fieldGroup.IsFold,
-	}).Error
-	if err != nil {
-		app.Error(c, -1, err, "更新字段分组失败")
-		return
-	}
-
-	app.OK(c, nil, "")
 }
 
 // 编辑模型

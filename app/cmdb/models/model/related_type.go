@@ -13,6 +13,7 @@ type RelatedType struct {
 	Name           string `gorm:"column:name; type:varchar(128)" json:"name" binding:"required"`             // 分组名称
 	SourceDescribe string `gorm:"column:source_describe; type:varchar(1024)" json:"source_describe"`         // 源->目标描述
 	TargetDescribe string `gorm:"column:target_describe; type:varchar(1024)" json:"target_describe"`         // 目标->源描述
+	Direction      int    `gorm:"column:direction; type:int(11)" json:"direction"`                           // 是否有方向  1：有，源指向目标，2：双向，3：无方向
 	models.BaseModel
 }
 
