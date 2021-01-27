@@ -4,7 +4,6 @@ import (
 	"fiy/app/cmdb/models/model"
 	orm "fiy/common/global"
 	"fiy/tools/app"
-
 	"github.com/gin-gonic/gin"
 )
 
@@ -360,4 +359,53 @@ func GetModelUniqueFields(c *gin.Context) {
 	}
 
 	app.OK(c, fields, "")
+}
+
+// 更新字段唯一校验规则
+func UpdateFieldUnique(c *gin.Context) {
+	var (
+		err          error
+		fieldId      string
+		uniqueStatus string
+		isUnique     bool
+		fieldValue   model.Fields
+	)
+
+	fieldId = c.Param("id")
+
+	uniqueStatus = c.DefaultQuery("unique_status", "")
+	if uniqueStatus == "" {
+		app.Error(c, -1, err, "unique_status 参数异常请确认")
+		return
+	}
+
+	if uniqueStatus == "create" {
+		// 校验是否已经开启唯一校验
+		err = orm.Eloquent.Model(&model.Fields{}).
+			Select("id, is_unique").
+			Where("id = ?", fieldId).
+			Find(&fieldValue).Error
+		if err != nil {
+			app.Error(c, -1, err, "查新字段唯一校验状态失败")
+			return
+		}
+		if fieldValue.IsUnique {
+			app.Error(c, -1, err, "相同的唯一校验规则已经存在")
+			return
+		}
+		isUnique = true
+	} else if uniqueStatus == "delete" {
+		isUnique = false
+	}
+
+	err = orm.Eloquent.
+		Model(&model.Fields{}).
+		Where("id = ?", fieldId).
+		Update("is_unique", isUnique).Error
+	if err != nil {
+		app.Error(c, -1, err, "更新唯一校验失败")
+		return
+	}
+
+	app.OK(c, nil, "")
 }
