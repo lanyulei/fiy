@@ -15,25 +15,13 @@ import (
 // 创建模型字段分组
 func CreateModelFieldGroup(c *gin.Context) {
 	var (
-		err             error
-		fieldGroup      model.FieldGroup
-		fieldGroupCount int64
+		err        error
+		fieldGroup model.FieldGroup
 	)
 
 	err = c.ShouldBind(&fieldGroup)
 	if err != nil {
 		app.Error(c, -1, err, "参数绑定失败")
-		return
-	}
-
-	// 验证字段分组是否存在
-	err = orm.Eloquent.Model(&fieldGroup).Where("name = ?", fieldGroup.Name).Count(&fieldGroupCount).Error
-	if err != nil {
-		app.Error(c, -1, err, "查询字段分组是否存在失败")
-		return
-	}
-	if fieldGroupCount > 0 {
-		app.Error(c, -1, nil, "字段分组名称已存在，请确认")
 		return
 	}
 
@@ -81,10 +69,9 @@ func DeleteFieldGroup(c *gin.Context) {
 // 编辑字段分组
 func EditFieldGroup(c *gin.Context) {
 	var (
-		err             error
-		fieldGroup      model.FieldGroup
-		fieldGroupId    string
-		fieldGroupCount int64
+		err          error
+		fieldGroup   model.FieldGroup
+		fieldGroupId string
 	)
 
 	fieldGroupId = c.Param("id")
@@ -92,17 +79,6 @@ func EditFieldGroup(c *gin.Context) {
 	err = c.ShouldBind(&fieldGroup)
 	if err != nil {
 		app.Error(c, -1, err, "参数绑定失败")
-		return
-	}
-
-	// 验证字段分组是否存在
-	err = orm.Eloquent.Model(&fieldGroup).Where("name = ?", fieldGroup.Name).Count(&fieldGroupCount).Error
-	if err != nil {
-		app.Error(c, -1, err, "查询字段分组是否存在失败")
-		return
-	}
-	if fieldGroupCount > 0 {
-		app.Error(c, -1, nil, "字段分组名称已存在，请确认")
 		return
 	}
 

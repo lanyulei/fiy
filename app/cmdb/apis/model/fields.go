@@ -17,26 +17,11 @@ func CreateModelField(c *gin.Context) {
 	var (
 		err        error
 		fieldValue model.Fields
-		fieldCount int64
 	)
 
 	err = c.ShouldBind(&fieldValue)
 	if err != nil {
 		app.Error(c, -1, err, "参数绑定失败")
-		return
-	}
-
-	// 判断唯一标识及名称是否唯一
-	err = orm.Eloquent.
-		Model(&model.Fields{}).
-		Where("info_id = ? and (identifies = ? or name = ?)", fieldValue.InfoId, fieldValue.Identifies, fieldValue.Name).
-		Count(&fieldCount).Error
-	if err != nil {
-		app.Error(c, -1, err, "验证唯一标识或者名称的唯一性失败")
-		return
-	}
-	if fieldCount > 0 {
-		app.Error(c, -1, nil, "唯一标识或者名称出现重复，请确认")
 		return
 	}
 
@@ -53,10 +38,9 @@ func CreateModelField(c *gin.Context) {
 // 更新模型字段
 func EditModelField(c *gin.Context) {
 	var (
-		err        error
-		field      model.Fields
-		fieldId    string
-		fieldCount int64
+		err     error
+		field   model.Fields
+		fieldId string
 	)
 
 	fieldId = c.Param("id")
@@ -64,20 +48,6 @@ func EditModelField(c *gin.Context) {
 	err = c.ShouldBind(&field)
 	if err != nil {
 		app.Error(c, -1, err, "参数绑定失败")
-		return
-	}
-
-	// 判断唯一标识及名称是否唯一
-	err = orm.Eloquent.
-		Model(&model.Fields{}).
-		Where("info_id = ? and (identifies = ? or name = ?)", field.InfoId, field.Identifies, field.Name).
-		Count(&fieldCount).Error
-	if err != nil {
-		app.Error(c, -1, err, "验证唯一标识或者名称的唯一性失败")
-		return
-	}
-	if fieldCount > 0 {
-		app.Error(c, -1, nil, "唯一标识或者名称出现重复，请确认")
 		return
 	}
 

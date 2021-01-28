@@ -5,6 +5,7 @@ import (
 	orm "fiy/common/global"
 	"fiy/common/pagination"
 	"fiy/tools/app"
+
 	"github.com/gin-gonic/gin"
 )
 
@@ -15,28 +16,13 @@ import (
 // 新建关联类型
 func AddAssociationType(c *gin.Context) {
 	var (
-		err              error
-		association      model.RelatedType
-		associationCount int64
+		err         error
+		association model.RelatedType
 	)
 
 	err = c.ShouldBind(&association)
 	if err != nil {
 		app.Error(c, -1, err, "参数绑定失败")
-		return
-	}
-
-	// 判断唯一标识及名称是否唯一
-	err = orm.Eloquent.
-		Model(&model.RelatedType{}).
-		Where("identifies = ? or name = ?", association.Identifies, association.Name).
-		Count(&associationCount).Error
-	if err != nil {
-		app.Error(c, -1, err, "验证唯一标识或者名称的唯一性失败")
-		return
-	}
-	if associationCount > 0 {
-		app.Error(c, -1, nil, "唯一标识或者名称出现重复，请确认")
 		return
 	}
 
@@ -77,10 +63,9 @@ func AssociationTypeList(c *gin.Context) {
 // 编辑关联类型
 func UpdateAssociationType(c *gin.Context) {
 	var (
-		err                  error
-		associationType      model.RelatedType
-		associationTypeCount int64
-		associationTypeId    string
+		err               error
+		associationType   model.RelatedType
+		associationTypeId string
 	)
 
 	associationTypeId = c.Param("id")
@@ -88,20 +73,6 @@ func UpdateAssociationType(c *gin.Context) {
 	err = c.ShouldBind(&associationType)
 	if err != nil {
 		app.Error(c, -1, err, "参数绑定失败")
-		return
-	}
-
-	// 唯一标识及名称不可重复
-	err = orm.Eloquent.
-		Model(&associationType).
-		Where("identifies = ? or name = ?", associationType.Identifies, associationType.Name).
-		Count(&associationTypeCount).Error
-	if err != nil {
-		app.Error(c, -1, err, "查询关联类型是否存在失败")
-		return
-	}
-	if associationTypeCount > 0 {
-		app.Error(c, -1, nil, "唯一标识或名称已存在")
 		return
 	}
 
