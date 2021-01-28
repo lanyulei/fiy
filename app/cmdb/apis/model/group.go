@@ -27,7 +27,7 @@ func CreateGroup(c *gin.Context) {
 		return
 	}
 
-	// 查询分组是否存在， 分组唯一标识及名称都不存在，才可创建分组
+	// 唯一标识及名称不可重复
 	err = orm.Eloquent.
 		Model(&group).
 		Where("identifies = ? or name = ?", group.Identifies, group.Name).
@@ -91,9 +91,10 @@ func GetModelList(c *gin.Context) {
 // 编辑模型分组
 func EditGroup(c *gin.Context) {
 	var (
-		err     error
-		group   model.Group
-		groupId string
+		err        error
+		group      model.Group
+		groupId    string
+		groupCount int64
 	)
 
 	groupId = c.Param("id")
@@ -101,6 +102,20 @@ func EditGroup(c *gin.Context) {
 	err = c.ShouldBind(&group)
 	if err != nil {
 		app.Error(c, -1, err, "参数绑定失败")
+		return
+	}
+
+	// 唯一标识及名称不可重复
+	err = orm.Eloquent.
+		Model(&group).
+		Where("identifies = ? or name = ?", group.Identifies, group.Name).
+		Count(&groupCount).Error
+	if err != nil {
+		app.Error(c, -1, err, "查询分组是否存在失败")
+		return
+	}
+	if groupCount > 0 {
+		app.Error(c, -1, nil, "分组唯一标识或名称已存在")
 		return
 	}
 
