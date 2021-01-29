@@ -166,13 +166,6 @@ INSERT INTO sys_menu VALUES (504, 'ResourceCloudArea', '云区域', 'textarea', 
 INSERT INTO sys_menu VALUES (505, 'ResourceCloudResource', '云资源发现', 'upload', '/cmdb/resource/cloud-resource', '/0/484/494/505', 'C', '', '', 494, 0, '', '/cmdb/resource/cloud-resource', 4, '0', '1', '', '1', '2021-01-14 12:40:55.473', '2021-01-14 12:40:55.473', null);
 INSERT INTO sys_menu VALUES (506, 'ResourceEventpush', '事件订阅', 'rate', '/cmdb/resource/eventpush', '/0/484/494/506', 'C', '', '', 494, 0, '', '/cmdb/resource/eventpush', 5, '0', '1', '', '1', '2021-01-14 12:42:49.600', '2021-01-14 12:42:49.600', null);
 INSERT INTO sys_menu VALUES (507, 'ModelConfigurationFields', '模型字段', 'guide', '/cmdb/model/model-fields', '/0/484/496/507', 'C', '', '', 496, 0, '', '/cmdb/model/model-fields', 4, '1', '1', '', '1', '2021-01-18 22:22:30.841', '2021-01-18 22:22:30.841', null);
-
-INSERT INTO cmdb_model_related_type VALUES (2, 'belong', '属于', '属于', '包含', 1, '2021-01-28 21:14:35.187', '2021-01-28 21:14:35.187', null);
-INSERT INTO cmdb_model_related_type VALUES (3, 'group', '组成', '组成', '组成于', 1, '2021-01-28 21:14:57.224', '2021-01-28 21:14:57.224', null);
-INSERT INTO cmdb_model_related_type VALUES (4, 'bk_mainline', '拓扑组成', '组成', '组成于', 1, '2021-01-28 21:15:24.870', '2021-01-28 21:15:24.870', null);
-INSERT INTO cmdb_model_related_type VALUES (5, 'run', '运行', '运行于', '运行', 1, '2021-01-28 21:16:08.900', '2021-01-28 21:16:08.900', null);
-INSERT INTO cmdb_model_related_type VALUES (6, 'connect', '上联', '上联', '下联', 1, '2021-01-28 21:16:48.197', '2021-01-28 21:16:48.197', null);
-INSERT INTO cmdb_model_related_type VALUES (7, 'default', '默认关联', '关联', '关联', 1, '2021-01-28 21:17:12.015', '2021-01-28 21:17:12.015', null);
 COMMIT;
 
 -- 数据完成 ;

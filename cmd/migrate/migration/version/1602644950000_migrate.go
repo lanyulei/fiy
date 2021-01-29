@@ -13,10 +13,10 @@ import (
 
 func init() {
 	_, fileName, _, _ := runtime.Caller(0)
-	migration.Migrate.SetVersion(migration.GetFilename(fileName), _1602644950000Test)
+	migration.Migrate.SetVersion(migration.GetFilename(fileName), _1602644950000Migrate)
 }
 
-func _1602644950000Test(db *gorm.DB, version string) error {
+func _1602644950000Migrate(db *gorm.DB, version string) error {
 	return db.Transaction(func(tx *gorm.DB) error {
 		if tx.Migrator().HasColumn(&system.SysConfig{}, "config_id") {
 			err := tx.Migrator().RenameColumn(&system.SysConfig{}, "config_id", "id")

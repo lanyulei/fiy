@@ -14,10 +14,10 @@ import (
 
 func init() {
 	_, fileName, _, _ := runtime.Caller(0)
-	migration.Migrate.SetVersion(migration.GetFilename(fileName), _1599190683670Test)
+	migration.Migrate.SetVersion(migration.GetFilename(fileName), _1599190683670Migrate)
 }
 
-func _1599190683670Test(db *gorm.DB, version string) error {
+func _1599190683670Migrate(db *gorm.DB, version string) error {
 	return db.Transaction(func(tx *gorm.DB) error {
 
 		list3 := []models.SysDept{

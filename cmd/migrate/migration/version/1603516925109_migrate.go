@@ -12,10 +12,10 @@ import (
 
 func init() {
 	_, fileName, _, _ := runtime.Caller(0)
-	migration.Migrate.SetVersion(migration.GetFilename(fileName), _1603516925109Test)
+	migration.Migrate.SetVersion(migration.GetFilename(fileName), _1603516925109Migrate)
 }
 
-func _1603516925109Test(db *gorm.DB, version string) error {
+func _1603516925109Migrate(db *gorm.DB, version string) error {
 	return db.Transaction(func(tx *gorm.DB) error {
 		_ = tx.Migrator().RenameTable("sys_operlog", "sys_opera_log")
 		_ = tx.Migrator().RenameTable("sys_loginlog", "sys_login_log")
