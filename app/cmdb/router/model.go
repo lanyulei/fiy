@@ -37,6 +37,8 @@ func RegisterCmdbModelRouter(v1 *gin.RouterGroup, authMiddleware *jwt.GinJWTMidd
 		r.PUT("/field-group/:id", model.EditFieldGroup)
 		r.GET("/unique-field/:id", model.GetModelUniqueFields)
 		r.PUT("/unique-field/:id", model.UpdateFieldUnique)
+		r.POST("/model-related", model.CreateInfoRelatedType)
+		r.GET("/model-related", model.InfoRelatedTypeList)
 
 		// 关联类型
 		r.POST("/association-type", model.AddAssociationType)
