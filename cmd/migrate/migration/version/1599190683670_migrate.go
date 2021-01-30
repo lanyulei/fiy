@@ -1,6 +1,7 @@
 package version
 
 import (
+	"fiy/common/global"
 	"runtime"
 	"time"
 
@@ -133,8 +134,8 @@ func _1599190683670Migrate(db *gorm.DB, version string) error {
 			return err
 		}
 
-		if err := models.InitDb(tx); err != nil {
-
+		if err = models.InitDb(tx, "config/sql/db.sql"); err != nil {
+			global.Logger.Errorf("同步菜单数据失败, %v", err)
 		}
 
 		return tx.Create(&common.Migration{

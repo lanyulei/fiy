@@ -16,16 +16,17 @@ func RegisterCmdbModelRouter(v1 *gin.RouterGroup, authMiddleware *jwt.GinJWTMidd
 	r := v1.Group("/cmdb/model").Use(authMiddleware.MiddlewareFunc()).Use(middleware.AuthCheckRole())
 	{
 		// 模型分组
-		r.GET("/group", model.GetModelList)           // 模型分组列表
-		r.POST("/group", model.CreateGroup)           // 创建模型分组
-		r.PUT("/group/:id", model.EditGroup)          // 编辑模型分组
-		r.DELETE("/group/:id", model.DeleteGroup)     // 删除模型分组
-		r.GET("/group-list", model.GetModelGroupList) // 删除模型分组
+		r.GET("/group", model.GetModelList)
+		r.POST("/group", model.CreateGroup)
+		r.PUT("/group/:id", model.EditGroup)
+		r.DELETE("/group/:id", model.DeleteGroup)
+		r.GET("/group-list", model.GetModelGroupList)
 
 		// 模型管理
-		r.POST("/info", model.CreateModelInfo)       // 创建模型
-		r.PUT("/info/:id", model.EditModelInfo)      // 编辑模型
-		r.PUT("/stop/info/:id", model.StopModelInfo) // 编辑模型
+		r.POST("/info", model.CreateModelInfo)
+		r.PUT("/info/:id", model.EditModelInfo)
+		r.DELETE("/info/:id", model.DeleteModelInfo)
+		r.PUT("/stop/info/:id", model.StopModelInfo)
 
 		// 模型详情
 		r.POST("/field-group", model.CreateModelFieldGroup)
@@ -38,7 +39,9 @@ func RegisterCmdbModelRouter(v1 *gin.RouterGroup, authMiddleware *jwt.GinJWTMidd
 		r.GET("/unique-field/:id", model.GetModelUniqueFields)
 		r.PUT("/unique-field/:id", model.UpdateFieldUnique)
 		r.POST("/model-related", model.CreateInfoRelatedType)
-		r.GET("/model-related", model.InfoRelatedTypeList)
+		r.GET("/model-related/:id", model.InfoRelatedTypeList)
+		r.PUT("/model-related/:id", model.EditInfoRelatedType)
+		r.DELETE("/model-related/:id", model.DeleteInfoRelatedType)
 
 		// 关联类型
 		r.POST("/association-type", model.AddAssociationType)

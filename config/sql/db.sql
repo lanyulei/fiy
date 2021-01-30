@@ -166,6 +166,7 @@ INSERT INTO sys_menu VALUES (504, 'ResourceCloudArea', '云区域', 'textarea', 
 INSERT INTO sys_menu VALUES (505, 'ResourceCloudResource', '云资源发现', 'upload', '/cmdb/resource/cloud-resource', '/0/484/494/505', 'C', '', '', 494, 0, '', '/cmdb/resource/cloud-resource', 4, '0', '1', '', '1', '2021-01-14 12:40:55.473', '2021-01-14 12:40:55.473', null);
 INSERT INTO sys_menu VALUES (506, 'ResourceEventpush', '事件订阅', 'rate', '/cmdb/resource/eventpush', '/0/484/494/506', 'C', '', '', 494, 0, '', '/cmdb/resource/eventpush', 5, '0', '1', '', '1', '2021-01-14 12:42:49.600', '2021-01-14 12:42:49.600', null);
 INSERT INTO sys_menu VALUES (507, 'ModelConfigurationFields', '模型字段', 'guide', '/cmdb/model/model-fields', '/0/484/496/507', 'C', '', '', 496, 0, '', '/cmdb/model/model-fields', 4, '1', '1', '', '1', '2021-01-18 22:22:30.841', '2021-01-18 22:22:30.841', null);
+INSERT INTO sys_menu VALUES (508, 'ResourceDetails', '资源详情', 'guide', '/cmdb/resource/:classify/details', '/0/484/494/508', 'C', '', '', 494, 0, '', '/cmdb/resource/details', 11, '1', '1', '1', '1', '2021-01-31 01:51:45', '2021-01-31 01:52:20', null);
 COMMIT;
 
 -- 数据完成 ;

@@ -211,3 +211,21 @@ func UpdateFieldUnique(c *gin.Context) {
 
 	app.OK(c, nil, "")
 }
+
+// 删除模型
+func DeleteModelInfo(c *gin.Context) {
+	var (
+		err     error
+		modelId string
+	)
+
+	modelId = c.Param("id")
+
+	err = orm.Eloquent.Delete(&model.Info{}, modelId).Error
+	if err != nil {
+		app.Error(c, -1, err, "删除模型失败")
+		return
+	}
+
+	app.OK(c, nil, "")
+}

@@ -11,8 +11,7 @@ import (
 	"fiy/common/global"
 )
 
-func InitDb(db *gorm.DB) (err error) {
-	filePath := "config/db.sql"
+func InitDb(db *gorm.DB, filePath string) (err error) {
 	err = ExecSql(db, filePath)
 	if global.Driver == "postgres" {
 		filePath = "config/pg.sql"
