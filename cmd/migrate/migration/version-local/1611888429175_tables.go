@@ -24,6 +24,9 @@ func _1611888429175Tables(db *gorm.DB, version string) error {
 		new(cmdbModelModels.Info),
 		new(cmdbModelModels.RelatedType),
 		new(cmdbModelModels.InfoRelatedType),
+
+		// Cmdb 资源
+		new(cmdbModelModels.Data),
 	)
 	if err != nil {
 		return err
