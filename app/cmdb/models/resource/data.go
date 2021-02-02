@@ -1,4 +1,4 @@
-package model
+package resource
 
 import (
 	"fiy/common/models"

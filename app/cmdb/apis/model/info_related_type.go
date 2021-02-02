@@ -27,7 +27,7 @@ func CreateInfoRelatedType(c *gin.Context) {
 
 	err = orm.Eloquent.Create(&infoRelatedType).Error
 	if err != nil {
-		app.Error(c, -1, err, "新家关联失败")
+		app.Error(c, -1, err, "新建关联失败")
 		return
 	}
 

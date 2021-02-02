@@ -6,6 +6,7 @@ import (
 	"gorm.io/gorm"
 
 	cmdbModelModels "fiy/app/cmdb/models/model"
+	cmdbResourceModels "fiy/app/cmdb/models/resource"
 	"fiy/cmd/migrate/migration"
 	common "fiy/common/models"
 )
@@ -26,7 +27,7 @@ func _1611888429175Tables(db *gorm.DB, version string) error {
 		new(cmdbModelModels.InfoRelatedType),
 
 		// Cmdb 资源
-		new(cmdbModelModels.Data),
+		new(cmdbResourceModels.Data),
 	)
 	if err != nil {
 		return err
