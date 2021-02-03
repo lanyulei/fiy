@@ -5,6 +5,7 @@ import (
 	orm "fiy/common/global"
 	"fiy/common/pagination"
 	"fiy/tools/app"
+	"fmt"
 
 	"github.com/gin-gonic/gin"
 )
@@ -16,15 +17,23 @@ import (
 // 获取数据列表
 func DataList(c *gin.Context) {
 	var (
-		err      error
-		dataList []*resource.Data
-		result   interface{}
-		modelId  string
+		err        error
+		dataList   []*resource.Data
+		result     interface{}
+		modelId    string
+		value      string
+		identifies string
 	)
 
 	modelId = c.Param("id")
 
 	db := orm.Eloquent.Model(&resource.Data{}).Where("info_id = ?", modelId)
+
+	value = c.DefaultQuery("value", "")
+	identifies = c.DefaultQuery("identifies", "")
+	if identifies != "" && value != "" {
+		db = db.Where(fmt.Sprintf("data->'$.%s' like '%%%s%%'", identifies, value))
+	}
 
 	result, err = pagination.Paging(&pagination.Param{
 		C:  c,
