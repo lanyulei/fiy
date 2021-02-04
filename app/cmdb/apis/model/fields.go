@@ -52,14 +52,16 @@ func EditModelField(c *gin.Context) {
 	}
 
 	err = orm.Eloquent.Model(&field).Where("id = ?", fieldId).Updates(map[string]interface{}{
-		"identifies":    field.Identifies,
-		"name":          field.Name,
-		"type":          field.Type,
-		"is_edit":       field.IsEdit,
-		"is_unique":     field.IsUnique,
-		"required":      field.Required,
-		"prompt":        field.Prompt,
-		"configuration": field.Configuration,
+		"identifies":        field.Identifies,
+		"name":              field.Name,
+		"type":              field.Type,
+		"is_edit":           field.IsEdit,
+		"is_unique":         field.IsUnique,
+		"required":          field.Required,
+		"prompt":            field.Prompt,
+		"configuration":     field.Configuration,
+		"is_list_display":   field.IsListDisplay,
+		"list_display_sort": field.ListDisplaySort,
 	}).Error
 	if err != nil {
 		app.Error(c, -1, err, "参数绑定失败")

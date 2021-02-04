@@ -81,6 +81,28 @@ func GetModelDetails(c *gin.Context) {
 	app.OK(c, fieldDetails, "")
 }
 
+// 获取模型对应的所有字段列表
+func GetModelFields(c *gin.Context) {
+	var (
+		err     error
+		fields  []model.Fields
+		modelId string
+	)
+
+	modelId = c.Param("id")
+
+	err = orm.Eloquent.Model(&model.Fields{}).
+		Where("info_id = ?", modelId).
+		Order("list_display_sort").
+		Find(&fields).Error
+	if err != nil {
+		app.Error(c, -1, err, "查询字段列表失败")
+		return
+	}
+
+	app.OK(c, fields, "")
+}
+
 // 编辑模型
 func EditModelInfo(c *gin.Context) {
 	var (
