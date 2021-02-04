@@ -114,3 +114,22 @@ func EditData(c *gin.Context) {
 
 	app.OK(c, nil, "")
 }
+
+// 获取数据详情
+func GetDataDetails(c *gin.Context) {
+	var (
+		err     error
+		details resource.Data
+		dataId  string
+	)
+
+	dataId = c.Param("id")
+
+	err = orm.Eloquent.Model(&details).Where("id = ?", dataId).Find(&details).Error
+	if err != nil {
+		app.Error(c, -1, err, "参数绑定失败")
+		return
+	}
+
+	app.OK(c, details, "")
+}
