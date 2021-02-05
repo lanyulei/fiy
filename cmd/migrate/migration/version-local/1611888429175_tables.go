@@ -28,6 +28,8 @@ func _1611888429175Tables(db *gorm.DB, version string) error {
 
 		// Cmdb 资源
 		new(cmdbResourceModels.Data),
+		new(cmdbResourceModels.CloudAccount),
+		new(cmdbResourceModels.CloudDiscovery),
 	)
 	if err != nil {
 		return err
