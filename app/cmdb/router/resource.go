@@ -25,5 +25,10 @@ func RegisterCmdbResourceRouter(v1 *gin.RouterGroup, authMiddleware *jwt.GinJWTM
 		r.POST("/cloud-account", resource.CreateCloudAccount)       // 新建云账户
 		r.DELETE("/cloud-account/:id", resource.DeleteCloudAccount) // 删除云账户
 		r.PUT("/cloud-account/:id", resource.EditCloudAccount)      // 编辑云账户
+
+		r.GET("/cloud-discovery", resource.CloudDiscoveryList)    // 云资源同步列表
+		r.POST("/cloud-discovery", resource.CreateCloudDiscovery) // 新建云资源同步
+		r.PUT("/cloud-discovery", resource.CloudDiscoveryList)    // 编辑云资源同步
+		r.DELETE("/cloud-discovery", resource.CloudDiscoveryList) // 删除云资源同步
 	}
 }
