@@ -5,6 +5,7 @@ import (
 
 	"gorm.io/gorm"
 
+	cmdbBusinessModels "fiy/app/cmdb/models/business"
 	cmdbModelModels "fiy/app/cmdb/models/model"
 	cmdbResourceModels "fiy/app/cmdb/models/resource"
 	"fiy/cmd/migrate/migration"
@@ -30,6 +31,9 @@ func _1611888429175Tables(db *gorm.DB, version string) error {
 		new(cmdbResourceModels.Data),
 		new(cmdbResourceModels.CloudAccount),
 		new(cmdbResourceModels.CloudDiscovery),
+
+		// Cmdb 业务
+		new(cmdbBusinessModels.ServiceClassify),
 	)
 	if err != nil {
 		return err
