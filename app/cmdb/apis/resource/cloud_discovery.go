@@ -115,13 +115,13 @@ func EditCloudDiscovery(c *gin.Context) {
 	}
 
 	err = orm.Eloquent.Model(&discovery).Where("id = ?", discoveryId).Updates(map[string]interface{}{
-		"name": discovery.Name,
-		//"type":     discovery.Type,
-		"status": discovery.Status,
-		//"secret":   discovery.Secret,
-		//"key":      discovery.Key,
-		"modifier": tools.GetUserId(c),
-		"remarks":  discovery.Remarks,
+		"name":          discovery.Name,
+		"resource_type": discovery.ResourceType,
+		"cloud_account": discovery.CloudAccount,
+		"field_map":     discovery.FieldMap,
+		"status":        discovery.Status,
+		"modifier":      tools.GetUserId(c),
+		"remarks":       discovery.Remarks,
 	}).Error
 	if err != nil {
 		app.Error(c, -1, err, "编辑云资源同步任务失败")
