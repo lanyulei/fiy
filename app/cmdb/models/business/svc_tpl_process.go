@@ -9,9 +9,9 @@ import "fiy/common/models"
 
 type ServiceTemplateProcess struct {
 	Id          int    `gorm:"column:id; primary_key;AUTO_INCREMENT" json:"id"`
-	Name        string `gorm:"column:name; type:varchar(128); unique;" json:"name" binding:"required"`  // 名称
-	Alias       string `gorm:"column:name; type:varchar(128); unique;" json:"alias" binding:"required"` // 别名
-	StartParams string `gorm:"column:start_params; type:varchar(512);" json:"start_params"`             // 启动参数
+	Name        string `gorm:"column:name; type:varchar(128);" json:"name" binding:"required"`   // 名称
+	Alias       string `gorm:"column:alias; type:varchar(128);" json:"alias" binding:"required"` // 别名
+	StartParams string `gorm:"column:start_params; type:varchar(512);" json:"start_params"`      // 启动参数
 
 	BindIP   string `gorm:"column:bind_ip; type:varchar(45);" json:"bind_ip"`    // 绑定IP
 	Port     string `gorm:"column:port; type:varchar(45);" json:"port"`          // 端口
@@ -24,7 +24,7 @@ type ServiceTemplateProcess struct {
 	StartTimeout     int    `gorm:"column:start_timeout; type:int(11);" json:"start_timeout"`                // 启动超时时长（秒）
 	StartCommand     string `gorm:"column:start_command; type:varchar(128);" json:"start_command"`           // 启动命令
 	StopCommand      string `gorm:"column:stop_command; type:varchar(128);" json:"stop_command"`             // 停止命令
-	RestartCommand   string `gorm:"column:restart_command; type:varchar(128);" json:"restart_command"`       // 停止命令
+	RestartCommand   string `gorm:"column:restart_command; type:varchar(128);" json:"restart_command"`       // 重启命令
 	ForceStopCommand string `gorm:"column:force_stop_command; type:varchar(128);" json:"force_stop_command"` // 强制停止命令
 	ReloadCommand    string `gorm:"column:reload_command; type:varchar(128);" json:"reload_command"`         // 重载命令
 	PidPath          string `gorm:"column:pid_path; type:varchar(128);" json:"pid_path"`                     // PID文件

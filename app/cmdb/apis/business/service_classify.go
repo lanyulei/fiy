@@ -41,7 +41,7 @@ func ServiceClassifyList(c *gin.Context) {
 		err  error
 		list []*struct {
 			business.ServiceClassify
-			Services []business.ServiceClassify
+			Services []business.ServiceClassify `json:"services"`
 		}
 	)
 
