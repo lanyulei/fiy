@@ -34,6 +34,10 @@ func _1611888429175Tables(db *gorm.DB, version string) error {
 
 		// Cmdb 业务
 		new(cmdbBusinessModels.ServiceClassify),
+		new(cmdbBusinessModels.ClusterTemplate),
+		new(cmdbBusinessModels.ServiceCluster),
+		new(cmdbBusinessModels.ServiceTemplate),
+		new(cmdbBusinessModels.ServiceTemplateProcess),
 	)
 	if err != nil {
 		return err
