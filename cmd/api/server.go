@@ -73,6 +73,10 @@ func setup() {
 }
 
 func run() error {
+	if err := global.InitTrans("zh"); err != nil {
+		panic(fmt.Sprintf("init trans failed, err:%v\n", err))
+	}
+
 	if viper.GetString("settings.application.mode") == string(tools.ModeProd) {
 		gin.SetMode(gin.ReleaseMode)
 	}

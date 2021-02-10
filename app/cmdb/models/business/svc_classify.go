@@ -17,5 +17,5 @@ type ServiceClassify struct {
 }
 
 func (ServiceClassify) TableName() string {
-	return "cmdb_business_service_classify"
+	return "cmdb_business_svc_classify"
 }

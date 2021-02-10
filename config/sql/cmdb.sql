@@ -1,5 +1,6 @@
 -- 开始初始化数据 ;
 BEGIN;
+-- 内置字段 ;
 INSERT INTO cmdb_model_fields VALUES (3, 'built_in_host_innerip', '内网IP', 'string', 0, 0, 1, 0, '', '{"is_edit": true, "regular": "^((1?\\\\d{1,2}|2[0-4]\\\\d|25[0-5])[.]){3}(1?\\\\d{1,2}|2[0-4]\\\\d|25[0-5])(,((1?\\\\d{1,2}|2[0-4]\\\\d|25[0-5])[.]){3}(1?\\\\d{1,2}|2[0-4]\\\\d|25[0-5]))*$", "enum_list": [{"uuid": "", "value": ""}], "list_value": [{"value": ""}]}', 1, 1, 1, 2, '2021-01-31 00:04:08', '2021-02-04 12:12:51', null);
 INSERT INTO cmdb_model_fields VALUES (4, 'built_in_host_outerip', '外网IP', 'string', 0, 0, 0, 0, '', '{"is_edit": true, "regular": "^((1?\\\\d{1,2}|2[0-4]\\\\d|25[0-5])[.]){3}(1?\\\\d{1,2}|2[0-4]\\\\d|25[0-5])(,((1?\\\\d{1,2}|2[0-4]\\\\d|25[0-5])[.]){3}(1?\\\\d{1,2}|2[0-4]\\\\d|25[0-5]))*$", "enum_list": [{"uuid": "", "value": ""}], "list_value": [{"value": ""}]}', 1, 1, 1, 3, '2021-01-31 00:05:29', '2021-02-04 12:13:02', null);
 INSERT INTO cmdb_model_fields VALUES (5, 'built_in_operator', '主要维护人', 'user', 0, 0, 0, 0, '', '{"is_edit": true, "enum_list": [{"uuid": "", "value": ""}], "list_value": [{"value": ""}]}', 1, 1, 1, 4, '2021-01-31 00:07:30', '2021-02-04 12:13:06', null);
@@ -49,5 +50,25 @@ INSERT INTO cmdb_model_fields VALUES (48, 'built_in_biz_productor', '产品人�
 INSERT INTO cmdb_model_fields VALUES (49, 'built_in_biz_tester', '测试人员', 'user', 0, 0, 0, 0, '', '{"is_edit": true, "enum_list": [{"uuid": "", "value": ""}], "list_value": [{"value": ""}]}', 6, 4, 1, 999, '2021-01-31 01:45:49', '2021-01-31 01:45:49', null);
 INSERT INTO cmdb_model_fields VALUES (50, 'built_in_biz_developer', '开发人员', 'user', 0, 0, 0, 0, '', '{"is_edit": true, "enum_list": [{"uuid": "", "value": ""}], "list_value": [{"value": ""}]}', 6, 4, 1, 999, '2021-01-31 01:46:15', '2021-01-31 01:46:15', null);
 INSERT INTO cmdb_model_fields VALUES (51, 'built_in_operator', '操作人员', 'user', 0, 0, 0, 0, '', '{"is_edit": true, "enum_list": [{"uuid": "", "value": ""}], "list_value": [{"value": ""}]}', 6, 4, 1, 999, '2021-01-31 01:46:39', '2021-01-31 01:46:39', null);
+
+-- 服务分类 ;
+INSERT INTO cmdb_business_service_classify VALUES (1, 'db', '数据库', 1, 0, '2021-02-09 15:10:15', '2021-02-09 15:10:15', null);
+INSERT INTO cmdb_business_service_classify VALUES (4, 'etcd', 'Etcd', 2, 1, '2021-02-09 17:16:45', '2021-02-09 17:16:45', null);
+INSERT INTO cmdb_business_service_classify VALUES (5, 'mongodb', 'MongoDB', 2, 1, '2021-02-09 17:16:58', '2021-02-09 17:16:58', null);
+INSERT INTO cmdb_business_service_classify VALUES (6, 'mysql', 'MySQL', 2, 1, '2021-02-09 17:17:08', '2021-02-09 17:17:08', null);
+INSERT INTO cmdb_business_service_classify VALUES (7, 'oracle', 'Oracle', 2, 1, '2021-02-09 17:17:31', '2021-02-09 17:17:31', null);
+INSERT INTO cmdb_business_service_classify VALUES (8, 'redis', 'Redis', 2, 1, '2021-02-09 17:17:43', '2021-02-09 17:17:43', null);
+INSERT INTO cmdb_business_service_classify VALUES (9, 'sqlserver', 'SQLServer', 2, 1, '2021-02-09 17:17:56', '2021-02-09 17:17:56', null);
+INSERT INTO cmdb_business_service_classify VALUES (10, 'zookeeper', 'Zookeeper', 2, 1, '2021-02-09 17:18:05', '2021-02-09 17:18:05', null);
+INSERT INTO cmdb_business_service_classify VALUES (11, 'queue', '消息队列', 1, 1, '2021-02-09 17:18:39', '2021-02-09 17:18:39', null);
+INSERT INTO cmdb_business_service_classify VALUES (12, 'kafka', 'Kafka', 2, 11, '2021-02-09 17:18:55', '2021-02-09 17:18:55', null);
+INSERT INTO cmdb_business_service_classify VALUES (13, 'rabbitmq', 'RabbitMQ', 2, 11, '2021-02-09 17:19:17', '2021-02-09 17:19:17', null);
+INSERT INTO cmdb_business_service_classify VALUES (14, 'http', 'HTTP 服务', 1, 11, '2021-02-09 17:19:59', '2021-02-09 17:19:59', null);
+INSERT INTO cmdb_business_service_classify VALUES (15, 'apache', 'Apache', 2, 14, '2021-02-09 17:20:16', '2021-02-09 17:20:16', null);
+INSERT INTO cmdb_business_service_classify VALUES (16, 'nginx', 'Nginx', 2, 14, '2021-02-09 17:20:27', '2021-02-09 17:20:35', null);
+INSERT INTO cmdb_business_service_classify VALUES (17, 'tomcat', 'Tomcat', 2, 14, '2021-02-09 17:20:55', '2021-02-09 17:20:55', null);
+INSERT INTO cmdb_business_service_classify VALUES (18, 'storage', '存储', 1, 0, '2021-02-09 17:21:52', '2021-02-09 17:21:52', null);
+INSERT INTO cmdb_business_service_classify VALUES (19, 'ceph', 'Ceph', 2, 18, '2021-02-09 17:22:05', '2021-02-09 17:22:05', null);
+INSERT INTO cmdb_business_service_classify VALUES (20, 'nfs', 'NFS', 2, 18, '2021-02-09 17:22:14', '2021-02-09 17:22:14', null);
 COMMIT;
 -- 数据完成 ;
