@@ -168,6 +168,7 @@ INSERT INTO sys_menu VALUES (505, 'ResourceCloudResource', '云资源同步', 'u
 INSERT INTO sys_menu VALUES (507, 'ModelConfigurationFields', '模型字段', 'guide', '/cmdb/model/model-fields', '/0/484/496/507', 'C', '', '', 496, 0, '', '/cmdb/model/model-fields', 4, '1', '1', '', '1', '2021-01-18 22:22:30.841', '2021-01-18 22:22:30.841', null);
 INSERT INTO sys_menu VALUES (508, 'ResourceList', '资源列表', 'guide', '/cmdb/resource/:classify/list', '/0/484/494/508', 'C', '', '', 494, 0, '', '/cmdb/resource/list', 11, '1', '1', '1', '1', '2021-01-31 01:51:45', '2021-02-05 13:03:46', null);
 INSERT INTO sys_menu VALUES (509, 'ResourceDetails', '资源详情', 'guide', '/cmdb/resource/details/:id', '/0/484/494/509', 'C', '', '', 494, 0, '', '/cmdb/resource/details', 12, '1', '1', '1', '1', '2021-02-05 13:04:12', '2021-02-05 13:04:28', null);
+INSERT INTO sys_menu VALUES (510, 'BusinessSvcTplManager', '服务模板管理', 'guide', '/cmdb/business/svc-tpl-manager', '/0/484/486/510', 'C', '', '', 486, 0, '', '/cmdb/business/service-template-manager', 11, '1', '1', '1', '1', '2021-02-11 22:59:43', '2021-02-11 22:59:49', null);
 COMMIT;
 
 -- 数据完成 ;
