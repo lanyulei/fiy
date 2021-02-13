@@ -48,7 +48,7 @@ func ServiceTemplateList(c *gin.Context) {
 	app.OK(c, result, "")
 }
 
-// 新建服务模版
+// 新建服务模板
 func CreateServiceTemplate(c *gin.Context) {
 	var (
 		err    error
@@ -66,7 +66,7 @@ func CreateServiceTemplate(c *gin.Context) {
 
 	tx := orm.Eloquent.Begin()
 
-	// 新建服务模版
+	// 新建服务模板
 	currentUser := tools.GetUserId(c)
 	svcData := business.ServiceTemplate{
 		Name:        params.Name,
@@ -89,7 +89,7 @@ func CreateServiceTemplate(c *gin.Context) {
 	err = tx.Create(&params.ProcessList).Error
 	if err != nil {
 		tx.Rollback()
-		app.Error(c, -1, err, "新建服务模版失败")
+		app.Error(c, -1, err, "新建服务模板失败")
 		return
 	}
 
@@ -128,4 +128,35 @@ func ServiceTemplateDetails(c *gin.Context) {
 	}
 
 	app.OK(c, info, "")
+}
+
+// 删除服务模板
+func DeleteServiceTemplate(c *gin.Context) {
+	var (
+		err          error
+		id           string
+		processCount int64
+	)
+
+	id = c.Param("id")
+
+	// 有进程数据，则无法删除服务模板
+	err = orm.Eloquent.Model(&business.ServiceTemplateProcess{}).Where("svc_tpl = ?", id).Count(&processCount).Error
+	if err != nil {
+		app.Error(c, -1, err, "查询服务模板进程数量失败")
+		return
+	}
+	if processCount > 0 {
+		app.Error(c, -1, err, "无法删除当前服务模板，存在绑定的进程")
+		return
+	}
+
+	// 删除模板
+	err = orm.Eloquent.Delete(&business.ServiceTemplate{}, id).Error
+	if err != nil {
+		app.Error(c, -1, err, "删除服务模板失败")
+		return
+	}
+
+	app.OK(c, nil, "")
 }

@@ -20,11 +20,13 @@ func RegisterCmdbBusinessRouter(v1 *gin.RouterGroup, authMiddleware *jwt.GinJWTM
 		r.DELETE("/service-classify/:id", business.DeleteServiceClassify) // 删除
 		r.PUT("/service-classify/:id", business.EditServiceClassify)      // 编辑
 
-		r.GET("/svc-tpl", business.ServiceTemplateList)        // 列表
-		r.POST("/svc-tpl", business.CreateServiceTemplate)     // 新建
-		r.GET("/svc-tpl/:id", business.ServiceTemplateDetails) // 详情
+		r.GET("/svc-tpl", business.ServiceTemplateList)          // 列表
+		r.POST("/svc-tpl", business.CreateServiceTemplate)       // 新建
+		r.GET("/svc-tpl/:id", business.ServiceTemplateDetails)   // 详情
+		r.DELETE("/svc-tpl/:id", business.DeleteServiceTemplate) // 删除
 
-		r.POST("/svc-tpl-process", business.CreateProcess)  // 新建流程
-		r.PUT("/svc-tpl-process/:id", business.EditProcess) // 编辑流程
+		r.POST("/svc-tpl-process", business.CreateProcess)       // 新建进程
+		r.PUT("/svc-tpl-process/:id", business.EditProcess)      // 编辑进程
+		r.DELETE("/svc-tpl-process/:id", business.DeleteProcess) // 删除进程
 	}
 }

@@ -34,7 +34,7 @@ type ServiceTemplateProcess struct {
 	GatewayPort     string `gorm:"column:gateway_port; type:varchar(50);" json:"gateway_port"`         // 网关端口
 	GatewayProtocol string `gorm:"column:gateway_protocol; type:varchar(50);" json:"gateway_protocol"` // 网关协议
 
-	SvcTpl int `gorm:"column:svc_tpl; type:int(11);" json:"svc_tpl"` // 绑定服务模版
+	SvcTpl int `gorm:"column:svc_tpl; type:int(11);" json:"svc_tpl"` // 绑定服务模板
 
 	Remark string `gorm:"column:remark; type:varchar(1024);" json:"remark"` // 备注
 	models.BaseModel
