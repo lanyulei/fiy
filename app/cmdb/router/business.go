@@ -28,5 +28,11 @@ func RegisterCmdbBusinessRouter(v1 *gin.RouterGroup, authMiddleware *jwt.GinJWTM
 		r.POST("/svc-tpl-process", business.CreateProcess)       // 新建进程
 		r.PUT("/svc-tpl-process/:id", business.EditProcess)      // 编辑进程
 		r.DELETE("/svc-tpl-process/:id", business.DeleteProcess) // 删除进程
+
+		r.POST("/cluster-tpl", business.CreateClusterTpl)          // 新建集群模板
+		r.GET("/cluster-tpl", business.ClusterTplList)             // 集群模板列表
+		r.PUT("/cluster-tpl/:id", business.EditClusterTpl)         // 编辑集群模板
+		r.DELETE("/cluster-tpl/:id", business.DeleteClusterTpl)    // 删除集群模板
+		r.GET("/cluster-svc-tpl/:id", business.ClusterTplReSvcTpl) // 集群模板对应的服务模板列表
 	}
 }
