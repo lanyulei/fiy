@@ -31,6 +31,7 @@ func _1611888429175Tables(db *gorm.DB, version string) error {
 		new(cmdbResourceModels.Data),
 		new(cmdbResourceModels.CloudAccount),
 		new(cmdbResourceModels.CloudDiscovery),
+		new(cmdbResourceModels.DataRelated),
 
 		// Cmdb 业务
 		new(cmdbBusinessModels.ServiceClassify),

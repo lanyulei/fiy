@@ -33,6 +33,8 @@ func RegisterCmdbBusinessRouter(v1 *gin.RouterGroup, authMiddleware *jwt.GinJWTM
 		r.GET("/cluster-tpl", business.ClusterTplList)             // 集群模板列表
 		r.PUT("/cluster-tpl/:id", business.EditClusterTpl)         // 编辑集群模板
 		r.DELETE("/cluster-tpl/:id", business.DeleteClusterTpl)    // 删除集群模板
-		r.GET("/cluster-svc-tpl/:id", business.ClusterTplReSvcTpl) // 集群模板对应的服务模板列表
+		r.GET("/cluster-svc-tpl/:id", business.ClusterTplReSvcTpl) // 集群模板对应的服务模板列表+
+
+		r.GET("/tree", business.BusinessTree) // 集群模板对应的服务模板列表
 	}
 }
