@@ -49,5 +49,8 @@ func RegisterCmdbModelRouter(v1 *gin.RouterGroup, authMiddleware *jwt.GinJWTMidd
 		r.GET("/association-type", model.AssociationTypeList)
 		r.PUT("/association-type/:id", model.UpdateAssociationType)
 		r.DELETE("/association-type/:id", model.DeleteAssociationType)
+
+		// 模型关系
+		r.GET("/related", model.RelatedInfo)
 	}
 }

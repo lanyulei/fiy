@@ -128,3 +128,39 @@ func DeleteInfoRelatedType(c *gin.Context) {
 
 	app.OK(c, nil, "")
 }
+
+// 模型关系数据
+func RelatedInfo(c *gin.Context) {
+	var (
+		err       error
+		modelList []struct {
+			Name string `json:"name"`
+		}
+		relatedList []struct {
+			Source string `json:"source"`
+			Target string `json:"target"`
+		}
+	)
+
+	err = orm.Eloquent.Model(&model.Info{}).Select("name").Scan(&modelList).Error
+	if err != nil {
+		app.Error(c, -1, err, "查询模型列表失败")
+		return
+	}
+
+	err = orm.Eloquent.
+		Model(&model.InfoRelatedType{}).
+		Joins("left join cmdb_model_info as s on s.id = cmdb_model_info_related_type.source").
+		Joins("left join cmdb_model_info as t on t.id = cmdb_model_info_related_type.target").
+		Select("s.name as source, t.name as target").
+		Scan(&relatedList).Error
+	if err != nil {
+		app.Error(c, -1, err, "查询模型关联失败")
+		return
+	}
+
+	app.OK(c, map[string]interface{}{
+		"models":   modelList,
+		"relateds": relatedList,
+	}, "")
+}
