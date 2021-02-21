@@ -5,6 +5,7 @@ import (
 
 	"gorm.io/gorm"
 
+	cmdbAnalysisModels "fiy/app/cmdb/models/analysis"
 	cmdbBusinessModels "fiy/app/cmdb/models/business"
 	cmdbModelModels "fiy/app/cmdb/models/model"
 	cmdbResourceModels "fiy/app/cmdb/models/resource"
@@ -39,6 +40,9 @@ func _1611888429175Tables(db *gorm.DB, version string) error {
 		new(cmdbBusinessModels.ServiceCluster),
 		new(cmdbBusinessModels.ServiceTemplate),
 		new(cmdbBusinessModels.ServiceTemplateProcess),
+
+		// Cmdb 运营分析
+		new(cmdbAnalysisModels.Audit),
 	)
 	if err != nil {
 		return err
