@@ -2,10 +2,12 @@ package business
 
 import (
 	"fiy/app/cmdb/models/business"
+	"fiy/common/actions"
 	orm "fiy/common/global"
 	"fiy/common/pagination"
 	"fiy/tools"
 	"fiy/tools/app"
+	"fmt"
 	"strconv"
 
 	"github.com/gin-gonic/gin"
@@ -64,6 +66,19 @@ func CreateClusterTpl(c *gin.Context) {
 	}
 
 	tx.Commit()
+
+	// 添加操作审计
+	err = actions.AddAudit(c,
+		"业务",
+		"集群模版",
+		"新建",
+		fmt.Sprintf("新建集群模版 <%s>", data.Name),
+		"{}",
+		data)
+	if err != nil {
+		app.Error(c, -1, err, "添加操作审计失败")
+		return
+	}
 
 	app.OK(c, nil, "")
 }

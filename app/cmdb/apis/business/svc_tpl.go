@@ -2,11 +2,13 @@ package business
 
 import (
 	"fiy/app/cmdb/models/business"
+	"fiy/common/actions"
 	orm "fiy/common/global"
 	"fiy/common/models"
 	"fiy/common/pagination"
 	"fiy/tools"
 	"fiy/tools/app"
+	"fmt"
 
 	"github.com/gin-gonic/gin"
 )
@@ -94,6 +96,19 @@ func CreateServiceTemplate(c *gin.Context) {
 	}
 
 	tx.Commit()
+
+	// 添加操作审计
+	err = actions.AddAudit(c,
+		"业务",
+		"服务模版",
+		"新建",
+		fmt.Sprintf("新建服务模版 <%s>", params.Name),
+		"{}",
+		params)
+	if err != nil {
+		app.Error(c, -1, err, "添加操作审计失败")
+		return
+	}
 
 	app.OK(c, nil, "")
 }

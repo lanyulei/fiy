@@ -208,6 +208,8 @@ var (
 
 	NiceKey = "nice"
 
+	NickName = "nickName"
+
 	DataScopeKey = "datascope"
 
 	RKey      = "r"

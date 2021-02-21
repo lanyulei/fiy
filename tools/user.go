@@ -53,6 +53,15 @@ func GetUserName(c *gin.Context) string {
 	return ""
 }
 
+func GetNickName(c *gin.Context) string {
+	data := ExtractClaims(c)
+	if data["nickName"] != nil {
+		return (data["nickName"]).(string)
+	}
+	fmt.Println(GetCurrentTimeStr() + " [WARING] " + c.Request.Method + " " + c.Request.URL.Path + " GetNickName 缺少nickName")
+	return ""
+}
+
 func GetRoleName(c *gin.Context) string {
 	data := ExtractClaims(c)
 	if data["rolekey"] != nil {
