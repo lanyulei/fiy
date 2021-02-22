@@ -3,11 +3,12 @@ package actions
 import (
 	"encoding/json"
 	"fiy/app/cmdb/models/analysis"
-	orm "fiy/common/global"
 	"fiy/tools"
 	"fmt"
 
 	"github.com/gin-gonic/gin"
+
+	"gorm.io/gorm"
 )
 
 /*
@@ -15,7 +16,7 @@ import (
 */
 
 // 添加审计
-func AddAudit(c *gin.Context, classify, features, action, describe string, oldData, newData interface{}) (err error) {
+func AddAudit(c *gin.Context, tx *gorm.DB, classify, features, action, describe string, oldData, newData interface{}) (err error) {
 	/*
 		classify 分组
 		features 功能模块
@@ -41,7 +42,7 @@ func AddAudit(c *gin.Context, classify, features, action, describe string, oldDa
 		return
 	}
 
-	err = orm.Eloquent.Create(&analysis.Audit{
+	err = tx.Create(&analysis.Audit{
 		Classify: classify,
 		Features: features,
 		Action:   action,

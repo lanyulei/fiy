@@ -2,8 +2,10 @@ package business
 
 import (
 	"fiy/app/cmdb/models/business"
+	"fiy/common/actions"
 	orm "fiy/common/global"
 	"fiy/tools/app"
+	"fmt"
 
 	"github.com/gin-gonic/gin"
 )
@@ -16,6 +18,7 @@ import (
 func CreateServiceClassify(c *gin.Context) {
 	var (
 		err             error
+		remark          string
 		serviceClassify business.ServiceClassify
 	)
 
@@ -25,12 +28,30 @@ func CreateServiceClassify(c *gin.Context) {
 		return
 	}
 
+	tx := orm.Eloquent.Begin()
+
 	// 写入数据库
-	err = orm.Eloquent.Create(&serviceClassify).Error
+	err = tx.Create(&serviceClassify).Error
 	if err != nil {
+		tx.Rollback()
 		app.Error(c, -1, err, "创建服务分类失败")
 		return
 	}
+
+	// 添加操作审计
+	if serviceClassify.Level == 1 {
+		remark = "新建分组名称"
+	} else if serviceClassify.Level == 2 {
+		remark = "新建服务分类"
+	}
+	err = actions.AddAudit(c, tx, "业务", "服务分类", "新建", fmt.Sprintf("%s <%s>", remark, serviceClassify.Name), map[string]interface{}{}, serviceClassify)
+	if err != nil {
+		tx.Rollback()
+		app.Error(c, -1, err, "添加操作审计失败")
+		return
+	}
+
+	tx.Commit()
 
 	app.OK(c, nil, "")
 }
@@ -73,6 +94,7 @@ func DeleteServiceClassify(c *gin.Context) {
 		id        string
 		dataCount int64
 		level     string
+		oldData   business.ServiceClassify
 	)
 
 	id = c.Param("id")
@@ -95,11 +117,29 @@ func DeleteServiceClassify(c *gin.Context) {
 		}
 	}
 
-	err = orm.Eloquent.Delete(&business.ServiceClassify{}, id).Error
+	err = orm.Eloquent.Find(&oldData, id).Error
 	if err != nil {
+		app.Error(c, -1, err, "查询服务分类失败")
+		return
+	}
+
+	tx := orm.Eloquent.Begin()
+
+	err = actions.AddAudit(c, tx, "业务", "服务分类", "删除", fmt.Sprintf("删除服务分类 <%s>", oldData.Name), oldData, map[string]interface{}{})
+	if err != nil {
+		tx.Rollback()
+		app.Error(c, -1, err, "添加操作审计失败")
+		return
+	}
+
+	err = tx.Delete(&business.ServiceClassify{}, id).Error
+	if err != nil {
+		tx.Rollback()
 		app.Error(c, -1, err, "删除分组列表失败")
 		return
 	}
+
+	tx.Commit()
 
 	app.OK(c, nil, "")
 }
@@ -107,9 +147,10 @@ func DeleteServiceClassify(c *gin.Context) {
 // 编辑服务分类
 func EditServiceClassify(c *gin.Context) {
 	var (
-		err  error
-		data business.ServiceClassify
-		id   string
+		err     error
+		data    business.ServiceClassify
+		oldData business.ServiceClassify
+		id      string
 	)
 
 	id = c.Param("id")
@@ -120,14 +161,40 @@ func EditServiceClassify(c *gin.Context) {
 		return
 	}
 
-	err = orm.Eloquent.Model(&data).Where("id = ?", id).Updates(map[string]interface{}{
+	err = orm.Eloquent.Find(&oldData, id).Error
+	if err != nil {
+		app.Error(c, -1, err, "查询服务分类失败")
+		return
+	}
+
+	tx := orm.Eloquent.Begin()
+
+	err = actions.AddAudit(c, tx, "业务", "服务分类", "编辑", fmt.Sprintf("编辑服务分类 <%s>", oldData.Name),
+		map[string]interface{}{
+			"identifies": oldData.Identifies,
+			"name":       oldData.Name,
+		},
+		map[string]interface{}{
+			"identifies": data.Identifies,
+			"name":       data.Name,
+		})
+	if err != nil {
+		tx.Rollback()
+		app.Error(c, -1, err, "添加操作审计失败")
+		return
+	}
+
+	err = tx.Model(&data).Where("id = ?", id).Updates(map[string]interface{}{
 		"identifies": data.Identifies,
 		"name":       data.Name,
 	}).Error
 	if err != nil {
+		tx.Rollback()
 		app.Error(c, -1, err, "编辑服务分类失败")
 		return
 	}
+
+	tx.Commit()
 
 	app.OK(c, nil, "")
 }

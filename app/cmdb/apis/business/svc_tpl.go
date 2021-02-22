@@ -85,30 +85,34 @@ func CreateServiceTemplate(c *gin.Context) {
 	}
 
 	// 新建服务模板的进程
-	for _, p := range params.ProcessList {
-		p.SvcTpl = svcData.Id
+	if len(params.ProcessList) > 0 {
+		for _, p := range params.ProcessList {
+			p.SvcTpl = svcData.Id
+		}
+		err = tx.Create(&params.ProcessList).Error
+		if err != nil {
+			tx.Rollback()
+			app.Error(c, -1, err, "新建服务模板失败")
+			return
+		}
 	}
-	err = tx.Create(&params.ProcessList).Error
-	if err != nil {
-		tx.Rollback()
-		app.Error(c, -1, err, "新建服务模板失败")
-		return
-	}
-
-	tx.Commit()
 
 	// 添加操作审计
 	err = actions.AddAudit(c,
+		tx,
 		"业务",
 		"服务模版",
 		"新建",
 		fmt.Sprintf("新建服务模版 <%s>", params.Name),
-		"{}",
+		map[string]interface{}{},
 		params)
 	if err != nil {
+		tx.Rollback()
 		app.Error(c, -1, err, "添加操作审计失败")
 		return
 	}
+
+	tx.Commit()
 
 	app.OK(c, nil, "")
 }
@@ -151,6 +155,7 @@ func DeleteServiceTemplate(c *gin.Context) {
 		err          error
 		id           string
 		processCount int64
+		oldData      business.ServiceTemplate
 	)
 
 	id = c.Param("id")
@@ -166,12 +171,38 @@ func DeleteServiceTemplate(c *gin.Context) {
 		return
 	}
 
-	// 删除模板
-	err = orm.Eloquent.Delete(&business.ServiceTemplate{}, id).Error
+	err = orm.Eloquent.Find(&oldData, id).Error
 	if err != nil {
+		app.Error(c, -1, err, "查询服务模板失败")
+		return
+	}
+
+	tx := orm.Eloquent.Begin()
+
+	// 删除模板
+	err = tx.Delete(&business.ServiceTemplate{}, id).Error
+	if err != nil {
+		tx.Rollback()
 		app.Error(c, -1, err, "删除服务模板失败")
 		return
 	}
+
+	// 添加操作审计
+	err = actions.AddAudit(c,
+		tx,
+		"业务",
+		"服务模版",
+		"删除",
+		fmt.Sprintf("删除服务模版 <%s>", oldData.Name),
+		oldData,
+		map[string]interface{}{})
+	if err != nil {
+		tx.Rollback()
+		app.Error(c, -1, err, "添加操作审计失败")
+		return
+	}
+
+	tx.Commit()
 
 	app.OK(c, nil, "")
 }

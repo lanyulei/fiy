@@ -52,33 +52,30 @@ func CreateClusterTpl(c *gin.Context) {
 		return
 	}
 
-	for _, i := range data.SvcTpls {
-		svcReTpl = append(svcReTpl, business.ServiceCluster{
-			SvcTpl:     i,
-			ClusterTpl: CTData.Id,
-		})
+	if len(data.SvcTpls) > 0 {
+		for _, i := range data.SvcTpls {
+			svcReTpl = append(svcReTpl, business.ServiceCluster{
+				SvcTpl:     i,
+				ClusterTpl: CTData.Id,
+			})
+		}
+		err = tx.Create(&svcReTpl).Error
+		if err != nil {
+			tx.Rollback()
+			app.Error(c, -1, err, "新建集群模板失败")
+			return
+		}
 	}
-	err = tx.Create(&svcReTpl).Error
+
+	// 添加操作审计
+	err = actions.AddAudit(c, tx, "业务", "集群模版", "新建", fmt.Sprintf("新建集群模版 <%s>", data.Name), map[string]interface{}{}, data)
 	if err != nil {
 		tx.Rollback()
-		app.Error(c, -1, err, "新建集群模板失败")
+		app.Error(c, -1, err, "添加操作审计失败")
 		return
 	}
 
 	tx.Commit()
-
-	// 添加操作审计
-	err = actions.AddAudit(c,
-		"业务",
-		"集群模版",
-		"新建",
-		fmt.Sprintf("新建集群模版 <%s>", data.Name),
-		"{}",
-		data)
-	if err != nil {
-		app.Error(c, -1, err, "添加操作审计失败")
-		return
-	}
 
 	app.OK(c, nil, "")
 }
@@ -168,6 +165,32 @@ func EditClusterTpl(c *gin.Context) {
 	}
 
 	tx := orm.Eloquent.Begin()
+	// 查询变更前的数据
+	var oldData struct {
+		Name    string `json:"name"`
+		SvcTpls []int  `json:"svc_tpls"`
+	}
+	err = tx.Model(&business.ClusterTemplate{}).Where("id = ?", id).Find(&oldData).Error
+	if err != nil {
+		tx.Rollback()
+		app.Error(c, -1, err, "查询变更前数据失败")
+		return
+	}
+
+	err = tx.Model(&business.ServiceCluster{}).Where("cluster_tpl = ?", id).Pluck("svc_tpl", &oldData.SvcTpls).Error
+	if err != nil {
+		tx.Rollback()
+		app.Error(c, -1, err, "查询变更前数据失败")
+		return
+	}
+
+	// 添加操作审计
+	err = actions.AddAudit(c, tx, "业务", "集群模版", "编辑", fmt.Sprintf("编辑集群模版 <%s>", data.Name), oldData, data)
+	if err != nil {
+		tx.Rollback()
+		app.Error(c, -1, err, "添加操作审计失败")
+		return
+	}
 
 	// 编辑集群模板
 	err = tx.Model(&business.ClusterTemplate{}).Where("id = ?", id).Updates(map[string]interface{}{
@@ -228,12 +251,34 @@ func DeleteClusterTpl(c *gin.Context) {
 		return
 	}
 
-	// 删除集群模板
-	err = orm.Eloquent.Delete(&business.ClusterTemplate{}, id).Error
+	tx := orm.Eloquent.Begin()
+
+	// 查询删除前的数据
+	var oldData business.ClusterTemplate
+	err = tx.Find(&oldData, id).Error
 	if err != nil {
+		tx.Rollback()
+		app.Error(c, -1, err, "查询删除前的数据失败")
+		return
+	}
+
+	// 添加操作审计
+	err = actions.AddAudit(c, tx, "业务", "集群模版", "删除", fmt.Sprintf("删除集群模版 <%s>", oldData.Name), oldData, map[string]interface{}{})
+	if err != nil {
+		tx.Rollback()
+		app.Error(c, -1, err, "添加操作审计失败")
+		return
+	}
+
+	// 删除集群模板
+	err = tx.Delete(&business.ClusterTemplate{}, id).Error
+	if err != nil {
+		tx.Rollback()
 		app.Error(c, -1, nil, "删除集群模板失败")
 		return
 	}
+
+	tx.Commit()
 
 	app.OK(c, nil, "")
 }
