@@ -2,8 +2,10 @@ package model
 
 import (
 	"fiy/app/cmdb/models/model"
+	"fiy/common/actions"
 	orm "fiy/common/global"
 	"fiy/tools/app"
+	"fmt"
 
 	"github.com/gin-gonic/gin"
 )
@@ -27,12 +29,32 @@ func CreateModelInfo(c *gin.Context) {
 
 	info.IsUsable = true
 
+	tx := orm.Eloquent.Begin()
+
 	// 写入数据库
-	err = orm.Eloquent.Create(&info).Error
+	err = tx.Create(&info).Error
 	if err != nil {
+		tx.Rollback()
 		app.Error(c, -1, err, "创建模型失败")
 		return
 	}
+
+	// 添加操作审计
+	err = actions.AddAudit(c,
+		tx,
+		"模型",
+		"模型管理",
+		"新建",
+		fmt.Sprintf("新建模型 <%s>", info.Name),
+		map[string]interface{}{},
+		info)
+	if err != nil {
+		tx.Rollback()
+		app.Error(c, -1, err, "添加操作审计失败")
+		return
+	}
+
+	tx.Commit()
 
 	app.OK(c, info, "")
 }
@@ -106,9 +128,10 @@ func GetModelFields(c *gin.Context) {
 // 编辑模型
 func EditModelInfo(c *gin.Context) {
 	var (
-		err    error
-		info   model.Info
-		infoId string
+		err     error
+		info    model.Info
+		oldInfo model.Info
+		infoId  string
 	)
 
 	infoId = c.Param("id")
@@ -119,17 +142,42 @@ func EditModelInfo(c *gin.Context) {
 		return
 	}
 
-	err = orm.Eloquent.Model(&info).Where("id = ?", infoId).Updates(map[string]interface{}{
+	err = orm.Eloquent.Find(&oldInfo, infoId).Error
+	if err != nil {
+		app.Error(c, -1, err, "查询模型数据失败")
+		return
+	}
+
+	tx := orm.Eloquent.Begin()
+	newData := map[string]interface{}{
 		"identifies": info.Identifies,
 		"name":       info.Name,
 		"icon":       info.Icon,
 		"group_id":   info.GroupId,
-	}).Error
-
+	}
+	err = tx.Model(&info).Where("id = ?", infoId).Updates(newData).Error
 	if err != nil {
+		tx.Rollback()
 		app.Error(c, -1, err, "更新模型数据失败")
 		return
 	}
+
+	// 添加操作审计
+	err = actions.AddAudit(c,
+		tx,
+		"模型",
+		"模型管理",
+		"编辑",
+		fmt.Sprintf("编辑模型 <%s>", info.Name),
+		oldInfo,
+		newData)
+	if err != nil {
+		tx.Rollback()
+		app.Error(c, -1, err, "添加操作审计失败")
+		return
+	}
+
+	tx.Commit()
 
 	app.OK(c, nil, "")
 }
@@ -139,9 +187,11 @@ func StopModelInfo(c *gin.Context) {
 	var (
 		err     error
 		modelId string
+		oldData model.Info
 		params  struct {
 			IsUsable bool `json:"is_usable"`
 		}
+		memo string
 	)
 
 	modelId = c.Param("id")
@@ -152,13 +202,45 @@ func StopModelInfo(c *gin.Context) {
 		return
 	}
 
-	err = orm.Eloquent.Model(&model.Info{}).
+	err = orm.Eloquent.Find(&oldData, modelId).Error
+	if err != nil {
+		app.Error(c, -1, err, "查询模型数据失败")
+		return
+	}
+
+	tx := orm.Eloquent.Begin()
+
+	err = tx.Model(&model.Info{}).
 		Where("id = ?", modelId).
 		Update("is_usable", params.IsUsable).Error
 	if err != nil {
+		tx.Rollback()
 		app.Error(c, -1, err, "更新模型状态")
 		return
 	}
+
+	if params.IsUsable {
+		memo = "开启"
+	} else {
+		memo = "停用"
+	}
+
+	// 添加操作审计
+	err = actions.AddAudit(c,
+		tx,
+		"模型",
+		"模型管理",
+		"编辑",
+		fmt.Sprintf("%s模型 <%s>", memo, oldData.Name),
+		map[string]interface{}{},
+		map[string]interface{}{})
+	if err != nil {
+		tx.Rollback()
+		app.Error(c, -1, err, "添加操作审计失败")
+		return
+	}
+
+	tx.Commit()
 
 	app.OK(c, nil, "")
 }
@@ -188,11 +270,13 @@ func GetModelUniqueFields(c *gin.Context) {
 // 更新字段唯一校验规则
 func UpdateFieldUnique(c *gin.Context) {
 	var (
-		err          error
-		fieldId      string
-		uniqueStatus string
-		isUnique     bool
-		fieldValue   model.Fields
+		err           error
+		fieldId       string
+		uniqueStatus  string
+		isUnique      bool
+		fieldValue    model.Fields
+		oldFieldValue model.Fields
+		memo          string
 	)
 
 	fieldId = c.Param("id")
@@ -222,14 +306,45 @@ func UpdateFieldUnique(c *gin.Context) {
 		isUnique = false
 	}
 
-	err = orm.Eloquent.
-		Model(&model.Fields{}).
+	err = orm.Eloquent.Find(&oldFieldValue, fieldId).Error
+	if err != nil {
+		app.Error(c, -1, err, "查询字段数据失败")
+		return
+	}
+
+	tx := orm.Eloquent.Begin()
+
+	err = tx.Model(&model.Fields{}).
 		Where("id = ?", fieldId).
 		Update("is_unique", isUnique).Error
 	if err != nil {
+		tx.Rollback()
 		app.Error(c, -1, err, "更新唯一校验失败")
 		return
 	}
+
+	if isUnique {
+		memo = "新建"
+	} else {
+		memo = "删除"
+	}
+
+	// 添加操作审计
+	err = actions.AddAudit(c,
+		tx,
+		"模型",
+		"模型管理",
+		memo,
+		fmt.Sprintf("模型ID：%d, %s字段唯一校验 <%s>", oldFieldValue.InfoId, memo, oldFieldValue.Name),
+		map[string]interface{}{},
+		map[string]interface{}{})
+	if err != nil {
+		tx.Rollback()
+		app.Error(c, -1, err, "添加操作审计失败")
+		return
+	}
+
+	tx.Commit()
 
 	app.OK(c, nil, "")
 }
@@ -239,15 +354,42 @@ func DeleteModelInfo(c *gin.Context) {
 	var (
 		err     error
 		modelId string
+		oldInfo model.Info
 	)
 
 	modelId = c.Param("id")
 
-	err = orm.Eloquent.Delete(&model.Info{}, modelId).Error
+	err = orm.Eloquent.Find(&oldInfo, modelId).Error
 	if err != nil {
+		app.Error(c, -1, err, "查询模型数据失败")
+		return
+	}
+
+	tx := orm.Eloquent.Begin()
+
+	err = tx.Delete(&model.Info{}, modelId).Error
+	if err != nil {
+		tx.Rollback()
 		app.Error(c, -1, err, "删除模型失败")
 		return
 	}
+
+	// 添加操作审计
+	err = actions.AddAudit(c,
+		tx,
+		"模型",
+		"模型管理",
+		"删除",
+		fmt.Sprintf("删除模型 <%s>", oldInfo.Name),
+		oldInfo,
+		map[string]interface{}{})
+	if err != nil {
+		tx.Rollback()
+		app.Error(c, -1, err, "添加操作审计失败")
+		return
+	}
+
+	tx.Commit()
 
 	app.OK(c, nil, "")
 }

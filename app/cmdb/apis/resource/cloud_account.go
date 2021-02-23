@@ -2,10 +2,12 @@ package resource
 
 import (
 	"fiy/app/cmdb/models/resource"
+	"fiy/common/actions"
 	orm "fiy/common/global"
 	"fiy/common/pagination"
 	"fiy/tools"
 	"fiy/tools/app"
+	"fmt"
 
 	"github.com/gin-gonic/gin"
 )
@@ -33,11 +35,31 @@ func CreateCloudAccount(c *gin.Context) {
 	account.Creator = userId
 	account.Modifier = userId
 
-	err = orm.Eloquent.Create(&account).Error
+	tx := orm.Eloquent.Begin()
+
+	err = tx.Create(&account).Error
 	if err != nil {
+		tx.Rollback()
 		app.Error(c, -1, err, "创建云账户失败")
 		return
 	}
+
+	// 添加操作审计
+	err = actions.AddAudit(c,
+		tx,
+		"资源",
+		"云账号",
+		"新建",
+		fmt.Sprintf("新建云账号 <%s>", account.Name),
+		map[string]interface{}{},
+		account)
+	if err != nil {
+		tx.Rollback()
+		app.Error(c, -1, err, "添加操作审计失败")
+		return
+	}
+
+	tx.Commit()
 
 	app.OK(c, nil, "")
 }
@@ -80,15 +102,42 @@ func DeleteCloudAccount(c *gin.Context) {
 	var (
 		err       error
 		accountId string
+		account   resource.CloudAccount
 	)
 
 	accountId = c.Param("id")
 
-	err = orm.Eloquent.Delete(&resource.CloudAccount{}, accountId).Error
+	err = orm.Eloquent.Find(&account, accountId).Error
 	if err != nil {
+		app.Error(c, -1, err, "查询云账号失败")
+		return
+	}
+
+	tx := orm.Eloquent.Begin()
+
+	err = tx.Delete(&resource.CloudAccount{}, accountId).Error
+	if err != nil {
+		tx.Rollback()
 		app.Error(c, -1, err, "删除云账号失败")
 		return
 	}
+
+	// 添加操作审计
+	err = actions.AddAudit(c,
+		tx,
+		"资源",
+		"云账号",
+		"删除",
+		fmt.Sprintf("删除云账号 <%s>", account.Name),
+		account,
+		map[string]interface{}{})
+	if err != nil {
+		tx.Rollback()
+		app.Error(c, -1, err, "添加操作审计失败")
+		return
+	}
+
+	tx.Commit()
 
 	app.OK(c, nil, "")
 }
@@ -96,9 +145,10 @@ func DeleteCloudAccount(c *gin.Context) {
 // 编辑云账户
 func EditCloudAccount(c *gin.Context) {
 	var (
-		err       error
-		account   resource.CloudAccount
-		accountId string
+		err        error
+		account    resource.CloudAccount
+		oldAccount resource.CloudAccount
+		accountId  string
 	)
 
 	accountId = c.Param("id")
@@ -109,7 +159,15 @@ func EditCloudAccount(c *gin.Context) {
 		return
 	}
 
-	err = orm.Eloquent.Model(&account).Where("id = ?", accountId).Updates(map[string]interface{}{
+	err = orm.Eloquent.Find(&oldAccount, accountId).Error
+	if err != nil {
+		app.Error(c, -1, err, "查询云账号失败")
+		return
+	}
+
+	tx := orm.Eloquent.Begin()
+
+	err = tx.Model(&account).Where("id = ?", accountId).Updates(map[string]interface{}{
 		"name":     account.Name,
 		"type":     account.Type,
 		"status":   account.Status,
@@ -119,9 +177,27 @@ func EditCloudAccount(c *gin.Context) {
 		"remarks":  account.Remarks,
 	}).Error
 	if err != nil {
+		tx.Rollback()
 		app.Error(c, -1, err, "编辑云账户失败")
 		return
 	}
+
+	// 添加操作审计
+	err = actions.AddAudit(c,
+		tx,
+		"资源",
+		"云账号",
+		"编辑",
+		fmt.Sprintf("编辑云账号 <%s>", account.Name),
+		oldAccount,
+		account)
+	if err != nil {
+		tx.Rollback()
+		app.Error(c, -1, err, "添加操作审计失败")
+		return
+	}
+
+	tx.Commit()
 
 	app.OK(c, nil, "")
 }

@@ -2,8 +2,10 @@ package model
 
 import (
 	"fiy/app/cmdb/models/model"
+	"fiy/common/actions"
 	orm "fiy/common/global"
 	"fiy/tools/app"
+	"fmt"
 
 	"github.com/gin-gonic/gin"
 )
@@ -25,12 +27,32 @@ func CreateModelFieldGroup(c *gin.Context) {
 		return
 	}
 
+	tx := orm.Eloquent.Begin()
+
 	// 创建字段分组
-	err = orm.Eloquent.Create(&fieldGroup).Error
+	err = tx.Create(&fieldGroup).Error
 	if err != nil {
+		tx.Rollback()
 		app.Error(c, -1, err, "创建字段分组失败")
 		return
 	}
+
+	// 添加操作审计
+	err = actions.AddAudit(c,
+		tx,
+		"模型",
+		"模型管理",
+		"新建",
+		fmt.Sprintf("新建字段分组 <%s>", fieldGroup.Name),
+		map[string]interface{}{},
+		fieldGroup)
+	if err != nil {
+		tx.Rollback()
+		app.Error(c, -1, err, "添加操作审计失败")
+		return
+	}
+
+	tx.Commit()
 
 	app.OK(c, nil, "")
 }
@@ -38,9 +60,10 @@ func CreateModelFieldGroup(c *gin.Context) {
 // 删除模型分组
 func DeleteFieldGroup(c *gin.Context) {
 	var (
-		err          error
-		fieldGroupId string
-		fieldCount   int64
+		err            error
+		fieldGroupId   string
+		fieldCount     int64
+		fieldGroupInfo model.FieldGroup
 	)
 
 	fieldGroupId = c.Param("id")
@@ -56,12 +79,38 @@ func DeleteFieldGroup(c *gin.Context) {
 		return
 	}
 
-	// 删除字段分组
-	err = orm.Eloquent.Delete(&model.FieldGroup{}, fieldGroupId).Error
+	err = orm.Eloquent.Find(&fieldGroupInfo, fieldGroupId).Error
 	if err != nil {
+		app.Error(c, -1, err, "查询字段分组失败")
+		return
+	}
+
+	tx := orm.Eloquent.Begin()
+
+	// 添加操作审计
+	err = actions.AddAudit(c,
+		tx,
+		"模型",
+		"模型管理",
+		"删除",
+		fmt.Sprintf("删除字段分组 <%s>", fieldGroupInfo.Name),
+		fieldGroupInfo,
+		map[string]interface{}{})
+	if err != nil {
+		tx.Rollback()
+		app.Error(c, -1, err, "添加操作审计失败")
+		return
+	}
+
+	// 删除字段分组
+	err = tx.Delete(&model.FieldGroup{}, fieldGroupId).Error
+	if err != nil {
+		tx.Rollback()
 		app.Error(c, -1, err, "删除字段分组失败")
 		return
 	}
+
+	tx.Commit()
 
 	app.OK(c, nil, "")
 }
@@ -69,9 +118,10 @@ func DeleteFieldGroup(c *gin.Context) {
 // 编辑字段分组
 func EditFieldGroup(c *gin.Context) {
 	var (
-		err          error
-		fieldGroup   model.FieldGroup
-		fieldGroupId string
+		err            error
+		fieldGroup     model.FieldGroup
+		fieldGroupId   string
+		fieldGroupInfo model.FieldGroup
 	)
 
 	fieldGroupId = c.Param("id")
@@ -82,15 +132,41 @@ func EditFieldGroup(c *gin.Context) {
 		return
 	}
 
-	err = orm.Eloquent.Model(&fieldGroup).Where("id = ?", fieldGroupId).Updates(map[string]interface{}{
+	err = orm.Eloquent.Find(&fieldGroupInfo, fieldGroupId).Error
+	if err != nil {
+		app.Error(c, -1, err, "查询字段分组失败")
+		return
+	}
+
+	tx := orm.Eloquent.Begin()
+
+	// 添加操作审计
+	err = actions.AddAudit(c,
+		tx,
+		"模型",
+		"模型管理",
+		"编辑",
+		fmt.Sprintf("编辑字段分组 <%s>", fieldGroup.Name),
+		fieldGroup,
+		fieldGroupInfo)
+	if err != nil {
+		tx.Rollback()
+		app.Error(c, -1, err, "添加操作审计失败")
+		return
+	}
+
+	err = tx.Model(&fieldGroup).Where("id = ?", fieldGroupId).Updates(map[string]interface{}{
 		"name":     fieldGroup.Name,
 		"sequence": fieldGroup.Sequence,
 		"is_fold":  fieldGroup.IsFold,
 	}).Error
 	if err != nil {
+		tx.Rollback()
 		app.Error(c, -1, err, "更新字段分组失败")
 		return
 	}
+
+	tx.Commit()
 
 	app.OK(c, nil, "")
 }

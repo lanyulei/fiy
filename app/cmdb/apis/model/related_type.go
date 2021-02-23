@@ -2,9 +2,11 @@ package model
 
 import (
 	"fiy/app/cmdb/models/model"
+	"fiy/common/actions"
 	orm "fiy/common/global"
 	"fiy/common/pagination"
 	"fiy/tools/app"
+	"fmt"
 
 	"github.com/gin-gonic/gin"
 )
@@ -26,12 +28,32 @@ func AddAssociationType(c *gin.Context) {
 		return
 	}
 
+	tx := orm.Eloquent.Begin()
+
 	// 新建关联类型
-	err = orm.Eloquent.Create(&association).Error
+	err = tx.Create(&association).Error
 	if err != nil {
+		tx.Rollback()
 		app.Error(c, -1, err, "新建关联类型失败")
 		return
 	}
+
+	// 添加操作审计
+	err = actions.AddAudit(c,
+		tx,
+		"模型",
+		"关联类型",
+		"新建",
+		fmt.Sprintf("新建关联类型 <%s>", association.Name),
+		map[string]interface{}{},
+		association)
+	if err != nil {
+		tx.Rollback()
+		app.Error(c, -1, err, "添加操作审计失败")
+		return
+	}
+
+	tx.Commit()
 
 	app.OK(c, nil, "")
 }
@@ -66,6 +88,7 @@ func UpdateAssociationType(c *gin.Context) {
 		err               error
 		associationType   model.RelatedType
 		associationTypeId string
+		oldData           model.RelatedType
 	)
 
 	associationTypeId = c.Param("id")
@@ -76,8 +99,16 @@ func UpdateAssociationType(c *gin.Context) {
 		return
 	}
 
+	err = orm.Eloquent.Find(&oldData, associationTypeId).Error
+	if err != nil {
+		app.Error(c, -1, err, "查询关联类型失败")
+		return
+	}
+
+	tx := orm.Eloquent.Begin()
+
 	// 更新关联类型
-	err = orm.Eloquent.Model(&associationType).
+	err = tx.Model(&associationType).
 		Where("id = ?", associationTypeId).
 		Updates(map[string]interface{}{
 			"identifies":      associationType.Identifies,
@@ -87,9 +118,27 @@ func UpdateAssociationType(c *gin.Context) {
 			"direction":       associationType.Direction,
 		}).Error
 	if err != nil {
+		tx.Rollback()
 		app.Error(c, -1, err, "更新关联类型失败")
 		return
 	}
+
+	// 添加操作审计
+	err = actions.AddAudit(c,
+		tx,
+		"模型",
+		"关联类型",
+		"编辑",
+		fmt.Sprintf("编辑关联类型 <%s>", associationType.Name),
+		oldData,
+		associationType)
+	if err != nil {
+		tx.Rollback()
+		app.Error(c, -1, err, "添加操作审计失败")
+		return
+	}
+
+	tx.Commit()
 
 	app.OK(c, nil, "")
 }
@@ -99,15 +148,42 @@ func DeleteAssociationType(c *gin.Context) {
 	var (
 		err               error
 		associationTypeId string
+		oldData           model.RelatedType
 	)
 
 	associationTypeId = c.Param("id")
 
-	err = orm.Eloquent.Delete(&model.RelatedType{}, associationTypeId).Error
+	err = orm.Eloquent.Find(&oldData, associationTypeId).Error
 	if err != nil {
+		app.Error(c, -1, err, "查询关联类型失败")
+		return
+	}
+
+	tx := orm.Eloquent.Begin()
+
+	err = tx.Delete(&model.RelatedType{}, associationTypeId).Error
+	if err != nil {
+		tx.Rollback()
 		app.Error(c, -1, err, "删除关联分类失败")
 		return
 	}
+
+	// 添加操作审计
+	err = actions.AddAudit(c,
+		tx,
+		"模型",
+		"关联类型",
+		"删除",
+		fmt.Sprintf("删除关联类型 <%s>", oldData.Name),
+		oldData,
+		map[string]interface{}{})
+	if err != nil {
+		tx.Rollback()
+		app.Error(c, -1, err, "添加操作审计失败")
+		return
+	}
+
+	tx.Commit()
 
 	app.OK(c, nil, "")
 }

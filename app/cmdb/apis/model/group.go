@@ -2,8 +2,10 @@ package model
 
 import (
 	"fiy/app/cmdb/models/model"
+	"fiy/common/actions"
 	orm "fiy/common/global"
 	"fiy/tools/app"
+	"fmt"
 
 	"github.com/gin-gonic/gin"
 )
@@ -26,12 +28,32 @@ func CreateGroup(c *gin.Context) {
 		return
 	}
 
+	tx := orm.Eloquent.Begin()
+
 	// 写入数据库
-	err = orm.Eloquent.Create(&group).Error
+	err = tx.Create(&group).Error
 	if err != nil {
+		tx.Rollback()
 		app.Error(c, -1, err, "创建分组失败")
 		return
 	}
+
+	// 添加操作审计
+	err = actions.AddAudit(c,
+		tx,
+		"模型",
+		"模型管理",
+		"新建",
+		fmt.Sprintf("新建模型分组 <%s>", group.Name),
+		map[string]interface{}{},
+		group)
+	if err != nil {
+		tx.Rollback()
+		app.Error(c, -1, err, "添加操作审计失败")
+		return
+	}
+
+	tx.Commit()
 
 	app.OK(c, nil, "")
 }
@@ -78,6 +100,7 @@ func EditGroup(c *gin.Context) {
 	var (
 		err     error
 		group   model.Group
+		oldData model.Group
 		groupId string
 	)
 
@@ -89,11 +112,37 @@ func EditGroup(c *gin.Context) {
 		return
 	}
 
-	err = orm.Eloquent.Model(&group).Where("id = ?", groupId).Updates(group).Error
+	err = orm.Eloquent.Find(&oldData, groupId).Error
 	if err != nil {
+		app.Error(c, -1, err, "获取模型分组失败")
+		return
+	}
+
+	tx := orm.Eloquent.Begin()
+
+	err = tx.Model(&group).Where("id = ?", groupId).Updates(group).Error
+	if err != nil {
+		tx.Rollback()
 		app.Error(c, -1, err, "编辑模型分组失败")
 		return
 	}
+
+	// 添加操作审计
+	err = actions.AddAudit(c,
+		tx,
+		"模型",
+		"模型管理",
+		"编辑",
+		fmt.Sprintf("编辑模型分组 <%s>", group.Name),
+		oldData,
+		group)
+	if err != nil {
+		tx.Rollback()
+		app.Error(c, -1, err, "添加操作审计失败")
+		return
+	}
+
+	tx.Commit()
 
 	app.OK(c, nil, "")
 }
@@ -103,15 +152,42 @@ func DeleteGroup(c *gin.Context) {
 	var (
 		err     error
 		groupId string
+		oldData model.Group
 	)
 
 	groupId = c.Param("id")
 
-	err = orm.Eloquent.Delete(&model.Group{}, groupId).Error
+	err = orm.Eloquent.Find(&oldData, groupId).Error
 	if err != nil {
+		app.Error(c, -1, err, "获取模型分组失败")
+		return
+	}
+
+	tx := orm.Eloquent.Begin()
+
+	err = tx.Delete(&model.Group{}, groupId).Error
+	if err != nil {
+		tx.Rollback()
 		app.Error(c, -1, err, "模型分组删除失败")
 		return
 	}
+
+	// 添加操作审计
+	err = actions.AddAudit(c,
+		tx,
+		"模型",
+		"模型管理",
+		"删除",
+		fmt.Sprintf("删除模型分组 <%s>", oldData.Name),
+		oldData,
+		map[string]interface{}{})
+	if err != nil {
+		tx.Rollback()
+		app.Error(c, -1, err, "添加操作审计失败")
+		return
+	}
+
+	tx.Commit()
 
 	app.OK(c, nil, "")
 }

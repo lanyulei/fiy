@@ -2,6 +2,7 @@ package resource
 
 import (
 	"fiy/app/cmdb/models/resource"
+	"fiy/common/actions"
 	orm "fiy/common/global"
 	"fiy/common/pagination"
 	"fiy/tools/app"
@@ -60,11 +61,31 @@ func CreateData(c *gin.Context) {
 		return
 	}
 
-	err = orm.Eloquent.Create(&data).Error
+	tx := orm.Eloquent.Begin()
+
+	err = tx.Create(&data).Error
 	if err != nil {
+		tx.Rollback()
 		app.Error(c, -1, err, "新建资源数据失败")
 		return
 	}
+
+	// 添加操作审计
+	err = actions.AddAudit(c,
+		tx,
+		"资源",
+		"资源数据",
+		"新建",
+		fmt.Sprintf("新建资源数据 <%d>", data.Id),
+		map[string]interface{}{},
+		data)
+	if err != nil {
+		tx.Rollback()
+		app.Error(c, -1, err, "添加操作审计失败")
+		return
+	}
+
+	tx.Commit()
 
 	app.OK(c, nil, "")
 }
@@ -74,15 +95,42 @@ func DeleteData(c *gin.Context) {
 	var (
 		err    error
 		dataId string
+		data   resource.Data
 	)
 
 	dataId = c.Param("id")
 
-	err = orm.Eloquent.Delete(&resource.Data{}, dataId).Error
+	err = orm.Eloquent.Find(&data, dataId).Error
 	if err != nil {
+		app.Error(c, -1, err, "查询资源数据失败")
+		return
+	}
+
+	tx := orm.Eloquent.Begin()
+
+	err = tx.Delete(&resource.Data{}, dataId).Error
+	if err != nil {
+		tx.Rollback()
 		app.Error(c, -1, err, "删除资源数据失败")
 		return
 	}
+
+	// 添加操作审计
+	err = actions.AddAudit(c,
+		tx,
+		"资源",
+		"资源数据",
+		"删除",
+		fmt.Sprintf("删除资源数据 <%s>", dataId),
+		data,
+		map[string]interface{}{})
+	if err != nil {
+		tx.Rollback()
+		app.Error(c, -1, err, "添加操作审计失败")
+		return
+	}
+
+	tx.Commit()
 
 	app.OK(c, nil, "")
 }
@@ -90,9 +138,10 @@ func DeleteData(c *gin.Context) {
 // 编辑数据
 func EditData(c *gin.Context) {
 	var (
-		err    error
-		data   resource.Data
-		dataId string
+		err     error
+		data    resource.Data
+		oldData resource.Data
+		dataId  string
 	)
 
 	dataId = c.Param("id")
@@ -103,14 +152,46 @@ func EditData(c *gin.Context) {
 		return
 	}
 
-	err = orm.Eloquent.Model(&data).Where("id = ?", dataId).Updates(map[string]interface{}{
+	err = orm.Eloquent.Find(&oldData, dataId).Error
+	if err != nil {
+		app.Error(c, -1, err, "查询资源数据失败")
+		return
+	}
+
+	tx := orm.Eloquent.Begin()
+
+	err = tx.Model(&data).Where("id = ?", dataId).Updates(map[string]interface{}{
 		"info_id": data.InfoId,
 		"data":    data.Data,
 	}).Error
 	if err != nil {
+		tx.Rollback()
 		app.Error(c, -1, err, "更新资源数据失败")
 		return
 	}
+
+	// 添加操作审计
+	err = actions.AddAudit(c,
+		tx,
+		"资源",
+		"资源数据",
+		"编辑",
+		fmt.Sprintf("编辑资源数据 <%s>", dataId),
+		map[string]interface{}{
+			"info_id": oldData.InfoId,
+			"data":    oldData.Data,
+		},
+		map[string]interface{}{
+			"info_id": data.InfoId,
+			"data":    data.Data,
+		})
+	if err != nil {
+		tx.Rollback()
+		app.Error(c, -1, err, "添加操作审计失败")
+		return
+	}
+
+	tx.Commit()
 
 	app.OK(c, nil, "")
 }

@@ -2,8 +2,10 @@ package model
 
 import (
 	"fiy/app/cmdb/models/model"
+	"fiy/common/actions"
 	orm "fiy/common/global"
 	"fiy/tools/app"
+	"fmt"
 
 	"github.com/gin-gonic/gin"
 )
@@ -12,7 +14,7 @@ import (
   @Author : lanyulei
 */
 
-// 新建模型关联
+// 新建模型关系
 func CreateInfoRelatedType(c *gin.Context) {
 	var (
 		err             error
@@ -25,21 +27,42 @@ func CreateInfoRelatedType(c *gin.Context) {
 		return
 	}
 
-	err = orm.Eloquent.Create(&infoRelatedType).Error
+	tx := orm.Eloquent.Begin()
+
+	err = tx.Create(&infoRelatedType).Error
 	if err != nil {
+		tx.Rollback()
 		app.Error(c, -1, err, "新建关联失败")
 		return
 	}
 
+	// 添加操作审计
+	err = actions.AddAudit(c,
+		tx,
+		"模型",
+		"模型关系",
+		"新建",
+		fmt.Sprintf("新建模型关系"),
+		map[string]interface{}{},
+		infoRelatedType)
+	if err != nil {
+		tx.Rollback()
+		app.Error(c, -1, err, "添加操作审计失败")
+		return
+	}
+
+	tx.Commit()
+
 	app.OK(c, nil, "")
 }
 
-// 编辑模型关联
+// 编辑模型关系
 func EditInfoRelatedType(c *gin.Context) {
 	var (
-		err               error
-		infoRelatedType   model.InfoRelatedType
-		infoRelatedTypeId string
+		err                error
+		infoRelatedType    model.InfoRelatedType
+		oldInfoRelatedType model.InfoRelatedType
+		infoRelatedTypeId  string
 	)
 
 	infoRelatedTypeId = c.Param("id")
@@ -50,7 +73,14 @@ func EditInfoRelatedType(c *gin.Context) {
 		return
 	}
 
-	err = orm.Eloquent.Model(&model.InfoRelatedType{}).
+	err = orm.Eloquent.Find(&oldInfoRelatedType, infoRelatedTypeId).Error
+	if err != nil {
+		app.Error(c, -1, err, "查询模型关系失败")
+		return
+	}
+
+	tx := orm.Eloquent.Begin()
+	err = tx.Model(&model.InfoRelatedType{}).
 		Where("id = ?", infoRelatedTypeId).
 		Updates(map[string]interface{}{
 			"target":          infoRelatedType.Target,
@@ -59,14 +89,35 @@ func EditInfoRelatedType(c *gin.Context) {
 			"remark":          infoRelatedType.Remark,
 		}).Error
 	if err != nil {
-		app.Error(c, -1, err, "编辑模型关联失败")
+		tx.Rollback()
+		app.Error(c, -1, err, "编辑模型关系失败")
 		return
 	}
+
+	infoRelatedType.Id = oldInfoRelatedType.Id
+	infoRelatedType.Source = oldInfoRelatedType.Source
+
+	// 添加操作审计
+	err = actions.AddAudit(c,
+		tx,
+		"模型",
+		"模型关系",
+		"编辑",
+		"编辑模型关系",
+		oldInfoRelatedType,
+		infoRelatedType)
+	if err != nil {
+		tx.Rollback()
+		app.Error(c, -1, err, "添加操作审计失败")
+		return
+	}
+
+	tx.Commit()
 
 	app.OK(c, nil, "")
 }
 
-// 模型关联列表
+// 模型关系列表
 func InfoRelatedTypeList(c *gin.Context) {
 	var (
 		err     error
@@ -111,20 +162,47 @@ func InfoRelatedTypeList(c *gin.Context) {
 	app.OK(c, list, "")
 }
 
-// 删除模型关联
+// 删除模型关系
 func DeleteInfoRelatedType(c *gin.Context) {
 	var (
 		err               error
 		infoRelatedTypeId string
+		oldData           model.InfoRelatedType
 	)
 
 	infoRelatedTypeId = c.Param("id")
 
-	err = orm.Eloquent.Delete(&model.InfoRelatedType{}, infoRelatedTypeId).Error
+	err = orm.Eloquent.Find(&oldData, infoRelatedTypeId).Error
 	if err != nil {
-		app.Error(c, -1, err, "删除模型关联失败")
+		app.Error(c, -1, err, "查询模型关系失败")
 		return
 	}
+
+	tx := orm.Eloquent.Begin()
+
+	err = tx.Delete(&model.InfoRelatedType{}, infoRelatedTypeId).Error
+	if err != nil {
+		tx.Rollback()
+		app.Error(c, -1, err, "删除模型关系失败")
+		return
+	}
+
+	// 添加操作审计
+	err = actions.AddAudit(c,
+		tx,
+		"模型",
+		"模型关系",
+		"删除",
+		fmt.Sprintf("删除模型关系"),
+		oldData,
+		map[string]interface{}{})
+	if err != nil {
+		tx.Rollback()
+		app.Error(c, -1, err, "添加操作审计失败")
+		return
+	}
+
+	tx.Commit()
 
 	app.OK(c, nil, "")
 }
@@ -155,7 +233,7 @@ func RelatedInfo(c *gin.Context) {
 		Select("s.name as source, t.name as target").
 		Scan(&relatedList).Error
 	if err != nil {
-		app.Error(c, -1, err, "查询模型关联失败")
+		app.Error(c, -1, err, "查询模型关系失败")
 		return
 	}
 

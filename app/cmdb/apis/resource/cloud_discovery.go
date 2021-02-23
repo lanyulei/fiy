@@ -2,10 +2,12 @@ package resource
 
 import (
 	"fiy/app/cmdb/models/resource"
+	"fiy/common/actions"
 	orm "fiy/common/global"
 	"fiy/common/pagination"
 	"fiy/tools"
 	"fiy/tools/app"
+	"fmt"
 
 	"github.com/gin-gonic/gin"
 )
@@ -33,11 +35,31 @@ func CreateCloudDiscovery(c *gin.Context) {
 	discovery.Creator = userId
 	discovery.Modifier = userId
 
-	err = orm.Eloquent.Create(&discovery).Error
+	tx := orm.Eloquent.Begin()
+
+	err = tx.Create(&discovery).Error
 	if err != nil {
+		tx.Rollback()
 		app.Error(c, -1, err, "创建云资源同步任务失败")
 		return
 	}
+
+	// 添加操作审计
+	err = actions.AddAudit(c,
+		tx,
+		"资源",
+		"云资源同步",
+		"新建",
+		fmt.Sprintf("新建云资源同步 <%s>", discovery.Name),
+		map[string]interface{}{},
+		discovery)
+	if err != nil {
+		tx.Rollback()
+		app.Error(c, -1, err, "添加操作审计失败")
+		return
+	}
+
+	tx.Commit()
 
 	app.OK(c, nil, "")
 }
@@ -85,15 +107,42 @@ func DeleteCloudDiscovery(c *gin.Context) {
 	var (
 		err         error
 		discoveryId string
+		discovery   resource.CloudDiscovery
 	)
 
 	discoveryId = c.Param("id")
 
-	err = orm.Eloquent.Delete(&resource.CloudDiscovery{}, discoveryId).Error
+	err = orm.Eloquent.Find(&discovery, discoveryId).Error
 	if err != nil {
+		app.Error(c, -1, err, "获取云资源同步失败")
+		return
+	}
+
+	tx := orm.Eloquent.Begin()
+
+	err = tx.Delete(&resource.CloudDiscovery{}, discoveryId).Error
+	if err != nil {
+		tx.Rollback()
 		app.Error(c, -1, err, "删除云账号失败")
 		return
 	}
+
+	// 添加操作审计
+	err = actions.AddAudit(c,
+		tx,
+		"资源",
+		"云资源同步",
+		"删除",
+		fmt.Sprintf("删除云资源同步 <%s>", discovery.Name),
+		discovery,
+		map[string]interface{}{})
+	if err != nil {
+		tx.Rollback()
+		app.Error(c, -1, err, "添加操作审计失败")
+		return
+	}
+
+	tx.Commit()
 
 	app.OK(c, nil, "")
 }
@@ -101,9 +150,10 @@ func DeleteCloudDiscovery(c *gin.Context) {
 // 编辑云资源同步任务
 func EditCloudDiscovery(c *gin.Context) {
 	var (
-		err         error
-		discovery   resource.CloudDiscovery
-		discoveryId string
+		err          error
+		discovery    resource.CloudDiscovery
+		oldDiscovery resource.CloudDiscovery
+		discoveryId  string
 	)
 
 	discoveryId = c.Param("id")
@@ -114,7 +164,15 @@ func EditCloudDiscovery(c *gin.Context) {
 		return
 	}
 
-	err = orm.Eloquent.Model(&discovery).Where("id = ?", discoveryId).Updates(map[string]interface{}{
+	err = orm.Eloquent.Find(&oldDiscovery, discoveryId).Error
+	if err != nil {
+		app.Error(c, -1, err, "获取云资源同步失败")
+		return
+	}
+
+	tx := orm.Eloquent.Begin()
+
+	err = tx.Model(&discovery).Where("id = ?", discoveryId).Updates(map[string]interface{}{
 		"name":          discovery.Name,
 		"resource_type": discovery.ResourceType,
 		"cloud_account": discovery.CloudAccount,
@@ -124,9 +182,27 @@ func EditCloudDiscovery(c *gin.Context) {
 		"remarks":       discovery.Remarks,
 	}).Error
 	if err != nil {
+		tx.Rollback()
 		app.Error(c, -1, err, "编辑云资源同步任务失败")
 		return
 	}
+
+	// 添加操作审计
+	err = actions.AddAudit(c,
+		tx,
+		"资源",
+		"云资源同步",
+		"编辑",
+		fmt.Sprintf("编辑云资源同步 <%s>", discovery.Name),
+		oldDiscovery,
+		discovery)
+	if err != nil {
+		tx.Rollback()
+		app.Error(c, -1, err, "添加操作审计失败")
+		return
+	}
+
+	tx.Commit()
 
 	app.OK(c, nil, "")
 }
