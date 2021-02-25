@@ -44,7 +44,7 @@ func CreateServiceClassify(c *gin.Context) {
 	} else if serviceClassify.Level == 2 {
 		remark = "新建服务分类"
 	}
-	err = actions.AddAudit(c, tx, "业务", "服务分类", "新建", fmt.Sprintf("%s <%s>", remark, serviceClassify.Name), map[string]interface{}{}, serviceClassify)
+	err = actions.AddAudit(c, tx, "业务", "服务分类", "新建", fmt.Sprintf("%s \"%s\"", remark, serviceClassify.Name), map[string]interface{}{}, serviceClassify)
 	if err != nil {
 		tx.Rollback()
 		app.Error(c, -1, err, "添加操作审计失败")
@@ -125,7 +125,7 @@ func DeleteServiceClassify(c *gin.Context) {
 
 	tx := orm.Eloquent.Begin()
 
-	err = actions.AddAudit(c, tx, "业务", "服务分类", "删除", fmt.Sprintf("删除服务分类 <%s>", oldData.Name), oldData, map[string]interface{}{})
+	err = actions.AddAudit(c, tx, "业务", "服务分类", "删除", fmt.Sprintf("删除服务分类 \"%s\"", oldData.Name), oldData, map[string]interface{}{})
 	if err != nil {
 		tx.Rollback()
 		app.Error(c, -1, err, "添加操作审计失败")
@@ -169,7 +169,7 @@ func EditServiceClassify(c *gin.Context) {
 
 	tx := orm.Eloquent.Begin()
 
-	err = actions.AddAudit(c, tx, "业务", "服务分类", "编辑", fmt.Sprintf("编辑服务分类 <%s>", oldData.Name),
+	err = actions.AddAudit(c, tx, "业务", "服务分类", "编辑", fmt.Sprintf("编辑服务分类 \"%s\"", oldData.Name),
 		map[string]interface{}{
 			"identifies": oldData.Identifies,
 			"name":       oldData.Name,

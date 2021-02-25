@@ -44,7 +44,7 @@ func AddAssociationType(c *gin.Context) {
 		"模型",
 		"关联类型",
 		"新建",
-		fmt.Sprintf("新建关联类型 <%s>", association.Name),
+		fmt.Sprintf("新建关联类型 \"%s\"", association.Name),
 		map[string]interface{}{},
 		association)
 	if err != nil {
@@ -129,7 +129,7 @@ func UpdateAssociationType(c *gin.Context) {
 		"模型",
 		"关联类型",
 		"编辑",
-		fmt.Sprintf("编辑关联类型 <%s>", associationType.Name),
+		fmt.Sprintf("编辑关联类型 \"%s\"", associationType.Name),
 		oldData,
 		associationType)
 	if err != nil {
@@ -174,7 +174,7 @@ func DeleteAssociationType(c *gin.Context) {
 		"模型",
 		"关联类型",
 		"删除",
-		fmt.Sprintf("删除关联类型 <%s>", oldData.Name),
+		fmt.Sprintf("删除关联类型 \"%s\"", oldData.Name),
 		oldData,
 		map[string]interface{}{})
 	if err != nil {

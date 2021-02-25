@@ -103,7 +103,7 @@ func CreateServiceTemplate(c *gin.Context) {
 		"业务",
 		"服务模版",
 		"新建",
-		fmt.Sprintf("新建服务模版 <%s>", params.Name),
+		fmt.Sprintf("新建服务模版 \"%s\"", params.Name),
 		map[string]interface{}{},
 		params)
 	if err != nil {
@@ -193,7 +193,7 @@ func DeleteServiceTemplate(c *gin.Context) {
 		"业务",
 		"服务模版",
 		"删除",
-		fmt.Sprintf("删除服务模版 <%s>", oldData.Name),
+		fmt.Sprintf("删除服务模版 \"%s\"", oldData.Name),
 		oldData,
 		map[string]interface{}{})
 	if err != nil {

@@ -42,7 +42,7 @@ func CreateProcess(c *gin.Context) {
 		"业务",
 		"服务模版",
 		"新建",
-		fmt.Sprintf("新建进程 <%s>", process.Name),
+		fmt.Sprintf("新建进程 \"%s\"", process.Name),
 		map[string]interface{}{},
 		process)
 	if err != nil {
@@ -94,7 +94,7 @@ func EditProcess(c *gin.Context) {
 		"业务",
 		"服务模版",
 		"编辑",
-		fmt.Sprintf("编辑进程 <%s>", process.Name),
+		fmt.Sprintf("编辑进程 \"%s\"", process.Name),
 		oldData,
 		process)
 	if err != nil {
@@ -139,7 +139,7 @@ func DeleteProcess(c *gin.Context) {
 		"业务",
 		"服务模版",
 		"删除",
-		fmt.Sprintf("删除进程 <%s>", oldData.Name),
+		fmt.Sprintf("删除进程 \"%s\"", oldData.Name),
 		oldData,
 		map[string]interface{}{})
 	if err != nil {

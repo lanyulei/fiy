@@ -68,7 +68,7 @@ func CreateClusterTpl(c *gin.Context) {
 	}
 
 	// 添加操作审计
-	err = actions.AddAudit(c, tx, "业务", "集群模版", "新建", fmt.Sprintf("新建集群模版 <%s>", data.Name), map[string]interface{}{}, data)
+	err = actions.AddAudit(c, tx, "业务", "集群模版", "新建", fmt.Sprintf("新建集群模版 \"%s\"", data.Name), map[string]interface{}{}, data)
 	if err != nil {
 		tx.Rollback()
 		app.Error(c, -1, err, "添加操作审计失败")
@@ -185,7 +185,7 @@ func EditClusterTpl(c *gin.Context) {
 	}
 
 	// 添加操作审计
-	err = actions.AddAudit(c, tx, "业务", "集群模版", "编辑", fmt.Sprintf("编辑集群模版 <%s>", data.Name), oldData, data)
+	err = actions.AddAudit(c, tx, "业务", "集群模版", "编辑", fmt.Sprintf("编辑集群模版 \"%s\"", data.Name), oldData, data)
 	if err != nil {
 		tx.Rollback()
 		app.Error(c, -1, err, "添加操作审计失败")
@@ -263,7 +263,7 @@ func DeleteClusterTpl(c *gin.Context) {
 	}
 
 	// 添加操作审计
-	err = actions.AddAudit(c, tx, "业务", "集群模版", "删除", fmt.Sprintf("删除集群模版 <%s>", oldData.Name), oldData, map[string]interface{}{})
+	err = actions.AddAudit(c, tx, "业务", "集群模版", "删除", fmt.Sprintf("删除集群模版 \"%s\"", oldData.Name), oldData, map[string]interface{}{})
 	if err != nil {
 		tx.Rollback()
 		app.Error(c, -1, err, "添加操作审计失败")

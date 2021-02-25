@@ -43,7 +43,7 @@ func CreateModelField(c *gin.Context) {
 		"模型",
 		"模型管理",
 		"新建",
-		fmt.Sprintf("新建字段 <%s>", fieldValue.Name),
+		fmt.Sprintf("新建字段 \"%s\"", fieldValue.Name),
 		map[string]interface{}{},
 		fieldValue)
 	if err != nil {
@@ -107,7 +107,7 @@ func EditModelField(c *gin.Context) {
 		"模型",
 		"模型管理",
 		"编辑",
-		fmt.Sprintf("编辑字段 <%s>", field.Name),
+		fmt.Sprintf("编辑字段 \"%s\"", field.Name),
 		oldData,
 		newData)
 	if err != nil {
@@ -152,7 +152,7 @@ func DeleteModelField(c *gin.Context) {
 		"模型",
 		"模型管理",
 		"删除",
-		fmt.Sprintf("删除字段 <%s>", oldData.Name),
+		fmt.Sprintf("删除字段 \"%s\"", oldData.Name),
 		oldData,
 		map[string]interface{}{})
 	if err != nil {

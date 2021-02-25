@@ -44,7 +44,7 @@ func CreateGroup(c *gin.Context) {
 		"模型",
 		"模型管理",
 		"新建",
-		fmt.Sprintf("新建模型分组 <%s>", group.Name),
+		fmt.Sprintf("新建模型分组 \"%s\"", group.Name),
 		map[string]interface{}{},
 		group)
 	if err != nil {
@@ -133,7 +133,7 @@ func EditGroup(c *gin.Context) {
 		"模型",
 		"模型管理",
 		"编辑",
-		fmt.Sprintf("编辑模型分组 <%s>", group.Name),
+		fmt.Sprintf("编辑模型分组 \"%s\"", group.Name),
 		oldData,
 		group)
 	if err != nil {
@@ -178,7 +178,7 @@ func DeleteGroup(c *gin.Context) {
 		"模型",
 		"模型管理",
 		"删除",
-		fmt.Sprintf("删除模型分组 <%s>", oldData.Name),
+		fmt.Sprintf("删除模型分组 \"%s\"", oldData.Name),
 		oldData,
 		map[string]interface{}{})
 	if err != nil {

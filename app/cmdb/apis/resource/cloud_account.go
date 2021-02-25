@@ -50,7 +50,7 @@ func CreateCloudAccount(c *gin.Context) {
 		"资源",
 		"云账号",
 		"新建",
-		fmt.Sprintf("新建云账号 <%s>", account.Name),
+		fmt.Sprintf("新建云账号 \"%s\"", account.Name),
 		map[string]interface{}{},
 		account)
 	if err != nil {
@@ -128,7 +128,7 @@ func DeleteCloudAccount(c *gin.Context) {
 		"资源",
 		"云账号",
 		"删除",
-		fmt.Sprintf("删除云账号 <%s>", account.Name),
+		fmt.Sprintf("删除云账号 \"%s\"", account.Name),
 		account,
 		map[string]interface{}{})
 	if err != nil {
@@ -188,7 +188,7 @@ func EditCloudAccount(c *gin.Context) {
 		"资源",
 		"云账号",
 		"编辑",
-		fmt.Sprintf("编辑云账号 <%s>", account.Name),
+		fmt.Sprintf("编辑云账号 \"%s\"", account.Name),
 		oldAccount,
 		account)
 	if err != nil {

@@ -45,7 +45,7 @@ func CreateModelInfo(c *gin.Context) {
 		"模型",
 		"模型管理",
 		"新建",
-		fmt.Sprintf("新建模型 <%s>", info.Name),
+		fmt.Sprintf("新建模型 \"%s\"", info.Name),
 		map[string]interface{}{},
 		info)
 	if err != nil {
@@ -168,7 +168,7 @@ func EditModelInfo(c *gin.Context) {
 		"模型",
 		"模型管理",
 		"编辑",
-		fmt.Sprintf("编辑模型 <%s>", info.Name),
+		fmt.Sprintf("编辑模型 \"%s\"", info.Name),
 		oldInfo,
 		newData)
 	if err != nil {
@@ -231,7 +231,7 @@ func StopModelInfo(c *gin.Context) {
 		"模型",
 		"模型管理",
 		"编辑",
-		fmt.Sprintf("%s模型 <%s>", memo, oldData.Name),
+		fmt.Sprintf("%s模型 \"%s\"", memo, oldData.Name),
 		map[string]interface{}{},
 		map[string]interface{}{})
 	if err != nil {
@@ -335,7 +335,7 @@ func UpdateFieldUnique(c *gin.Context) {
 		"模型",
 		"模型管理",
 		memo,
-		fmt.Sprintf("模型ID：%d, %s字段唯一校验 <%s>", oldFieldValue.InfoId, memo, oldFieldValue.Name),
+		fmt.Sprintf("模型ID：%d, %s字段唯一校验 \"%s\"", oldFieldValue.InfoId, memo, oldFieldValue.Name),
 		map[string]interface{}{},
 		map[string]interface{}{})
 	if err != nil {
@@ -380,7 +380,7 @@ func DeleteModelInfo(c *gin.Context) {
 		"模型",
 		"模型管理",
 		"删除",
-		fmt.Sprintf("删除模型 <%s>", oldInfo.Name),
+		fmt.Sprintf("删除模型 \"%s\"", oldInfo.Name),
 		oldInfo,
 		map[string]interface{}{})
 	if err != nil {

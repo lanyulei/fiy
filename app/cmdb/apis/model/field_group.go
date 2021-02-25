@@ -43,7 +43,7 @@ func CreateModelFieldGroup(c *gin.Context) {
 		"模型",
 		"模型管理",
 		"新建",
-		fmt.Sprintf("新建字段分组 <%s>", fieldGroup.Name),
+		fmt.Sprintf("新建字段分组 \"%s\"", fieldGroup.Name),
 		map[string]interface{}{},
 		fieldGroup)
 	if err != nil {
@@ -93,7 +93,7 @@ func DeleteFieldGroup(c *gin.Context) {
 		"模型",
 		"模型管理",
 		"删除",
-		fmt.Sprintf("删除字段分组 <%s>", fieldGroupInfo.Name),
+		fmt.Sprintf("删除字段分组 \"%s\"", fieldGroupInfo.Name),
 		fieldGroupInfo,
 		map[string]interface{}{})
 	if err != nil {
@@ -146,7 +146,7 @@ func EditFieldGroup(c *gin.Context) {
 		"模型",
 		"模型管理",
 		"编辑",
-		fmt.Sprintf("编辑字段分组 <%s>", fieldGroup.Name),
+		fmt.Sprintf("编辑字段分组 \"%s\"", fieldGroup.Name),
 		fieldGroup,
 		fieldGroupInfo)
 	if err != nil {

@@ -121,7 +121,7 @@ func DeleteData(c *gin.Context) {
 		"资源",
 		"资源数据",
 		"删除",
-		fmt.Sprintf("删除资源数据 <%s>", dataId),
+		fmt.Sprintf("删除资源数据 \"%s\"", dataId),
 		data,
 		map[string]interface{}{})
 	if err != nil {
@@ -176,7 +176,7 @@ func EditData(c *gin.Context) {
 		"资源",
 		"资源数据",
 		"编辑",
-		fmt.Sprintf("编辑资源数据 <%s>", dataId),
+		fmt.Sprintf("编辑资源数据 \"%s\"", dataId),
 		map[string]interface{}{
 			"info_id": oldData.InfoId,
 			"data":    oldData.Data,

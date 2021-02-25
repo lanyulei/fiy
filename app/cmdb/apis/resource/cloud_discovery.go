@@ -50,7 +50,7 @@ func CreateCloudDiscovery(c *gin.Context) {
 		"资源",
 		"云资源同步",
 		"新建",
-		fmt.Sprintf("新建云资源同步 <%s>", discovery.Name),
+		fmt.Sprintf("新建云资源同步 \"%s\"", discovery.Name),
 		map[string]interface{}{},
 		discovery)
 	if err != nil {
@@ -133,7 +133,7 @@ func DeleteCloudDiscovery(c *gin.Context) {
 		"资源",
 		"云资源同步",
 		"删除",
-		fmt.Sprintf("删除云资源同步 <%s>", discovery.Name),
+		fmt.Sprintf("删除云资源同步 \"%s\"", discovery.Name),
 		discovery,
 		map[string]interface{}{})
 	if err != nil {
@@ -193,7 +193,7 @@ func EditCloudDiscovery(c *gin.Context) {
 		"资源",
 		"云资源同步",
 		"编辑",
-		fmt.Sprintf("编辑云资源同步 <%s>", discovery.Name),
+		fmt.Sprintf("编辑云资源同步 \"%s\"", discovery.Name),
 		oldDiscovery,
 		discovery)
 	if err != nil {
