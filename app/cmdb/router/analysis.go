@@ -17,5 +17,7 @@ func RegisterCmdbAnalysisRouter(v1 *gin.RouterGroup, authMiddleware *jwt.GinJWTM
 	{
 		r.GET("", analysis.AuditList)                // 操作列表
 		r.GET("/details/:id", analysis.AuditDetails) // 详情
+
+		r.GET("/operation", analysis.Operation)
 	}
 }
