@@ -2,6 +2,7 @@ package model
 
 import (
 	"fiy/app/cmdb/models/model"
+	"fiy/app/cmdb/models/resource"
 	"fiy/common/actions"
 	orm "fiy/common/global"
 	"fiy/tools/app"
@@ -66,6 +67,8 @@ func GetModelList(c *gin.Context) {
 			model.Group
 			ModelList []model.Info `json:"model_list"`
 		}
+		modelIdentifiesList []string
+		modelResourceCount  map[string]interface{}
 	)
 
 	isUsable := c.DefaultQuery("isUsable", "1")
@@ -90,9 +93,34 @@ func GetModelList(c *gin.Context) {
 			app.Error(c, -1, err, "获取模型信息失败")
 			return
 		}
+
+		for _, m := range group.ModelList {
+			modelIdentifiesList = append(modelIdentifiesList, m.Identifies)
+		}
 	}
 
-	app.OK(c, modelList, "")
+	modelResourceCount = make(map[string]interface{})
+	selectValue := ""
+	for i, m := range modelIdentifiesList {
+		if i == 0 {
+			selectValue = fmt.Sprintf("count(cmi.identifies = '%s') as %s", m, m)
+		} else {
+			selectValue = fmt.Sprintf("%s, %s", selectValue, fmt.Sprintf("count(cmi.identifies = '%s') as %s", m, m))
+		}
+	}
+
+	err = orm.Eloquent.Model(&resource.Data{}).
+		Joins("left join cmdb_model_info as cmi on cmi.id = cmdb_resource_data.info_id").
+		Where("cmi.identifies in ?", modelIdentifiesList).
+		Select(selectValue).
+		Group("cmi.identifies").
+		Find(&modelResourceCount).
+		Error
+
+	app.OK(c, map[string]interface{}{
+		"models":               modelList,
+		"model_resource_count": modelResourceCount,
+	}, "")
 }
 
 // 编辑模型分组

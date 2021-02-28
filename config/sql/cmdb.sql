@@ -70,5 +70,10 @@ INSERT INTO cmdb_business_svc_classify VALUES (17, 'tomcat', 'Tomcat', 2, 14, '2
 INSERT INTO cmdb_business_svc_classify VALUES (18, 'storage', '存储', 1, 0, '2021-02-09 17:21:52', '2021-02-09 17:21:52', null);
 INSERT INTO cmdb_business_svc_classify VALUES (19, 'ceph', 'Ceph', 2, 18, '2021-02-09 17:22:05', '2021-02-09 17:22:05', null);
 INSERT INTO cmdb_business_svc_classify VALUES (20, 'nfs', 'NFS', 2, 18, '2021-02-09 17:22:14', '2021-02-09 17:22:14', null);
+
+-- 模型关联
+INSERT INTO cmdb_model_info_related_type VALUES (2, 1, 2, 4, 3, '', '2021-02-24 00:01:34', '2021-02-28 21:24:14', null);
+INSERT INTO cmdb_model_info_related_type VALUES (3, 2, 3, 1, 2, '', '2021-02-28 21:24:32', '2021-02-28 21:24:32', null);
+INSERT INTO cmdb_model_info_related_type VALUES (4, 3, 4, 1, 2, '', '2021-02-28 21:24:56', '2021-02-28 21:24:56', null);
 COMMIT;
 -- 数据完成 ;
