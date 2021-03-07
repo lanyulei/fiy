@@ -82,7 +82,7 @@ func GetModelDetails(c *gin.Context) {
 		return
 	}
 
-	// 查询模型分组
+	// 查询字段分组
 	err = orm.Eloquent.Model(&model.FieldGroup{}).Where("info_id = ?", modelId).Find(&fieldDetails.FieldGroups).Error
 	if err != nil {
 		app.Error(c, -1, err, "查询模型信息失败")

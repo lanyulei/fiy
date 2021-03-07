@@ -1,6 +1,8 @@
 package business
 
 import (
+	"encoding/json"
+	"fiy/app/cmdb/models/business"
 	"fiy/app/cmdb/models/model"
 	"fiy/app/cmdb/models/resource"
 	orm "fiy/common/global"
@@ -104,4 +106,100 @@ func BusinessTree(c *gin.Context) {
 	}
 
 	app.OK(c, treeData, "")
+}
+
+// 添加节点
+func AddBusinessNode(c *gin.Context) {
+	var (
+		err    error
+		params struct {
+			Name     string `json:"name"`
+			Template int    `json:"template"`
+			Classify int    `json:"classify"`
+			Source   int    `json:"source"`
+		}
+		data      []byte
+		modelInfo model.Info
+	)
+
+	err = c.ShouldBind(&params)
+	if err != nil {
+		app.Error(c, -1, err, "参数绑定失败")
+		return
+	}
+
+	data, err = json.Marshal(map[string]interface{}{"built_in_field_name": params.Name})
+	if err != nil {
+		app.Error(c, -1, err, "Json序列化数据失败")
+		return
+	}
+
+	tx := orm.Eloquent.Begin()
+
+	if params.Classify == 1 { // 集群
+		// 查询模型信息
+		err = tx.Where("identifies = 'built_in_set'").Find(&modelInfo).Error
+		if err != nil {
+			tx.Rollback()
+			app.Error(c, -1, err, "查询集群模型失败")
+			return
+		}
+
+	} else if params.Classify == 2 { // 模块
+		// 查询模型信息
+		err = tx.Where("identifies = 'built_in_module'").Find(&modelInfo).Error
+		if err != nil {
+			tx.Rollback()
+			app.Error(c, -1, err, "查询模块模型失败")
+			return
+		}
+	}
+	if modelInfo.Id == 0 {
+		tx.Rollback()
+		app.Error(c, -1, err, "模型ID不能为零值")
+		return
+	}
+
+	// 新建数据
+	resourceData := &resource.Data{
+		InfoId: modelInfo.Id,
+		Status: 0,
+		Data:   data,
+	}
+	err = tx.Create(resourceData).Error
+	if err != nil {
+		tx.Rollback()
+		app.Error(c, -1, err, "新建数据失败")
+		return
+	}
+
+	// 新建数据关联
+	err = orm.Eloquent.Create(&resource.DataRelated{
+		Source: params.Source,
+		Target: resourceData.Id,
+	}).Error
+	if err != nil {
+		tx.Rollback()
+		app.Error(c, -1, err, "新建数据关联失败")
+		return
+	}
+
+	// 模版关联
+	if params.Template != 0 {
+		err = tx.Create(&business.TemplateRelated{
+			TplClassify: params.Classify,
+			TplId:       params.Template,
+			DataID:      resourceData.Id,
+			InfoId:      modelInfo.Id,
+		}).Error
+		if err != nil {
+			tx.Rollback()
+			app.Error(c, -1, err, "创建模板关联失败")
+			return
+		}
+	}
+
+	tx.Commit()
+
+	app.OK(c, nil, "")
 }

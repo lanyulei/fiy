@@ -36,5 +36,7 @@ func RegisterCmdbBusinessRouter(v1 *gin.RouterGroup, authMiddleware *jwt.GinJWTM
 		r.GET("/cluster-svc-tpl/:id", business.ClusterTplReSvcTpl) // 集群模板对应的服务模板列表+
 
 		r.GET("/tree", business.BusinessTree) // 集群模板对应的服务模板列表
+
+		r.POST("/add-business-node", business.AddBusinessNode) // 新建节点
 	}
 }
