@@ -30,5 +30,8 @@ func RegisterCmdbResourceRouter(v1 *gin.RouterGroup, authMiddleware *jwt.GinJWTM
 		r.POST("/cloud-discovery", resource.CreateCloudDiscovery)       // 新建云资源同步
 		r.PUT("/cloud-discovery/:id", resource.EditCloudDiscovery)      // 编辑云资源同步
 		r.DELETE("/cloud-discovery/:id", resource.DeleteCloudDiscovery) // 删除云资源同步
+
+		r.POST("/data-related", resource.DataRelated)        // 添加数据关联
+		r.GET("/node-model-data", resource.GetNodeModelData) // 查询节点对应的数据
 	}
 }

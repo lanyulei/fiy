@@ -1,12 +1,14 @@
 package resource
 
 import (
+	"fiy/app/cmdb/models/model"
 	"fiy/app/cmdb/models/resource"
 	"fiy/common/actions"
 	orm "fiy/common/global"
 	"fiy/common/pagination"
 	"fiy/tools/app"
 	"fmt"
+	"strconv"
 
 	"github.com/gin-gonic/gin"
 )
@@ -21,19 +23,41 @@ func DataList(c *gin.Context) {
 		err        error
 		dataList   []*resource.Data
 		result     interface{}
-		modelId    string
+		modelID    string
 		value      string
 		identifies string
+		status     string
+		nodeID     string
+		dataIDs    []int
 	)
 
-	modelId = c.Param("id")
+	modelID = c.Param("id")
 
-	db := orm.Eloquent.Model(&resource.Data{}).Where("info_id = ?", modelId)
+	db := orm.Eloquent.Model(&resource.Data{}).Where("info_id = ?", modelID)
 
 	value = c.DefaultQuery("value", "")
 	identifies = c.DefaultQuery("identifies", "")
+	status = c.DefaultQuery("status", "")
+	nodeID = c.DefaultQuery("nodeID", "")
+
 	if identifies != "" && value != "" {
 		db = db.Where(fmt.Sprintf("data->'$.%s' like '%%%s%%'", identifies, value))
+	}
+
+	if status != "" {
+		db = db.Where("status = ?", status)
+	}
+
+	if nodeID != "" {
+		err = orm.Eloquent.Model(&resource.DataRelated{}).
+			Where("source = ? and target_info_id = ?", nodeID, modelID).
+			Pluck("target", &dataIDs).Error
+		if err != nil {
+			app.Error(c, -1, err, "查询节点绑定的数据ID失败")
+			return
+		}
+
+		db = db.Where("id in ?", dataIDs)
 	}
 
 	result, err = pagination.Paging(&pagination.Param{
@@ -213,4 +237,117 @@ func GetDataDetails(c *gin.Context) {
 	}
 
 	app.OK(c, details, "")
+}
+
+// 查询节点对应的模型分组及模型信息
+func GetNodeModelData(c *gin.Context) {
+	var (
+		err           error
+		level         string
+		nodeID        string
+		modelNodeIDs  []int
+		clusterData   model.Info
+		modelData     model.Info
+		targetInfoIDs []int
+		modelList     []*struct {
+			model.Group
+			ModelList []model.Info `json:"model_list"`
+		}
+		modelGroupIDs []int
+	)
+
+	level = c.DefaultQuery("level", "")
+	nodeID = c.DefaultQuery("nodeID", "")
+	if level == "" || nodeID == "" {
+		app.Error(c, -1, nil, "参数异常，level和nodeID必须传递")
+		return
+	}
+
+	// 查询集群信息
+	err = orm.Eloquent.Model(&clusterData).Select("id").Where("identifies = ?", "built_in_set").Find(&clusterData).Error
+	if err != nil {
+		app.Error(c, -1, err, "查询集群信息失败")
+		return
+	}
+
+	// 查询模块信息
+	err = orm.Eloquent.Model(&modelData).Select("id").Where("identifies = ?", "built_in_module").Find(&modelData).Error
+	if err != nil {
+		app.Error(c, -1, err, "查询模块信息失败")
+		return
+	}
+
+	// 查询所有的模块节点
+	if level == "1" {
+		// 查询所有的集群ID
+		clusterIDs := make([]int, 0)
+		err = orm.Eloquent.Model(&resource.DataRelated{}).
+			Where("source = ? and target_info_id = ?", nodeID, clusterData.Id).
+			Pluck("target", &clusterIDs).Error
+		if err != nil {
+			app.Error(c, -1, err, "查询集群ID失败")
+			return
+		}
+
+		// 查询所有的模块ID
+		err = orm.Eloquent.Model(&resource.DataRelated{}).
+			Where("source in ? and target_info_id = ?", clusterIDs, modelData.Id).
+			Pluck("target", &modelNodeIDs).Error
+		if err != nil {
+			app.Error(c, -1, err, "查询模块ID失败")
+			return
+		}
+	} else if level == "2" {
+		// 查询所有的模块ID
+		err = orm.Eloquent.Model(&resource.DataRelated{}).
+			Where("source = ? and target_info_id = ?", nodeID, modelData.Id).
+			Pluck("target", &modelNodeIDs).Error
+		if err != nil {
+			app.Error(c, -1, err, "查询模块ID失败")
+			return
+		}
+	} else if level == "3" {
+		modelID, _ := strconv.Atoi(nodeID)
+		modelNodeIDs = append(modelNodeIDs, modelID)
+	}
+
+	// 查询节点关联的资产数据
+	err = orm.Eloquent.Model(&resource.DataRelated{}).
+		Select("distinct target_info_id").
+		Where("source in ?", modelNodeIDs).
+		Pluck("target_info_id", &targetInfoIDs).Error
+	if err != nil {
+		app.Error(c, -1, err, "查询绑定的数据模型ID失败")
+		return
+	}
+
+	// 查询模型数据
+	err = orm.Eloquent.Model(&model.Info{}).
+		Select("distinct group_id").
+		Where("id in ?", targetInfoIDs).
+		Pluck("group_id", &modelGroupIDs).Error
+	if err != nil {
+		app.Error(c, -1, err, "查询模型数据失败")
+		return
+	}
+
+	// 获取分组
+	err = orm.Eloquent.Model(&model.Group{}).Where("id in ?", modelGroupIDs).Find(&modelList).Error
+	if err != nil {
+		app.Error(c, -1, err, "获取分组列表失败")
+		return
+	}
+
+	// 获取分组对应的模型列表
+	for _, group := range modelList {
+		db := orm.Eloquent.Model(&model.Info{})
+		err = db.Where("group_id = ? and is_usable = 1", group.Id).
+			Find(&group.ModelList).Error
+		if err != nil {
+			app.Error(c, -1, err, "获取模型信息失败")
+			return
+		}
+	}
+
+	app.OK(c, modelList, "")
 }
