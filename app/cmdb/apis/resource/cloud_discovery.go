@@ -173,13 +173,14 @@ func EditCloudDiscovery(c *gin.Context) {
 	tx := orm.Eloquent.Begin()
 
 	err = tx.Model(&discovery).Where("id = ?", discoveryId).Updates(map[string]interface{}{
-		"name":          discovery.Name,
-		"resource_type": discovery.ResourceType,
-		"cloud_account": discovery.CloudAccount,
-		"field_map":     discovery.FieldMap,
-		"status":        discovery.Status,
-		"modifier":      tools.GetUserId(c),
-		"remarks":       discovery.Remarks,
+		"name":           discovery.Name,
+		"resource_model": discovery.ResourceModel,
+		"resource_type":  discovery.ResourceType,
+		"cloud_account":  discovery.CloudAccount,
+		"field_map":      discovery.FieldMap,
+		"status":         discovery.Status,
+		"modifier":       tools.GetUserId(c),
+		"remarks":        discovery.Remarks,
 	}).Error
 	if err != nil {
 		tx.Rollback()

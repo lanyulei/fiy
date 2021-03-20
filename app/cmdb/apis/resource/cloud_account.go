@@ -170,7 +170,7 @@ func EditCloudAccount(c *gin.Context) {
 	err = tx.Model(&account).Where("id = ?", accountId).Updates(map[string]interface{}{
 		"name":     account.Name,
 		"type":     account.Type,
-		"status":   account.Status,
+		"region":   account.Region,
 		"secret":   account.Secret,
 		"key":      account.Key,
 		"modifier": tools.GetUserId(c),
