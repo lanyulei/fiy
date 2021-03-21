@@ -3,6 +3,7 @@ package api
 import (
 	"context"
 	router "fiy/common/router"
+	"fiy/pkg/sync_cloud"
 	"fiy/tools/trace"
 	"fmt"
 	"net/http"
@@ -88,6 +89,12 @@ func run() error {
 	if mode == "dev" {
 		//监控
 		AppRouters = append(AppRouters, router.Monitor)
+	}
+
+	// 同步云资源
+	err := sync_cloud.Start()
+	if err != nil {
+		panic(err)
 	}
 
 	for _, f := range AppRouters {

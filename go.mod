@@ -5,6 +5,7 @@ go 1.15
 require (
 	github.com/alecthomas/template v0.0.0-20190718012654-fb15b899a751
 	github.com/alibaba/sentinel-golang v0.6.1
+	github.com/aliyun/alibaba-cloud-sdk-go v1.61.992 // indirect
 	github.com/aliyun/aliyun-oss-go-sdk v0.0.0-20190307165228-86c17b95fcd5
 	github.com/bsm/redislock v0.5.0
 	github.com/casbin/casbin/v2 v2.11.2
@@ -17,6 +18,8 @@ require (
 	github.com/go-redis/redis/v7 v7.4.0
 	github.com/google/uuid v1.1.2
 	github.com/gorilla/websocket v1.4.2
+	github.com/jmespath/go-jmespath v0.4.0 // indirect
+	github.com/json-iterator/go v1.1.10 // indirect
 	github.com/matchstalk/redisqueue v1.0.3
 	github.com/mojocn/base64Captcha v1.3.1
 	github.com/mssola/user_agent v0.5.2
@@ -38,6 +41,7 @@ require (
 	github.com/swaggo/swag v1.6.7
 	github.com/unrolled/secure v1.0.8
 	golang.org/x/crypto v0.0.0-20200820211705-5c72a883971a
+	gopkg.in/ini.v1 v1.62.0 // indirect
 	gorm.io/datatypes v1.0.0
 	gorm.io/driver/mysql v1.0.3
 	gorm.io/driver/postgres v1.0.5

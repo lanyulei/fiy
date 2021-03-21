@@ -176,6 +176,7 @@ func EditCloudDiscovery(c *gin.Context) {
 		"name":           discovery.Name,
 		"resource_model": discovery.ResourceModel,
 		"resource_type":  discovery.ResourceType,
+		"region":         discovery.Region,
 		"cloud_account":  discovery.CloudAccount,
 		"field_map":      discovery.FieldMap,
 		"status":         discovery.Status,
