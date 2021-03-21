@@ -87,7 +87,7 @@ func CloudDiscoveryList(c *gin.Context) {
 		Joins("left join sys_user as suc on suc.user_id = cmdb_resource_cloud_discovery.creator").
 		Joins("left join sys_user as sum on sum.user_id = cmdb_resource_cloud_discovery.modifier").
 		Joins("left join cmdb_resource_cloud_account as ca on ca.id = cmdb_resource_cloud_discovery.cloud_account").
-		Joins("left join cmdb_model_info as mi on mi.id = cmdb_resource_cloud_discovery.resource_type").
+		Joins("left join cmdb_model_info as mi on mi.id = cmdb_resource_cloud_discovery.resource_model").
 		Select("cmdb_resource_cloud_discovery.*, suc.nick_name as creator_name, sum.nick_name as modifier_name, ca.name as cloud_account_name, ca.type as cloud_account_type, mi.name as model_info_name")
 
 	result, err = pagination.Paging(&pagination.Param{
