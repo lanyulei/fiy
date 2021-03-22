@@ -1,8 +1,13 @@
 package aliyun
 
 import (
+	"fiy/app/cmdb/models/resource"
+	orm "fiy/common/global"
+	"fiy/common/log"
+	"fiy/tools"
 	"fmt"
-	"strings"
+
+	"gorm.io/gorm/clause"
 
 	"github.com/aliyun/alibaba-cloud-sdk-go/services/ecs"
 )
@@ -28,43 +33,51 @@ func NewAliyun(sk, ak string, region []string) *aliyun {
 
 func (a *aliyun) GetEcsList() (err error) {
 	var (
-		result []map[string]interface{}
+		response *ecs.DescribeInstancesResponse
+		ecsList  []ecs.Instance
 	)
 
 	for _, r := range a.Region {
-		r = strings.Trim(r, " ")
-		r = strings.Trim(r, "\t")
-		r = strings.Trim(r, "\n")
-		r = strings.Trim(r, "\r")
 		a.ecsClient, err = ecs.NewClientWithAccessKey(
-			r,
-			a.AK,
-			a.SK,
+			tools.Strip(r),
+			tools.Strip(a.AK),
+			tools.Strip(a.SK),
 		)
 		if err != nil {
+			log.Errorf("创建客户端连接失败，%v", err)
 			return
 		}
 
-		result, err = a.getAliyunECSList()
-		for _, r := range result {
-			fmt.Println(r)
+		request := ecs.CreateDescribeInstancesRequest()
+		request.PageSize = "1"
+
+		response, err = a.ecsClient.DescribeInstances(request)
+		if err != nil {
+			log.Errorf("查询ECS实例列表失败，%v", err)
+			return
 		}
+
+		if response.TotalCount > 0 {
+			for i := 0; i < response.TotalCount/100+1; i++ {
+				request.PageSize = "100"
+				r, err := a.ecsClient.DescribeInstances(request)
+				if err != nil {
+					log.Errorf("查询ECS实例列表失败，%v", err)
+					return err
+				}
+
+				ecsList = append(ecsList, r.Instances.Instance...)
+			}
+
+			// 写入数据
+			err = orm.Eloquent.Model(&resource.Data{}).Clauses(clause.OnConflict{
+				Columns:   []clause.Column{{Name: "id"}},
+				DoUpdates: clause.AssignmentColumns([]string{"data"}),
+			}).Error
+		}
+
+		fmt.Println(response.Instances.Instance)
 	}
-
-	return
-}
-
-func (a *aliyun) getAliyunECSList() (result []map[string]interface{}, err error) {
-
-	request := ecs.CreateDescribeInstancesRequest()
-	request.PageSize = "1"
-
-	response, err := a.ecsClient.DescribeInstances(request)
-	if err != nil {
-		return
-	}
-
-	response = response
 
 	return
 }

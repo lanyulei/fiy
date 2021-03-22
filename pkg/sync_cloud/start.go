@@ -2,10 +2,9 @@ package sync_cloud
 
 import (
 	"encoding/json"
+	"fiy/common/log"
 	"fmt"
 	"time"
-
-	"github.com/golang/glog"
 
 	"fiy/pkg/sync_cloud/aliyun"
 
@@ -44,6 +43,7 @@ func syncCloud() (err error) {
 	err = orm.Eloquent.Model(&resource.CloudDiscovery{}).
 		Joins("left join cmdb_resource_cloud_account as crca on crca.id = cmdb_resource_cloud_discovery.cloud_account").
 		Select("cmdb_resource_cloud_discovery.*, crca.name as account_name, crca.type as account_type, crca.status as account_status, crca.secret as account_secret, crca.key as account_key").
+		Where("crca.status = ? and cmdb_resource_cloud_discovery.status = ?", true, true).
 		Find(&cloudDiscoveryList).Error
 	if err != nil {
 		return
@@ -86,7 +86,7 @@ func syncCloud() (err error) {
 
 			if err != nil {
 				errValue := fmt.Sprintf("同步云资源失败，%v", err)
-				glog.Error(errValue)
+				log.Error(errValue)
 				panic(errValue)
 			}
 		}(task, ch)
@@ -104,7 +104,7 @@ func Start() (err error) {
 			<-t.C
 			err = syncCloud()
 			if err != nil {
-				glog.Fatalf("同步云资产数据失败，%v", err)
+				log.Fatalf("同步云资产数据失败，%v", err)
 				return
 			}
 			t.Reset(viper.GetDuration(`settings.sync.cloud`) * time.Second)

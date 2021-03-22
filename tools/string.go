@@ -3,6 +3,7 @@ package tools
 import (
 	"encoding/json"
 	"strconv"
+	"strings"
 	"time"
 )
 
@@ -24,4 +25,14 @@ func StructToJsonStr(e interface{}) (string, error) {
 	} else {
 		return "", err
 	}
+}
+
+func Strip(s string) (r string) {
+	if s != " " {
+		s = strings.Trim(s, " ")
+		s = strings.Trim(s, "\t")
+		s = strings.Trim(s, "\n")
+		r = strings.Trim(s, "\r")
+	}
+	return
 }
