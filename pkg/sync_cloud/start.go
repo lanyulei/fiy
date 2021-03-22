@@ -1,10 +1,16 @@
 package sync_cloud
 
 import (
-	"fiy/app/cmdb/models/resource"
-	orm "fiy/common/global"
+	"encoding/json"
 	"fmt"
 	"time"
+
+	"github.com/golang/glog"
+
+	"fiy/pkg/sync_cloud/aliyun"
+
+	"fiy/app/cmdb/models/resource"
+	orm "fiy/common/global"
 
 	"github.com/spf13/viper"
 )
@@ -13,37 +19,51 @@ import (
   @Author : lanyulei
 */
 
+type syncStatus struct {
+	ID     int  `json:"id"`
+	Status bool `json:"status"`
+}
+
+type cloudInfo struct {
+	resource.CloudDiscovery
+	AccountName   string `json:"account_name"`
+	AccountType   string `json:"account_type"`
+	AccountStatus bool   `json:"account_status"`
+	AccountSecret string `json:"account_secret"`
+	AccountKey    string `json:"account_key"`
+}
+
 // 执行同步任务
 func syncCloud() (err error) {
-	type syncStatus struct {
-		ID     int  `json:"id"`
-		Status bool `json:"status"`
-	}
 
 	var (
-		taskList []*resource.CloudDiscovery
-		ch       chan syncStatus
+		ch                 chan syncStatus
+		cloudDiscoveryList []*cloudInfo
 	)
 	// 查询所有的任务列表
-	err = orm.Eloquent.Find(&taskList).Error
+	err = orm.Eloquent.Model(&resource.CloudDiscovery{}).
+		Joins("left join cmdb_resource_cloud_account as crca on crca.id = cmdb_resource_cloud_discovery.cloud_account").
+		Select("cmdb_resource_cloud_discovery.*, crca.name as account_name, crca.type as account_type, crca.status as account_status, crca.secret as account_secret, crca.key as account_key").
+		Find(&cloudDiscoveryList).Error
 	if err != nil {
 		return
 	}
 
-	ch = make(chan syncStatus, len(taskList))
+	ch = make(chan syncStatus, len(cloudDiscoveryList))
 	// 接受云资产同步任务执行结果，并处理
 	go func(c <-chan syncStatus) {
-		for i := 0; i < len(taskList); i++ {
+		for i := 0; i < len(cloudDiscoveryList); i++ {
 			r := <-ch
+			// todo 更新同步状态与时间
 			fmt.Println(r)
 		}
 		close(ch)
 	}(ch)
 
 	// 开启多个goroutine执行云资源任务同步
-	for _, task := range taskList {
-		go func(t *resource.CloudDiscovery, c chan<- syncStatus) {
-			defer func(t1 *resource.CloudDiscovery) {
+	for _, task := range cloudDiscoveryList {
+		go func(t *cloudInfo, c chan<- syncStatus) {
+			defer func(t1 *cloudInfo) {
 				if err := recover(); err != nil {
 					c <- syncStatus{
 						ID:     t1.Id,
@@ -51,8 +71,24 @@ func syncCloud() (err error) {
 					}
 				}
 			}(t)
-			fmt.Println(t.Id)
-			panic(123)
+
+			var err error
+
+			if t.AccountType == "aliyun" {
+				regionList := make([]string, 0)
+				err = json.Unmarshal(t.Region, &regionList)
+
+				aliyunClient := aliyun.NewAliyun(t.AccountSecret, t.AccountKey, regionList)
+				if t.ResourceType == 1 { // 查询云主机资产
+					err = aliyunClient.GetEcsList()
+				}
+			}
+
+			if err != nil {
+				errValue := fmt.Sprintf("同步云资源失败，%v", err)
+				glog.Error(errValue)
+				panic(errValue)
+			}
 		}(task, ch)
 	}
 
@@ -61,10 +97,17 @@ func syncCloud() (err error) {
 
 // 开始同步数据
 func Start() (err error) {
-	for range time.Tick(viper.GetDuration(`settings.sync.cloud`) * time.Second) {
-		err = syncCloud()
-		if err != nil {
-			return
+	if viper.GetInt(`settings.sync.cloud`) > 0 {
+		t := time.NewTicker(viper.GetDuration(`settings.sync.cloud`) * time.Second)
+		defer t.Stop()
+		for {
+			<-t.C
+			err = syncCloud()
+			if err != nil {
+				glog.Fatalf("同步云资产数据失败，%v", err)
+				return
+			}
+			t.Reset(viper.GetDuration(`settings.sync.cloud`) * time.Second)
 		}
 	}
 	return

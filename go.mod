@@ -5,7 +5,7 @@ go 1.15
 require (
 	github.com/alecthomas/template v0.0.0-20190718012654-fb15b899a751
 	github.com/alibaba/sentinel-golang v0.6.1
-	github.com/aliyun/alibaba-cloud-sdk-go v1.61.992 // indirect
+	github.com/aliyun/alibaba-cloud-sdk-go v1.61.992
 	github.com/aliyun/aliyun-oss-go-sdk v0.0.0-20190307165228-86c17b95fcd5
 	github.com/bsm/redislock v0.5.0
 	github.com/casbin/casbin/v2 v2.11.2
@@ -16,6 +16,7 @@ require (
 	github.com/go-playground/universal-translator v0.17.0
 	github.com/go-playground/validator/v10 v10.2.0
 	github.com/go-redis/redis/v7 v7.4.0
+	github.com/golang/glog v0.0.0-20160126235308-23def4e6c14b
 	github.com/google/uuid v1.1.2
 	github.com/gorilla/websocket v1.4.2
 	github.com/jmespath/go-jmespath v0.4.0 // indirect

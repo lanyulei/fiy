@@ -92,10 +92,12 @@ func run() error {
 	}
 
 	// 同步云资源
-	err := sync_cloud.Start()
-	if err != nil {
-		panic(err)
-	}
+	go func() {
+		err := sync_cloud.Start()
+		if err != nil {
+			log.Fatal("sync cloud err: ", err)
+		}
+	}()
 
 	for _, f := range AppRouters {
 		f()

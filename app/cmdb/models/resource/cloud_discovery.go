@@ -11,7 +11,7 @@ import (
   @Author : lanyulei
 */
 
-// 云账户管理
+// 云资源同步管理
 type CloudDiscovery struct {
 	Id             int            `gorm:"column:id; primary_key;AUTO_INCREMENT" json:"id"`
 	Name           string         `gorm:"column:name; type:varchar(128); unique; uniqueIndex:idx_unique;" json:"name" binding:"required"`       // 任务名称
