@@ -2,9 +2,10 @@ package sync_cloud
 
 import (
 	"encoding/json"
-	"fiy/common/log"
 	"fmt"
 	"time"
+
+	"fiy/common/log"
 
 	"fiy/pkg/sync_cloud/aliyun"
 
@@ -46,6 +47,7 @@ func syncCloud() (err error) {
 		Where("crca.status = ? and cmdb_resource_cloud_discovery.status = ?", true, true).
 		Find(&cloudDiscoveryList).Error
 	if err != nil {
+		log.Errorf("查询所有同步任务列表失败", err)
 		return
 	}
 
@@ -80,7 +82,7 @@ func syncCloud() (err error) {
 
 				aliyunClient := aliyun.NewAliyun(t.AccountSecret, t.AccountKey, regionList)
 				if t.ResourceType == 1 { // 查询云主机资产
-					err = aliyunClient.GetEcsList()
+					err = aliyunClient.EcsList(t.ResourceModel)
 				}
 			}
 

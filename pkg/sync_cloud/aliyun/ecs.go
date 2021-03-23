@@ -1,13 +1,14 @@
 package aliyun
 
 import (
+	"encoding/json"
+
 	"fiy/app/cmdb/models/resource"
 	orm "fiy/common/global"
+	"gorm.io/gorm/clause"
+
 	"fiy/common/log"
 	"fiy/tools"
-	"fmt"
-
-	"gorm.io/gorm/clause"
 
 	"github.com/aliyun/alibaba-cloud-sdk-go/services/ecs"
 )
@@ -31,10 +32,11 @@ func NewAliyun(sk, ak string, region []string) *aliyun {
 	}
 }
 
-func (a *aliyun) GetEcsList() (err error) {
+func (a *aliyun) EcsList(infoID int) (err error) {
 	var (
 		response *ecs.DescribeInstancesResponse
 		ecsList  []ecs.Instance
+		dataList []resource.Data
 	)
 
 	for _, r := range a.Region {
@@ -69,15 +71,30 @@ func (a *aliyun) GetEcsList() (err error) {
 				ecsList = append(ecsList, r.Instances.Instance...)
 			}
 
-			// 写入数据
-			err = orm.Eloquent.Model(&resource.Data{}).Clauses(clause.OnConflict{
-				Columns:   []clause.Column{{Name: "id"}},
-				DoUpdates: clause.AssignmentColumns([]string{"data"}),
-			}).Error
 		}
-
-		fmt.Println(response.Instances.Instance)
 	}
+
+	// 格式化数据
+	for _, v := range ecsList {
+		d, err := json.Marshal(v)
+		if err != nil {
+			log.Errorf("序列化ecs数据失败，%v", err)
+			return err
+		}
+		dataList = append(dataList, resource.Data{
+			Uuid:   v.InstanceId,
+			InfoId: infoID,
+			Status: 0,
+			Data:   d,
+		})
+	}
+
+	// 写入数据
+	log.Info("开始同步阿里云ECS数据...")
+	err = orm.Eloquent.Model(&resource.Data{}).Clauses(clause.OnConflict{
+		Columns:   []clause.Column{{Name: "uuid"}},
+		DoUpdates: clause.AssignmentColumns([]string{"data"}),
+	}).Create(&dataList).Error
 
 	return
 }
