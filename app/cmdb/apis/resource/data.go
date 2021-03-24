@@ -8,6 +8,7 @@ import (
 	"fiy/common/pagination"
 	"fiy/tools/app"
 	"fmt"
+	uuid "github.com/satori/go.uuid"
 	"strconv"
 
 	"github.com/gin-gonic/gin"
@@ -79,6 +80,7 @@ func CreateData(c *gin.Context) {
 		data resource.Data
 	)
 
+	data.Uuid = uuid.NewV4().String()
 	err = c.ShouldBind(&data)
 	if err != nil {
 		app.Error(c, -1, err, "参数绑定失败")

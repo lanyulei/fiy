@@ -13,11 +13,6 @@ import (
   @Desc : 数据关联表
 */
 
-// 业务部分的树结构节点数据关联
-func BizTreeDataRelated(c *gin.Context) {
-	app.OK(c, nil, "")
-}
-
 // 资产关联绑定
 func DataRelated(c *gin.Context) {
 	var (
