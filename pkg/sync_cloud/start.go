@@ -54,12 +54,20 @@ func syncCloud() (err error) {
 	ch = make(chan syncStatus, len(cloudDiscoveryList))
 	// 接受云资产同步任务执行结果，并处理
 	go func(c <-chan syncStatus) {
+		defer close(ch)
 		for i := 0; i < len(cloudDiscoveryList); i++ {
 			r := <-ch
-			// todo 更新同步状态与时间
-			fmt.Println(r)
+			err = orm.Eloquent.Model(&resource.CloudDiscovery{}).
+				Where("id = ?", r.ID).
+				Updates(map[string]interface{}{
+					"last_sync_status": r.Status,
+					"last_sync_time":   time.Now().Format("2006-01-02 15:04:05"),
+				}).Error
+			if err != nil {
+				log.Errorf("更新同步任务执行状态失败", err)
+				return
+			}
 		}
-		close(ch)
 	}(ch)
 
 	// 开启多个goroutine执行云资源任务同步
@@ -90,6 +98,11 @@ func syncCloud() (err error) {
 				errValue := fmt.Sprintf("同步云资源失败，%v", err)
 				log.Error(errValue)
 				panic(errValue)
+			} else {
+				c <- syncStatus{
+					ID:     t.Id,
+					Status: true,
+				}
 			}
 		}(task, ch)
 	}
@@ -100,8 +113,10 @@ func syncCloud() (err error) {
 // 开始同步数据
 func Start() (err error) {
 	if viper.GetInt(`settings.sync.cloud`) > 0 {
-		t := time.NewTicker(viper.GetDuration(`settings.sync.cloud`) * time.Second)
+		t := time.NewTicker(viper.GetDuration(`settings.sync.cloud`) * time.Minute)
 		defer t.Stop()
+
+		log.Info("开始同步云资源数据...")
 		for {
 			<-t.C
 			err = syncCloud()

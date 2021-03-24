@@ -2,6 +2,7 @@ package aliyun
 
 import (
 	"encoding/json"
+	"fmt"
 
 	"fiy/app/cmdb/models/resource"
 	orm "fiy/common/global"
@@ -82,7 +83,7 @@ func (a *aliyun) EcsList(infoID int) (err error) {
 			return err
 		}
 		dataList = append(dataList, resource.Data{
-			Uuid:   v.InstanceId,
+			Uuid:   fmt.Sprintf("aliyun-ecs-%s", v.InstanceId),
 			InfoId: infoID,
 			Status: 0,
 			Data:   d,
@@ -90,7 +91,6 @@ func (a *aliyun) EcsList(infoID int) (err error) {
 	}
 
 	// 写入数据
-	log.Info("开始同步阿里云ECS数据...")
 	err = orm.Eloquent.Model(&resource.Data{}).Clauses(clause.OnConflict{
 		Columns:   []clause.Column{{Name: "uuid"}},
 		DoUpdates: clause.AssignmentColumns([]string{"data"}),
