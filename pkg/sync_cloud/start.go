@@ -2,6 +2,7 @@ package sync_cloud
 
 import (
 	"encoding/json"
+	"fiy/pkg/sync_cloud/baidu"
 	"fmt"
 	"time"
 
@@ -88,20 +89,40 @@ func syncCloud() (err error) {
 				regionList := make([]string, 0)
 				err = json.Unmarshal(t.Region, &regionList)
 
-				aliyunClient := aliyun.NewAliyun(t.AccountSecret, t.AccountKey, regionList)
+				aLiYunClient := aliyun.NewALiYun(t.AccountSecret, t.AccountKey, regionList)
 				if t.ResourceType == 1 { // 查询云主机资产
-					err = aliyunClient.EcsList(t.ResourceModel)
+					err = aLiYunClient.EcsList(t.ResourceModel)
 				}
-			}
 
-			if err != nil {
-				errValue := fmt.Sprintf("同步云资源失败，%v", err)
-				log.Error(errValue)
-				panic(errValue)
-			} else {
-				c <- syncStatus{
-					ID:     t.Id,
-					Status: true,
+				if err != nil {
+					errValue := fmt.Sprintf("同步阿里云资源失败，%v", err)
+					log.Error(errValue)
+					panic(errValue)
+				} else {
+					c <- syncStatus{
+						ID:     t.Id,
+						Status: true,
+					}
+				}
+
+			} else if t.AccountType == "baidu" {
+				regionList := make([]string, 0)
+				err = json.Unmarshal(t.Region, &regionList)
+
+				baiDuYunClient := baidu.NewBaiDuYun(t.AccountSecret, t.AccountKey, regionList)
+				if t.ResourceType == 1 { // 查询云主机资产
+					err = baiDuYunClient.BccList(t.ResourceModel)
+				}
+
+				if err != nil {
+					errValue := fmt.Sprintf("同步百度云资源失败，%v", err)
+					log.Error(errValue)
+					panic(errValue)
+				} else {
+					c <- syncStatus{
+						ID:     t.Id,
+						Status: true,
+					}
 				}
 			}
 		}(task, ch)

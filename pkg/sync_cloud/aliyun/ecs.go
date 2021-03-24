@@ -18,30 +18,30 @@ import (
   @Author : lanyulei
 */
 
-type aliyun struct {
-	SK        string   `json:"sk"`
-	AK        string   `json:"ak"`
-	Region    []string `json:"region"`
-	ecsClient *ecs.Client
+type aLiYun struct {
+	SK     string   `json:"sk"`
+	AK     string   `json:"ak"`
+	Region []string `json:"region"`
 }
 
-func NewAliyun(sk, ak string, region []string) *aliyun {
-	return &aliyun{
+func NewALiYun(sk, ak string, region []string) *aLiYun {
+	return &aLiYun{
 		SK:     sk,
 		AK:     ak,
 		Region: region,
 	}
 }
 
-func (a *aliyun) EcsList(infoID int) (err error) {
+func (a *aLiYun) EcsList(infoID int) (err error) {
 	var (
-		response *ecs.DescribeInstancesResponse
-		ecsList  []ecs.Instance
-		dataList []resource.Data
+		response  *ecs.DescribeInstancesResponse
+		ecsList   []ecs.Instance
+		dataList  []resource.Data
+		ecsClient *ecs.Client
 	)
 
 	for _, r := range a.Region {
-		a.ecsClient, err = ecs.NewClientWithAccessKey(
+		ecsClient, err = ecs.NewClientWithAccessKey(
 			tools.Strip(r),
 			tools.Strip(a.AK),
 			tools.Strip(a.SK),
@@ -54,7 +54,7 @@ func (a *aliyun) EcsList(infoID int) (err error) {
 		request := ecs.CreateDescribeInstancesRequest()
 		request.PageSize = "1"
 
-		response, err = a.ecsClient.DescribeInstances(request)
+		response, err = ecsClient.DescribeInstances(request)
 		if err != nil {
 			log.Errorf("查询ECS实例列表失败，%v", err)
 			return
@@ -63,7 +63,7 @@ func (a *aliyun) EcsList(infoID int) (err error) {
 		if response.TotalCount > 0 {
 			for i := 0; i < response.TotalCount/100+1; i++ {
 				request.PageSize = "100"
-				r, err := a.ecsClient.DescribeInstances(request)
+				r, err := ecsClient.DescribeInstances(request)
 				if err != nil {
 					log.Errorf("查询ECS实例列表失败，%v", err)
 					return err

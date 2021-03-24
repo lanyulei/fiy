@@ -7,6 +7,7 @@ require (
 	github.com/alibaba/sentinel-golang v0.6.1
 	github.com/aliyun/alibaba-cloud-sdk-go v1.61.992
 	github.com/aliyun/aliyun-oss-go-sdk v0.0.0-20190307165228-86c17b95fcd5
+	github.com/baidubce/bce-sdk-go v0.9.53
 	github.com/bsm/redislock v0.5.0
 	github.com/casbin/casbin/v2 v2.11.2
 	github.com/casbin/gorm-adapter/v3 v3.0.2
