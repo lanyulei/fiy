@@ -7,6 +7,7 @@ import (
 	"fiy/common/log"
 	"fiy/tools"
 	"fmt"
+	"github.com/baidubce/bce-sdk-go/services/bcc"
 	"github.com/baidubce/bce-sdk-go/services/bcc/api"
 	"gorm.io/gorm/clause"
 )
