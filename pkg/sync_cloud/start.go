@@ -134,7 +134,8 @@ func syncCloud() (err error) {
 // 开始同步数据
 func Start() (err error) {
 	if viper.GetInt(`settings.sync.cloud`) > 0 {
-		t := time.NewTicker(viper.GetDuration(`settings.sync.cloud`) * time.Minute)
+		td := viper.GetDuration(`settings.sync.cloud`) * time.Minute
+		t := time.NewTicker(td)
 		defer t.Stop()
 
 		log.Info("开始同步云资源数据...")
@@ -145,7 +146,7 @@ func Start() (err error) {
 				log.Fatalf("同步云资产数据失败，%v", err)
 				return
 			}
-			t.Reset(viper.GetDuration(`settings.sync.cloud`) * time.Second)
+			t.Reset(td)
 		}
 	}
 	return

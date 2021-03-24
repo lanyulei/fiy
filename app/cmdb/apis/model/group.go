@@ -68,7 +68,10 @@ func GetModelList(c *gin.Context) {
 			ModelList []model.Info `json:"model_list"`
 		}
 		modelIdentifiesList []string
-		modelResourceCount  map[string]interface{}
+		modelResourceCount  []struct {
+			Identifies string `json:"identifies"`
+			Count      int    `json:"count"`
+		}
 	)
 
 	isUsable := c.DefaultQuery("isUsable", "1")
@@ -99,27 +102,26 @@ func GetModelList(c *gin.Context) {
 		}
 	}
 
-	modelResourceCount = make(map[string]interface{})
-	selectValue := ""
-	for i, m := range modelIdentifiesList {
-		if i == 0 {
-			selectValue = fmt.Sprintf("count(cmi.identifies = '%s') as %s", m, m)
-		} else {
-			selectValue = fmt.Sprintf("%s, %s", selectValue, fmt.Sprintf("count(cmi.identifies = '%s') as %s", m, m))
-		}
-	}
-
 	err = orm.Eloquent.Model(&resource.Data{}).
 		Joins("left join cmdb_model_info as cmi on cmi.id = cmdb_resource_data.info_id").
 		Where("cmi.identifies in ?", modelIdentifiesList).
-		Select(selectValue).
+		Select("cmi.identifies, count(cmi.id) as count").
 		Group("cmi.identifies").
-		Find(&modelResourceCount).
+		Scan(&modelResourceCount).
 		Error
+	if err != nil {
+		app.Error(c, -1, err, "查询模型数据失败")
+		return
+	}
+
+	modelResourceCountMap := make(map[string]interface{})
+	for _, m := range modelResourceCount {
+		modelResourceCountMap[m.Identifies] = m.Count
+	}
 
 	app.OK(c, map[string]interface{}{
 		"models":               modelList,
-		"model_resource_count": modelResourceCount,
+		"model_resource_count": modelResourceCountMap,
 	}, "")
 }
 

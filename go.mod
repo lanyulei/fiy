@@ -42,6 +42,10 @@ require (
 	github.com/swaggo/swag v1.6.7
 	github.com/unrolled/secure v1.0.8
 	golang.org/x/crypto v0.0.0-20200820211705-5c72a883971a
+	golang.org/x/net v0.0.0-20210324051636-2c4c8ecb7826 // indirect
+	golang.org/x/sys v0.0.0-20210324051608-47abb6519492 // indirect
+	google.golang.org/genproto v0.0.0-20210324141432-3032e8ff099e // indirect
+	google.golang.org/grpc/cmd/protoc-gen-go-grpc v1.1.0 // indirect
 	gopkg.in/ini.v1 v1.62.0 // indirect
 	gorm.io/datatypes v1.0.0
 	gorm.io/driver/mysql v1.0.3
