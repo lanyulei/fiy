@@ -111,8 +111,14 @@ INSERT INTO cmdb_business_svc_classify VALUES (19, 'ceph', 'Ceph', 2, 18, '2021-
 INSERT INTO cmdb_business_svc_classify VALUES (20, 'nfs', 'NFS', 2, 18, '2021-02-09 17:22:14', '2021-02-09 17:22:14', null);
 
 -- 模型关联
-INSERT INTO cmdb_model_info_related_type VALUES (2, 1, 2, 4, 3, '', '2021-02-24 00:01:34', '2021-02-28 21:24:14', null);
-INSERT INTO cmdb_model_info_related_type VALUES (3, 2, 3, 1, 2, '', '2021-02-28 21:24:32', '2021-02-28 21:24:32', null);
-INSERT INTO cmdb_model_info_related_type VALUES (4, 3, 4, 1, 2, '', '2021-02-28 21:24:56', '2021-02-28 21:24:56', null);
+INSERT INTO cmdb_model_info_related_type VALUES (5, 5, 6, 2, 2, '', '2021-03-25 17:20:53', '2021-03-25 17:28:15', null);
+INSERT INTO cmdb_model_info_related_type VALUES (6, 5, 7, 2, 2, '', '2021-03-25 17:21:00', '2021-03-25 17:28:19', null);
+INSERT INTO cmdb_model_info_related_type VALUES (7, 5, 8, 2, 2, '', '2021-03-25 17:21:13', '2021-03-25 17:28:23', null);
+INSERT INTO cmdb_model_info_related_type VALUES (8, 5, 9, 2, 2, '', '2021-03-25 17:21:22', '2021-03-25 17:28:27', null);
+INSERT INTO cmdb_model_info_related_type VALUES (9, 5, 10, 2, 2, '', '2021-03-25 17:21:30', '2021-03-25 17:28:31', null);
+INSERT INTO cmdb_model_info_related_type VALUES (10, 4, 3, 3, 2, '', '2021-03-25 17:23:08', '2021-03-25 17:23:08', null);
+INSERT INTO cmdb_model_info_related_type VALUES (11, 3, 2, 3, 2, '', '2021-03-25 17:23:38', '2021-03-25 17:24:52', null);
+INSERT INTO cmdb_model_info_related_type VALUES (12, 2, 1, 2, 2, '', '2021-03-25 17:25:56', '2021-03-25 17:25:56', null);
+INSERT INTO cmdb_model_info_related_type VALUES (13, 2, 5, 2, 2, '', '2021-03-25 17:26:03', '2021-03-25 17:26:03', null);
 COMMIT;
 -- 数据完成 ;
