@@ -35,6 +35,7 @@ func _1611888450342Migrate(db *gorm.DB, version string) (err error) {
 			{Id: 1, Identifies: "built_in_host_manager", Name: "主机管理", BaseModel: common.BaseModel{CreatedAt: time.Now(), UpdatedAt: time.Now()}},
 			{Id: 2, Identifies: "built_in_business_topology", Name: "业务拓扑", BaseModel: common.BaseModel{CreatedAt: time.Now(), UpdatedAt: time.Now()}},
 			{Id: 3, Identifies: "built_in_organization", Name: "组织架构", BaseModel: common.BaseModel{CreatedAt: time.Now(), UpdatedAt: time.Now()}},
+			{Id: 4, Identifies: "built_in_host_device", Name: "主机设备", BaseModel: common.BaseModel{CreatedAt: time.Now(), UpdatedAt: time.Now()}},
 		}
 
 		// 模型
@@ -43,6 +44,12 @@ func _1611888450342Migrate(db *gorm.DB, version string) (err error) {
 			{Id: 2, Identifies: "built_in_module", Name: "模块", Icon: "el-icon-menu", IsUsable: true, IsInternal: false, GroupId: 2, BaseModel: common.BaseModel{CreatedAt: time.Now(), UpdatedAt: time.Now()}},
 			{Id: 3, Identifies: "built_in_set", Name: "集群", Icon: "el-icon-s-fold", IsUsable: true, IsInternal: false, GroupId: 2, BaseModel: common.BaseModel{CreatedAt: time.Now(), UpdatedAt: time.Now()}},
 			{Id: 4, Identifies: "built_in_biz", Name: "业务", Icon: "el-icon-s-cooperation", IsUsable: true, IsInternal: false, GroupId: 3, BaseModel: common.BaseModel{CreatedAt: time.Now(), UpdatedAt: time.Now()}},
+			{Id: 5, Identifies: "built_in_idc_host", Name: "IDC主机", Icon: "fa fa-th-list", IsUsable: true, IsInternal: false, GroupId: 1, BaseModel: common.BaseModel{CreatedAt: time.Now(), UpdatedAt: time.Now()}},
+			{Id: 6, Identifies: "built_in_gpu", Name: "GPU", Icon: "fa fa-sheqel", IsUsable: true, IsInternal: false, GroupId: 4, BaseModel: common.BaseModel{CreatedAt: time.Now(), UpdatedAt: time.Now()}},
+			{Id: 7, Identifies: "built_in_memory", Name: "内存", Icon: "fa fa-medium", IsUsable: true, IsInternal: false, GroupId: 4, BaseModel: common.BaseModel{CreatedAt: time.Now(), UpdatedAt: time.Now()}},
+			{Id: 8, Identifies: "built_in_cpu", Name: "CPU", Icon: "fa fa-xing", IsUsable: true, IsInternal: false, GroupId: 4, BaseModel: common.BaseModel{CreatedAt: time.Now(), UpdatedAt: time.Now()}},
+			{Id: 9, Identifies: "built_in_disk", Name: "磁盘", Icon: "fa fa-reorder", IsUsable: true, IsInternal: false, GroupId: 4, BaseModel: common.BaseModel{CreatedAt: time.Now(), UpdatedAt: time.Now()}},
+			{Id: 10, Identifies: "built_in_net", Name: "网卡", Icon: "fa fa-asl-interpreting", IsUsable: true, IsInternal: false, GroupId: 4, BaseModel: common.BaseModel{CreatedAt: time.Now(), UpdatedAt: time.Now()}},
 		}
 
 		// 模型字段分组
@@ -53,6 +60,12 @@ func _1611888450342Migrate(db *gorm.DB, version string) (err error) {
 			{Id: 4, Name: "基础信息", Sequence: 1, IsFold: false, InfoId: 3, BaseModel: common.BaseModel{CreatedAt: time.Now(), UpdatedAt: time.Now()}},
 			{Id: 5, Name: "基础信息", Sequence: 1, IsFold: false, InfoId: 4, BaseModel: common.BaseModel{CreatedAt: time.Now(), UpdatedAt: time.Now()}},
 			{Id: 6, Name: "角色", Sequence: 2, IsFold: false, InfoId: 4, BaseModel: common.BaseModel{CreatedAt: time.Now(), UpdatedAt: time.Now()}},
+			{Id: 7, Name: "基础信息", Sequence: 0, IsFold: false, InfoId: 5, BaseModel: common.BaseModel{CreatedAt: time.Now(), UpdatedAt: time.Now()}},
+			{Id: 8, Name: "基础信息", Sequence: 0, IsFold: false, InfoId: 6, BaseModel: common.BaseModel{CreatedAt: time.Now(), UpdatedAt: time.Now()}},
+			{Id: 9, Name: "基础信息", Sequence: 0, IsFold: false, InfoId: 7, BaseModel: common.BaseModel{CreatedAt: time.Now(), UpdatedAt: time.Now()}},
+			{Id: 10, Name: "基础信息", Sequence: 0, IsFold: false, InfoId: 8, BaseModel: common.BaseModel{CreatedAt: time.Now(), UpdatedAt: time.Now()}},
+			{Id: 11, Name: "基础信息", Sequence: 0, IsFold: false, InfoId: 9, BaseModel: common.BaseModel{CreatedAt: time.Now(), UpdatedAt: time.Now()}},
+			{Id: 12, Name: "基础信息", Sequence: 0, IsFold: false, InfoId: 10, BaseModel: common.BaseModel{CreatedAt: time.Now(), UpdatedAt: time.Now()}},
 		}
 
 		err = tx.Create(relatedTypeList).Error
