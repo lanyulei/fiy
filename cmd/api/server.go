@@ -3,6 +3,7 @@ package api
 import (
 	"context"
 	router "fiy/common/router"
+	"fiy/pkg/grpc/server"
 	"fiy/pkg/sync_cloud"
 	"fiy/tools/trace"
 	"fmt"
@@ -98,6 +99,9 @@ func run() error {
 			log.Fatal("sync cloud err: ", err)
 		}
 	}()
+
+	// 启动rpc服务
+	go server.RunServer()
 
 	for _, f := range AppRouters {
 		f()

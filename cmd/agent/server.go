@@ -2,6 +2,8 @@ package agent
 
 import (
 	"fiy/common/global"
+	"fiy/common/log"
+	"fiy/pkg/grpc/client"
 	"fiy/pkg/logger"
 	"fiy/tools"
 	"fiy/tools/config"
@@ -35,11 +37,16 @@ func setup() {
 	config.Setup(configYml)
 	//2. 设置日志
 	global.Logger.Logger = logger.SetupLogger(config.LoggerConfig.Path, "bus")
+	log.Info("初始化完成")
 }
 
 func run() (err error) {
+	log.Info("启动agent...")
 	fmt.Println(tools.Green("Agent run at:"))
 	fmt.Printf("-  Server: http://%s:%s/ \r\n", tools.GetLocaHonst(), config.ApplicationConfig.Port)
 	fmt.Printf("%s Enter Control + C Shutdown Agent \r\n", tools.GetCurrentTimeStr())
+
+	client.RunClient()
+
 	return nil
 }

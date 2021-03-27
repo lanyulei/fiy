@@ -31,7 +31,7 @@ require (
 	github.com/robinjoseph08/redisqueue/v2 v2.1.0
 	github.com/satori/go.uuid v1.2.0
 	github.com/shamsher31/goimgext v1.0.0
-	github.com/shirou/gopsutil v2.20.7+incompatible
+	github.com/shirou/gopsutil v3.21.2+incompatible
 	github.com/shurcooL/httpfs v0.0.0-20190707220628-8d4bc4ba7749 // indirect
 	github.com/shurcooL/vfsgen v0.0.0-20200824052919-0d455de96546 // indirect
 	github.com/smartystreets/goconvey v1.6.4
@@ -40,12 +40,16 @@ require (
 	github.com/spf13/viper v1.7.1
 	github.com/swaggo/gin-swagger v1.2.0
 	github.com/swaggo/swag v1.6.7
+	github.com/tklauser/go-sysconf v0.3.5 // indirect
 	github.com/unrolled/secure v1.0.8
+	github.com/yumaojun03/dmidecode v0.1.4
 	golang.org/x/crypto v0.0.0-20200820211705-5c72a883971a
 	golang.org/x/net v0.0.0-20210324051636-2c4c8ecb7826 // indirect
 	golang.org/x/sys v0.0.0-20210324051608-47abb6519492 // indirect
 	google.golang.org/genproto v0.0.0-20210324141432-3032e8ff099e // indirect
+	google.golang.org/grpc v1.36.0
 	google.golang.org/grpc/cmd/protoc-gen-go-grpc v1.1.0 // indirect
+	google.golang.org/protobuf v1.26.0
 	gopkg.in/ini.v1 v1.62.0 // indirect
 	gorm.io/datatypes v1.0.0
 	gorm.io/driver/mysql v1.0.3

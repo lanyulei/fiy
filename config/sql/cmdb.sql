@@ -120,5 +120,6 @@ INSERT INTO cmdb_model_info_related_type VALUES (10, 4, 3, 3, 2, '', '2021-03-25
 INSERT INTO cmdb_model_info_related_type VALUES (11, 3, 2, 3, 2, '', '2021-03-25 17:23:38', '2021-03-25 17:24:52', null);
 INSERT INTO cmdb_model_info_related_type VALUES (12, 2, 1, 2, 2, '', '2021-03-25 17:25:56', '2021-03-25 17:25:56', null);
 INSERT INTO cmdb_model_info_related_type VALUES (13, 2, 5, 2, 2, '', '2021-03-25 17:26:03', '2021-03-25 17:26:03', null);
+INSERT INTO cmdb_model_info_related_type VALUES (14, 5, 6, 2, 2, '', '2021-03-27 12:41:51', '2021-03-27 12:41:51', null);
 COMMIT;
 -- 数据完成 ;

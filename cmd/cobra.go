@@ -2,17 +2,17 @@ package cmd
 
 import (
 	"errors"
-	"fmt"
-	"os"
-
-	"github.com/spf13/cobra"
-
+	"fiy/cmd/agent"
 	"fiy/cmd/api"
 	"fiy/cmd/config"
 	"fiy/cmd/migrate"
 	"fiy/cmd/version"
 	"fiy/common/global"
 	"fiy/tools"
+	"fmt"
+	"os"
+
+	"github.com/spf13/cobra"
 )
 
 var rootCmd = &cobra.Command{
@@ -43,6 +43,7 @@ func init() {
 	rootCmd.AddCommand(migrate.StartCmd)
 	rootCmd.AddCommand(version.StartCmd)
 	rootCmd.AddCommand(config.StartCmd)
+	rootCmd.AddCommand(agent.StartCmd)
 }
 
 //Execute : apply commands
