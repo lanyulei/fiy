@@ -6,6 +6,7 @@ import (
 	"fiy/app/cmdb/models/resource"
 	orm "fiy/common/global"
 	"fiy/common/log"
+	"fmt"
 
 	"gorm.io/gorm/clause"
 )
@@ -81,7 +82,10 @@ func formatData(data string) (result map[string]interface{}, err error) {
 
 func insertData(data string) (err error) {
 	var (
-		result map[string]interface{}
+		result          map[string]interface{}
+		hostInfo        resource.Data
+		dataList        []resource.Data
+		dataRelatedList []resource.DataRelated
 	)
 
 	result, err = formatData(data)
@@ -91,7 +95,18 @@ func insertData(data string) (err error) {
 	}
 
 	tx := orm.Eloquent.Begin()
-	for _, d := range result {
+
+	// 查询ID
+	err = orm.Eloquent.Model(&resource.Data{}).
+		Where("uuid = ?", result["info"].(*resource.Data).Uuid).
+		Find(&hostInfo).Error
+	if err != nil {
+		log.Error("查询数据ID失败，", err)
+		tx.Rollback()
+		return
+	}
+
+	for k, d := range result {
 		err = tx.Model(&resource.Data{}).
 			Clauses(clause.OnConflict{
 				Columns:   []clause.Column{{Name: "uuid"}},
@@ -102,7 +117,39 @@ func insertData(data string) (err error) {
 			log.Error("同步数据失败，", err)
 			return
 		}
+
+		if k != "info" {
+			dataUuids := make([]string, 0)
+			for _, z := range *d.(*[]resource.Data) {
+				dataUuids = append(dataUuids, z.Uuid)
+			}
+			err = orm.Eloquent.Where("uuid in ?", dataUuids).Find(&dataList).Error
+			if err != nil {
+				log.Error("查询数据列表失败，", err)
+				tx.Rollback()
+				return
+			}
+
+			fmt.Println(dataUuids)
+
+			for _, z := range dataList {
+				dataRelatedList = append(dataRelatedList, resource.DataRelated{
+					Source:       hostInfo.Id,
+					Target:       z.Id,
+					SourceInfoId: hostInfo.InfoId,
+					TargetInfoId: z.InfoId,
+				})
+			}
+		}
 	}
+
+	err = tx.Create(&dataRelatedList).Error
+	if err != nil {
+		log.Error("创建数据关联失败")
+		tx.Rollback()
+		return
+	}
+
 	tx.Commit()
 
 	return

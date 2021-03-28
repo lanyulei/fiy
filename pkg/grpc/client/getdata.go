@@ -74,35 +74,23 @@ func runCommand(timeout int, command string, args ...string) (out string, err er
 }
 
 // 获取uuid
-func getUuid(fileName string) (uuidString string, err error) {
+func getUUID() (uuidString string, err error) {
 	var (
 		content []byte
 		file    *os.File
 	)
 
-	// 判断目录是否存在
 	_, err = os.Stat("./.uuid") //os.Stat获取文件信息
 	if err != nil {
 		if !os.IsExist(err) {
-			err = os.Mkdir("./.uuid", 0744)
-			if err != nil {
-				log.Error("创建目录失败，", err)
-				return
-			}
-		}
-	}
-
-	_, err = os.Stat(fileName) //os.Stat获取文件信息
-	if err != nil {
-		if !os.IsExist(err) {
 			// 文件不存在
-			file, err = os.Create(fileName)
+			file, err = os.Create("./.uuid")
 			if err != nil {
 				fmt.Println("错误，", err)
 				return
 			}
 			defer file.Close()
-			err = ioutil.WriteFile(fileName, []byte(uuid.NewV4().String()), 0666)
+			err = ioutil.WriteFile("./.uuid", []byte(uuid.NewV4().String()), 0666)
 			if err != nil {
 				fmt.Println("错误，", err)
 				return
@@ -111,7 +99,7 @@ func getUuid(fileName string) (uuidString string, err error) {
 	}
 
 	// err == nil 文件存在
-	content, err = ioutil.ReadFile(fileName)
+	content, err = ioutil.ReadFile("./.uuid")
 	if err != nil {
 		fmt.Println("错误，", err)
 		return
@@ -184,7 +172,7 @@ func getHostInfo() (result map[string]interface{}, err error) {
 		cpuCoreCount = string(out)
 	}
 
-	uuidValue, err = getUuid("./.uuid/host")
+	uuidValue, err = getUUID()
 	if err != nil {
 		log.Error("获取UUID失败，", err)
 		return
@@ -212,6 +200,12 @@ func getHostInfo() (result map[string]interface{}, err error) {
 
 // 获取GPU相关信息
 func getGPUInfo() (result []map[string]interface{}, err error) {
+	var uuidValue string
+	uuidValue, err = getUUID()
+	if err != nil {
+		log.Error("获取UUID失败，", err)
+		return
+	}
 
 	s, err := runCommand(3, "bash",
 		"-c",
@@ -223,11 +217,11 @@ func getGPUInfo() (result []map[string]interface{}, err error) {
 
 	outLineList := strings.Split(s, "\n")
 	if len(outLineList) > 0 {
-		for _, outValue := range outLineList[1:] {
+		for idx, outValue := range outLineList[1:] {
 			outValueLineList := strings.Split(outValue, ", ")
 			if len(outValueLineList) > 0 && outValueLineList[0] != "" {
 				result = append(result, map[string]interface{}{
-					"uuid":      uuid.NewV4().String(),
+					"uuid":      fmt.Sprintf("%s-gpu-%d", uuidValue, idx),
 					"info_uuid": "",
 					"status":    1,
 					"data": map[string]interface{}{
@@ -250,8 +244,15 @@ func getGPUInfo() (result []map[string]interface{}, err error) {
 // 获取内存相关信息
 func getMemory() (result []map[string]interface{}, err error) {
 	var (
-		dmi *dmidecode.Decoder
+		dmi       *dmidecode.Decoder
+		uuidValue string
 	)
+
+	uuidValue, err = getUUID()
+	if err != nil {
+		log.Error("获取UUID失败，", err)
+		return
+	}
 
 	dmi, err = dmidecode.New()
 	if err != nil {
@@ -265,10 +266,10 @@ func getMemory() (result []map[string]interface{}, err error) {
 		return
 	}
 
-	for _, memoryDevice := range memoryDeviceList {
+	for idx, memoryDevice := range memoryDeviceList {
 		if memoryDevice.Size > 0 {
 			result = append(result, map[string]interface{}{
-				"uuid":      uuid.NewV4().String(),
+				"uuid":      fmt.Sprintf("%s-memory-%d", uuidValue, idx),
 				"info_uuid": "",
 				"status":    1,
 				"data": map[string]interface{}{
@@ -288,17 +289,24 @@ func getMemory() (result []map[string]interface{}, err error) {
 // 获取CPU相关信息
 func getCPUInfo() (result []map[string]interface{}, err error) {
 	var (
-		cpuInfos []cpu.InfoStat
+		cpuInfos  []cpu.InfoStat
+		uuidValue string
 	)
+
+	uuidValue, err = getUUID()
+	if err != nil {
+		log.Error("获取UUID失败，", err)
+		return
+	}
 
 	cpuInfos, err = cpu.Info()
 	if err != nil {
 		log.Error("查询CPU相关信息失败，", err)
 		return
 	}
-	for _, info := range cpuInfos {
+	for idx, info := range cpuInfos {
 		result = append(result, map[string]interface{}{
-			"uuid":      uuid.NewV4().String(),
+			"uuid":      fmt.Sprintf("%s-cpu-%d", uuidValue, idx),
 			"info_uuid": "",
 			"status":    1,
 			"data": map[string]interface{}{
@@ -319,15 +327,23 @@ func getCPUInfo() (result []map[string]interface{}, err error) {
 // 获取磁盘相关信息
 func getDiskInfo() (result []map[string]interface{}, err error) {
 	var (
-		infos    []disk.PartitionStat
-		diskInfo *disk.UsageStat
+		infos     []disk.PartitionStat
+		diskInfo  *disk.UsageStat
+		uuidValue string
 	)
+
+	uuidValue, err = getUUID()
+	if err != nil {
+		log.Error("获取UUID失败，", err)
+		return
+	}
+
 	infos, err = disk.Partitions(false)
 	if err != nil {
 		log.Error("查询磁盘信息失败，", err)
 		return
 	}
-	for _, info := range infos {
+	for idx, info := range infos {
 		var (
 			diskInfoTotal       uint64
 			diskInfoFree        uint64
@@ -346,7 +362,7 @@ func getDiskInfo() (result []map[string]interface{}, err error) {
 			diskInfoUsedPercent = diskInfo.UsedPercent
 		}
 		result = append(result, map[string]interface{}{
-			"uuid":      uuid.NewV4().String(),
+			"uuid":      fmt.Sprintf("%s-disk-%d", uuidValue, idx),
 			"info_uuid": "",
 			"status":    1,
 			"data": map[string]interface{}{
@@ -366,13 +382,21 @@ func getDiskInfo() (result []map[string]interface{}, err error) {
 
 // 获取网卡信息
 func getNetInfo() (result []map[string]interface{}, err error) {
-	var interfaces []net.InterfaceStat
+	var (
+		interfaces []net.InterfaceStat
+		uuidValue  string
+	)
+	uuidValue, err = getUUID()
+	if err != nil {
+		log.Error("获取UUID失败，", err)
+		return
+	}
 	interfaces, err = net.Interfaces()
 	if err != nil {
 		log.Error("查询网卡信息失败，", err)
 		return
 	}
-	for _, inter := range interfaces {
+	for idx, inter := range interfaces {
 		ipaddress := make([]string, 0)
 		for _, addrs := range inter.Addrs {
 			if strings.HasPrefix(addrs.Addr, "1") || strings.HasPrefix(addrs.Addr, "2") {
@@ -382,7 +406,7 @@ func getNetInfo() (result []map[string]interface{}, err error) {
 		ipAddressString := strings.Join(ipaddress, ", ")
 		if len(ipaddress) > 0 && !strings.HasPrefix(ipAddressString, "10.") && !strings.HasPrefix(ipAddressString, "127.0.0.1") {
 			result = append(result, map[string]interface{}{
-				"uuid":      uuid.NewV4().String(),
+				"uuid":      fmt.Sprintf("%s-net-%d", uuidValue, idx),
 				"info_uuid": "",
 				"status":    0,
 				"data": map[string]interface{}{
