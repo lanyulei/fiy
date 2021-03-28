@@ -2,10 +2,13 @@ package model
 
 import (
 	"fiy/app/cmdb/models/model"
+	"fiy/app/cmdb/models/resource"
 	"fiy/common/actions"
 	orm "fiy/common/global"
 	"fiy/tools/app"
 	"fmt"
+
+	"gorm.io/datatypes"
 
 	"github.com/gin-gonic/gin"
 )
@@ -123,6 +126,80 @@ func GetModelFields(c *gin.Context) {
 	}
 
 	app.OK(c, fields, "")
+}
+
+// 查询当前模型关联的所有模型及对应的字段
+func GetRelatedModelFields(c *gin.Context) {
+	var (
+		err                error
+		modelID            string
+		dataID             string
+		relatedModelIDs    []int
+		relatedModelFields []*struct {
+			model.Info
+			Fields []model.Fields `json:"fields"`
+		}
+		dataMap map[string]interface{}
+	)
+
+	modelID = c.Param("id")
+	dataID = c.Param("data_id")
+
+	// 查询关联的模型ID
+	err = orm.Eloquent.Model(&model.InfoRelatedType{}).
+		Where("source = ?", modelID).
+		Pluck("target", &relatedModelIDs).Error
+	if err != nil {
+		app.Error(c, -1, err, "查询关联的模型ID失败")
+		return
+	}
+
+	// 查询关联模型的信息
+	err = orm.Eloquent.Model(&model.Info{}).
+		Where("id in ?", relatedModelIDs).
+		Find(&relatedModelFields).Error
+	if err != nil {
+		app.Error(c, -1, err, "查询关联模型信息失败")
+		return
+	}
+
+	// 查询关联模型的字段
+	dataMap = make(map[string]interface{})
+	for _, f := range relatedModelFields {
+		err = orm.Eloquent.Model(&model.Fields{}).
+			Where("info_id = ?", f.Id).
+			Find(&f.Fields).Error
+		if err != nil {
+			app.Error(c, -1, err, "查询关联模型的字段失败")
+			return
+		}
+
+		// 查询关联的数据ID
+		dataIDs := make([]int, 0)
+		err = orm.Eloquent.Model(&resource.DataRelated{}).
+			Where("source = ? and target_info_id = ?", dataID, f.Id).
+			Pluck("target", &dataIDs).Error
+		if err != nil {
+			app.Error(c, -1, err, "查询关联数据ID失败")
+			return
+		}
+
+		var dataList []datatypes.JSON
+		err = orm.Eloquent.Model(&resource.Data{}).
+			Where("id in ?", dataIDs).
+			Pluck("data", &dataList).Error
+		if err != nil {
+			app.Error(c, -1, err, "查询关联数据失败")
+			return
+		}
+
+		dataMap[f.Identifies] = dataList
+	}
+
+	app.OK(c, map[string]interface{}{
+		"fields": relatedModelFields,
+		"data":   dataMap,
+	}, "")
 }
 
 // 编辑模型

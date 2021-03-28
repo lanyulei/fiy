@@ -6,7 +6,6 @@ import (
 	"fiy/app/cmdb/models/resource"
 	orm "fiy/common/global"
 	"fiy/common/log"
-	"fmt"
 
 	"gorm.io/gorm/clause"
 )
@@ -129,8 +128,6 @@ func insertData(data string) (err error) {
 				tx.Rollback()
 				return
 			}
-
-			fmt.Println(dataUuids)
 
 			for _, z := range dataList {
 				dataRelatedList = append(dataRelatedList, resource.DataRelated{
