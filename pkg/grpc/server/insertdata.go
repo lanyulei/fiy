@@ -95,32 +95,56 @@ func insertData(data string) (err error) {
 
 	tx := orm.Eloquent.Begin()
 
-	// 查询ID
-	err = orm.Eloquent.Model(&resource.Data{}).
-		Where("uuid = ?", result["info"].(*resource.Data).Uuid).
-		Find(&hostInfo).Error
+	err = tx.Model(&resource.Data{}).
+		Clauses(clause.OnConflict{
+			Columns:   []clause.Column{{Name: "uuid"}},
+			DoUpdates: clause.AssignmentColumns([]string{"info_id", "status", "data"}),
+		}).Create(result["info"].(*resource.Data)).Error
 	if err != nil {
-		log.Error("查询数据ID失败，", err)
 		tx.Rollback()
+		log.Error("同步数据失败，", err)
 		return
 	}
 
-	for k, d := range result {
-		err = tx.Model(&resource.Data{}).
-			Clauses(clause.OnConflict{
-				Columns:   []clause.Column{{Name: "uuid"}},
-				DoUpdates: clause.AssignmentColumns([]string{"info_id", "status", "data"}),
-			}).Create(d).Error
+	// 查询ID
+	if result["info"].(*resource.Data).Id == 0 {
+		err = orm.Eloquent.Model(&resource.Data{}).
+			Where("uuid = ?", result["info"].(*resource.Data).Uuid).
+			Find(&hostInfo).Error
 		if err != nil {
+			log.Error("查询数据ID失败，", err)
 			tx.Rollback()
-			log.Error("同步数据失败，", err)
 			return
 		}
+	} else {
+		hostInfo = *result["info"].(*resource.Data)
+	}
 
+	for k, d := range result {
 		if k != "info" {
+			err = tx.Model(&resource.Data{}).
+				Clauses(clause.OnConflict{
+					Columns:   []clause.Column{{Name: "uuid"}},
+					DoUpdates: clause.AssignmentColumns([]string{"info_id", "status", "data"}),
+				}).Create(d).Error
+			if err != nil {
+				tx.Rollback()
+				log.Error("同步数据失败，", err)
+				return
+			}
+
 			dataUuids := make([]string, 0)
 			for _, z := range *d.(*[]resource.Data) {
-				dataUuids = append(dataUuids, z.Uuid)
+				if z.Id == 0 {
+					dataUuids = append(dataUuids, z.Uuid)
+				} else {
+					dataRelatedList = append(dataRelatedList, resource.DataRelated{
+						Source:       hostInfo.Id,
+						Target:       z.Id,
+						SourceInfoId: hostInfo.InfoId,
+						TargetInfoId: z.InfoId,
+					})
+				}
 			}
 			err = orm.Eloquent.Where("uuid in ?", dataUuids).Find(&dataList).Error
 			if err != nil {
@@ -139,12 +163,16 @@ func insertData(data string) (err error) {
 			}
 		}
 	}
-
-	err = tx.Create(&dataRelatedList).Error
-	if err != nil {
-		log.Error("创建数据关联失败")
-		tx.Rollback()
-		return
+	if len(dataRelatedList) > 0 {
+		err = tx.Clauses(clause.OnConflict{
+			Columns:   []clause.Column{{Name: "source"}, {Name: "target"}},
+			DoUpdates: clause.AssignmentColumns([]string{"source", "target", "source_info_id", "target_info_id"}),
+		}).Create(&dataRelatedList).Error
+		if err != nil {
+			log.Error("创建数据关联失败")
+			tx.Rollback()
+			return
+		}
 	}
 
 	tx.Commit()
