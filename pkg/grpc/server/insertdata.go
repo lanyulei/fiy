@@ -53,26 +53,28 @@ func formatData(data string) (result map[string]interface{}, err error) {
 	}
 
 	for k, v := range dataMap {
-		if k == "info" {
-			jsonData, err = json.Marshal(v.(map[string]interface{})["data"])
-			result[k] = &resource.Data{
-				Uuid:   v.(map[string]interface{})["uuid"].(string),
-				InfoId: modelIDMaps[v.(map[string]interface{})["info_uuid"].(string)],
-				Status: int(v.(map[string]interface{})["status"].(float64)),
-				Data:   jsonData,
-			}
-		} else {
-			dataList := make([]resource.Data, 0)
-			for _, d := range v.([]interface{}) {
-				jsonData, err = json.Marshal(d.(map[string]interface{})["data"])
-				dataList = append(dataList, resource.Data{
-					Uuid:   d.(map[string]interface{})["uuid"].(string),
-					InfoId: modelIDMaps[d.(map[string]interface{})["info_uuid"].(string)],
-					Status: int(d.(map[string]interface{})["status"].(float64)),
+		if v != nil {
+			if k == "info" {
+				jsonData, err = json.Marshal(v.(map[string]interface{})["data"])
+				result[k] = &resource.Data{
+					Uuid:   v.(map[string]interface{})["uuid"].(string),
+					InfoId: modelIDMaps[v.(map[string]interface{})["info_uuid"].(string)],
+					Status: int(v.(map[string]interface{})["status"].(float64)),
 					Data:   jsonData,
-				})
+				}
+			} else {
+				dataList := make([]resource.Data, 0)
+				for _, d := range v.([]interface{}) {
+					jsonData, err = json.Marshal(d.(map[string]interface{})["data"])
+					dataList = append(dataList, resource.Data{
+						Uuid:   d.(map[string]interface{})["uuid"].(string),
+						InfoId: modelIDMaps[d.(map[string]interface{})["info_uuid"].(string)],
+						Status: int(d.(map[string]interface{})["status"].(float64)),
+						Data:   jsonData,
+					})
+				}
+				result[k] = &dataList
 			}
-			result[k] = &dataList
 		}
 	}
 

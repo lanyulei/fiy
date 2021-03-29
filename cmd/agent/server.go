@@ -13,8 +13,9 @@ import (
 )
 
 var (
-	configYml string
-	StartCmd  = &cobra.Command{
+	server   string
+	interval int
+	StartCmd = &cobra.Command{
 		Use:          "agent",
 		Short:        "Start agent",
 		Example:      "fiy agent -c config/settings.yml",
@@ -29,13 +30,11 @@ var (
 )
 
 func init() {
-	StartCmd.PersistentFlags().StringVarP(&configYml, "config", "c", "config/settings.yml", "Start server with provided configuration file")
+	StartCmd.PersistentFlags().StringVarP(&server, "server", "s", "localhost:50051", "Server address, example: localhost:50051")
+	StartCmd.PersistentFlags().IntVarP(&interval, "interval", "i", 5, "Resource reporting interval, unit: minutes, default: 5 minutes")
 }
 
 func setup() {
-	//1. 读取配置
-	config.Setup(configYml)
-	//2. 设置日志
 	global.Logger.Logger = logger.SetupLogger(config.LoggerConfig.Path, "bus")
 	log.Info("初始化完成")
 }
@@ -43,10 +42,10 @@ func setup() {
 func run() (err error) {
 	log.Info("启动agent...")
 	fmt.Println(tools.Green("Agent run at:"))
-	fmt.Printf("-  Server: http://%s:%s/ \r\n", tools.GetLocaHonst(), config.ApplicationConfig.Port)
+	fmt.Printf("-  Server: %s/ \r\n", server)
 	fmt.Printf("%s Enter Control + C Shutdown Agent \r\n", tools.GetCurrentTimeStr())
 
-	client.RunClient()
+	client.RunClient(server, interval)
 
 	return nil
 }
