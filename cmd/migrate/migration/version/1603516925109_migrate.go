@@ -17,9 +17,6 @@ func init() {
 
 func _1603516925109Migrate(db *gorm.DB, version string) error {
 	return db.Transaction(func(tx *gorm.DB) error {
-		_ = tx.Migrator().RenameTable("sys_operlog", "sys_opera_log")
-		_ = tx.Migrator().RenameTable("sys_loginlog", "sys_login_log")
-
 		if tx.Migrator().HasColumn(&system.SysLoginLog{}, "info_id") {
 			err := tx.Migrator().RenameColumn(&system.SysLoginLog{}, "info_id", "id")
 			if err != nil {
