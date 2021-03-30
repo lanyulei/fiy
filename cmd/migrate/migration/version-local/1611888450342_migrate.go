@@ -50,6 +50,7 @@ func _1611888450342Migrate(db *gorm.DB, version string) (err error) {
 			{Id: 8, Identifies: "built_in_cpu", Name: "CPU", Icon: "fa fa-xing", IsUsable: true, IsInternal: false, GroupId: 4, BaseModel: common.BaseModel{CreatedAt: time.Now(), UpdatedAt: time.Now()}},
 			{Id: 9, Identifies: "built_in_disk", Name: "磁盘", Icon: "fa fa-reorder", IsUsable: true, IsInternal: false, GroupId: 4, BaseModel: common.BaseModel{CreatedAt: time.Now(), UpdatedAt: time.Now()}},
 			{Id: 10, Identifies: "built_in_net", Name: "网卡", Icon: "fa fa-asl-interpreting", IsUsable: true, IsInternal: false, GroupId: 4, BaseModel: common.BaseModel{CreatedAt: time.Now(), UpdatedAt: time.Now()}},
+			{Id: 11, Identifies: "built_in_aliyun_ecs", Name: "阿里云ECS云服务器", Icon: "fa fa-hdd-o", IsUsable: true, IsInternal: false, GroupId: 1, BaseModel: common.BaseModel{CreatedAt: time.Now(), UpdatedAt: time.Now()}},
 		}
 
 		// 模型字段分组
@@ -66,6 +67,7 @@ func _1611888450342Migrate(db *gorm.DB, version string) (err error) {
 			{Id: 10, Name: "基础信息", Sequence: 0, IsFold: false, InfoId: 8, BaseModel: common.BaseModel{CreatedAt: time.Now(), UpdatedAt: time.Now()}},
 			{Id: 11, Name: "基础信息", Sequence: 0, IsFold: false, InfoId: 9, BaseModel: common.BaseModel{CreatedAt: time.Now(), UpdatedAt: time.Now()}},
 			{Id: 12, Name: "基础信息", Sequence: 0, IsFold: false, InfoId: 10, BaseModel: common.BaseModel{CreatedAt: time.Now(), UpdatedAt: time.Now()}},
+			{Id: 13, Name: "基础信息", Sequence: 0, IsFold: false, InfoId: 11, BaseModel: common.BaseModel{CreatedAt: time.Now(), UpdatedAt: time.Now()}},
 		}
 
 		err = tx.Create(relatedTypeList).Error
