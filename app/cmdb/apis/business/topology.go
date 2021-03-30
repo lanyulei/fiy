@@ -7,6 +7,7 @@ import (
 	"fiy/app/cmdb/models/resource"
 	orm "fiy/common/global"
 	"fiy/tools/app"
+	uuid "github.com/satori/go.uuid"
 
 	"github.com/gin-gonic/gin"
 )
@@ -162,6 +163,7 @@ func AddBusinessNode(c *gin.Context) {
 
 	// 新建数据
 	resourceData := &resource.Data{
+		Uuid:   uuid.NewV4().String(),
 		InfoId: modelInfo.Id,
 		Status: 0,
 		Data:   data,
