@@ -61,11 +61,28 @@ func (b *baiDuYun) BccList(infoID int) (err error) {
 
 	// 格式化数据
 	for _, v := range bccDataList {
-		d, err := json.Marshal(v)
+		var d []byte
+		d, err = json.Marshal(v)
 		if err != nil {
 			log.Errorf("序列化服务器数据失败，%v", err)
-			return err
+			return
 		}
+
+		tmp := make(map[string]interface{})
+		err = json.Unmarshal(d, &tmp)
+		if err != nil {
+			log.Error("反序列化数据失败，", err)
+			return
+		}
+
+		tmp["instancesID"] = tmp["id"]
+		delete(tmp, "id")
+		d, err = json.Marshal(tmp)
+		if err != nil {
+			log.Errorf("序列化服务器数据失败，%v", err)
+			return
+		}
+
 		instancesList = append(instancesList, resource.Data{
 			Uuid:   fmt.Sprintf("baiduyun-bcc-%s", v.InstanceId),
 			InfoId: infoID,
