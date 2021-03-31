@@ -15,6 +15,42 @@ import (
   @Desc : 存入数据
 */
 
+// 更新map
+func updateMap(uuid string, newMap map[string]interface{}) (jsonData []byte, err error) {
+	var (
+		data    resource.Data
+		oldData map[string]interface{}
+	)
+
+	// 查询现有数据
+	err = orm.Eloquent.Model(&resource.Data{}).Where("uuid = ?", uuid).Find(&data).Error
+	if err != nil {
+		log.Error("查询资源数据失败，", err)
+		return
+	}
+
+	// 没有数据则直接返回新上报的数据
+	if data.Id == 0 {
+		jsonData, _ = json.Marshal(newMap)
+		return
+	}
+
+	// 序列化旧的字段数据
+	err = json.Unmarshal(data.Data, &oldData)
+	if err != nil {
+		log.Error("反序列化数据失败")
+		return
+	}
+
+	// 更新新上报的数据
+	for k, v := range newMap {
+		oldData[k] = v
+	}
+	jsonData, _ = json.Marshal(oldData)
+
+	return
+}
+
 func formatData(data string) (result map[string]interface{}, err error) {
 	var (
 		modelIDs []struct {
@@ -55,7 +91,7 @@ func formatData(data string) (result map[string]interface{}, err error) {
 	for k, v := range dataMap {
 		if v != nil {
 			if k == "info" {
-				jsonData, err = json.Marshal(v.(map[string]interface{})["data"])
+				jsonData, err = updateMap(v.(map[string]interface{})["uuid"].(string), v.(map[string]interface{})["data"].(map[string]interface{}))
 				result[k] = &resource.Data{
 					Uuid:   v.(map[string]interface{})["uuid"].(string),
 					InfoId: modelIDMaps[v.(map[string]interface{})["info_uuid"].(string)],
@@ -65,7 +101,7 @@ func formatData(data string) (result map[string]interface{}, err error) {
 			} else {
 				dataList := make([]resource.Data, 0)
 				for _, d := range v.([]interface{}) {
-					jsonData, err = json.Marshal(d.(map[string]interface{})["data"])
+					jsonData, err = updateMap(d.(map[string]interface{})["uuid"].(string), d.(map[string]interface{})["data"].(map[string]interface{}))
 					dataList = append(dataList, resource.Data{
 						Uuid:   d.(map[string]interface{})["uuid"].(string),
 						InfoId: modelIDMaps[d.(map[string]interface{})["info_uuid"].(string)],

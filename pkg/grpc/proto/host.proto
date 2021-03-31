@@ -4,15 +4,14 @@ option go_package = "./";
 
 package Host;
 
-// 上报资源
 service HostInfo {
-  rpc GetHostInfo (HostInfoRequest) returns (HostInfoReply) {}
+  rpc GetHostInfo (HostInfoRequest) returns (CommonReply) {}
 }
 
 message HostInfoRequest {
   string data = 1;
 }
 
-message HostInfoReply {
+message CommonReply {
   bool status = 1;
 }

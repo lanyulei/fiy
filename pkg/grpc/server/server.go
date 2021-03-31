@@ -5,7 +5,7 @@ import (
 	"net"
 
 	"fiy/common/log"
-	"fiy/pkg/grpc/proto/host"
+	pb "fiy/pkg/grpc/proto"
 
 	"google.golang.org/grpc"
 )
@@ -19,19 +19,19 @@ const (
 )
 
 type server struct {
-	host.UnimplementedHostInfoServer
+	pb.UnimplementedHostInfoServer
 }
 
-func (s *server) GetHostInfo(ctx context.Context, in *host.HostInfoRequest) (*host.HostInfoReply, error) {
+func (s *server) GetHostInfo(ctx context.Context, in *pb.HostInfoRequest) (*pb.CommonReply, error) {
 	data := in.GetData()
 	if data != "" {
 		err := insertData(data)
 		if err != nil {
 			log.Error("插入数据错误，", err)
-			return &host.HostInfoReply{Status: false}, err
+			return &pb.CommonReply{Status: false}, err
 		}
 	}
-	return &host.HostInfoReply{Status: true}, nil
+	return &pb.CommonReply{Status: true}, nil
 }
 
 func RunServer() {
@@ -41,7 +41,7 @@ func RunServer() {
 		log.Fatalf("failed to listen: %v", err)
 	}
 	s := grpc.NewServer()
-	host.RegisterHostInfoServer(s, &server{})
+	pb.RegisterHostInfoServer(s, &server{})
 	if err := s.Serve(lis); err != nil {
 		log.Fatalf("failed to serve: %v", err)
 	}

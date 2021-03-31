@@ -3,7 +3,7 @@ package client
 import (
 	"context"
 	"fiy/common/log"
-	"fiy/pkg/grpc/proto/host"
+	pb "fiy/pkg/grpc/proto"
 	"time"
 
 	"google.golang.org/grpc"
@@ -12,10 +12,6 @@ import (
 /*
   @Author : lanyulei
 */
-
-const (
-	address = "localhost:50051"
-)
 
 func RunClient(address string, interval int) {
 	// 定时收集上报数据，每隔5分钟上报一次数据
@@ -36,7 +32,7 @@ func RunClient(address string, interval int) {
 				return
 			}
 			defer conn.Close()
-			c := host.NewHostInfoClient(conn)
+			c := pb.NewHostInfoClient(conn)
 
 			// Contact the server and print out its response.
 			log.Info("开始收集资源数据...")
@@ -48,7 +44,7 @@ func RunClient(address string, interval int) {
 			defer cancel()
 
 			log.Info("开始上报资源数据...")
-			_, err = c.GetHostInfo(ctx, &host.HostInfoRequest{Data: data})
+			_, err = c.GetHostInfo(ctx, &pb.HostInfoRequest{Data: data})
 			if err != nil {
 				log.Fatalf("收集资源数据失败: %v", err)
 				return

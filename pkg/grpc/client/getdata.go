@@ -180,7 +180,7 @@ func getHostInfo() (result map[string]interface{}, err error) {
 
 	result = map[string]interface{}{
 		"uuid":      uuidValue,
-		"info_uuid": "",
+		"info_uuid": "built_in_idc_host",
 		"status":    1,
 		"data": map[string]interface{}{
 			"built_in_hostname":              hostInfo.Hostname,        // 主机名
@@ -222,7 +222,7 @@ func getGPUInfo() (result []map[string]interface{}, err error) {
 			if len(outValueLineList) > 0 && outValueLineList[0] != "" {
 				result = append(result, map[string]interface{}{
 					"uuid":      fmt.Sprintf("%s-gpu-%d", uuidValue, idx),
-					"info_uuid": "",
+					"info_uuid": "built_in_gpu",
 					"status":    1,
 					"data": map[string]interface{}{
 						"built_in_gpu_uuid":          outValueLineList[0],
@@ -270,7 +270,7 @@ func getMemory() (result []map[string]interface{}, err error) {
 		if memoryDevice.Size > 0 {
 			result = append(result, map[string]interface{}{
 				"uuid":      fmt.Sprintf("%s-memory-%d", uuidValue, idx),
-				"info_uuid": "",
+				"info_uuid": "built_in_memory",
 				"status":    1,
 				"data": map[string]interface{}{
 					"built_in_memory_sn":           memoryDevice.SerialNumber,
@@ -307,7 +307,7 @@ func getCPUInfo() (result []map[string]interface{}, err error) {
 	for idx, info := range cpuInfos {
 		result = append(result, map[string]interface{}{
 			"uuid":      fmt.Sprintf("%s-cpu-%d", uuidValue, idx),
-			"info_uuid": "",
+			"info_uuid": "built_in_cpu",
 			"status":    1,
 			"data": map[string]interface{}{
 				"built_in_cpu_vendor_id":   info.VendorID,   // CPU制造商
@@ -363,7 +363,7 @@ func getDiskInfo() (result []map[string]interface{}, err error) {
 		}
 		result = append(result, map[string]interface{}{
 			"uuid":      fmt.Sprintf("%s-disk-%d", uuidValue, idx),
-			"info_uuid": "",
+			"info_uuid": "built_in_disk",
 			"status":    1,
 			"data": map[string]interface{}{
 				"built_in_disk_device_name":  info.Device,                                 // 设备名称
@@ -407,7 +407,7 @@ func getNetInfo() (result []map[string]interface{}, err error) {
 		if len(ipaddress) > 0 && !strings.HasPrefix(ipAddressString, "10.") && !strings.HasPrefix(ipAddressString, "127.0.0.1") {
 			result = append(result, map[string]interface{}{
 				"uuid":      fmt.Sprintf("%s-net-%d", uuidValue, idx),
-				"info_uuid": "",
+				"info_uuid": "built_in_net",
 				"status":    0,
 				"data": map[string]interface{}{
 					"built_in_net_index": inter.Index,        // 索引
@@ -424,108 +424,109 @@ func getNetInfo() (result []map[string]interface{}, err error) {
 // 整合数据
 func IntegrateData() (dataString string, err error) {
 	var dataBytes []byte
-	//data := make(map[string]interface{})
 
-	//data["info"], _ = getHostInfo()
-	//data["gpu"], _ = getGPUInfo()
-	//data["memory"], _ = getMemory()
-	//data["cpu"], _ = getCPUInfo()
-	//data["disk"], _ = getDiskInfo()
-	//data["net"], _ = getNetInfo()
+	data := make(map[string]interface{})
 
-	data := map[string]interface{}{
-		"info": map[string]interface{}{
-			"uuid":      "d8205faa-a71e-480a-b852-6543c11bbdb6",
-			"info_uuid": "built_in_idc_host",
-			"status":    1,
-			"data": map[string]interface{}{
-				"built_in_hostname":              "test1", // 主机名
-				"built_in_host_platform":         "test2", // 系统
-				"built_in_host_platform_version": "test3", // 系统版本
-				"built_in_kernel_version":        "test3", // 内核版本
-				"built_in_kernel_arch":           "test3", // 处理器架构
-				"built_in_fan_count":             "test3", // 风扇数量
-				"built_in_ssh_port":              "test3", // sshd端口
-				"built_in_cpu_count":             "test3", // CPU物理个数
-				"built_in_cpu_core_count":        "test3", // CPU核数
-			},
-		},
-		"gpu": []map[string]interface{}{{
-			"uuid":      "d8205faa-a71e-480a-b852-6543c11bbdb62",
-			"info_uuid": "built_in_gpu",
-			"status":    1,
-			"data": map[string]interface{}{
-				"built_in_gpu_uuid":          "test1",
-				"built_in_gpu_name":          "test2",
-				"built_in_gpu_version":       "test3",
-				"built_in_performance_state": "test4",
-				"built_in_gpu_memory":        "test5",
-				"built_in_power_waste":       "test6",
-				"built_in_power_limit":       "test7",
-			},
-		}},
-		"memory": []map[string]interface{}{{
-			"uuid":      uuid.NewV4().String(),
-			"info_uuid": "built_in_memory",
-			"status":    1,
-			"data": map[string]interface{}{
-				"built_in_memory_sn":           "test1",
-				"built_in_memory_size":         "test2",
-				"built_in_memory_slot":         "test3",
-				"built_in_memory_type":         "test4",
-				"built_in_memory_manufacturer": "test5",
-			},
-		}},
-		"cpu": []map[string]interface{}{{
-			"uuid":      uuid.NewV4().String(),
-			"info_uuid": "built_in_cpu",
-			"status":    1,
-			"data": map[string]interface{}{
-				"built_in_cpu_vendor_id":   "test1", // CPU制造商
-				"built_in_cpu_family":      "test2", // 系列
-				"built_in_cpu_model":       "test3", // 其系列中的哪一代的代号
-				"built_in_cpu_physical_id": "test4", // 编号
-				"built_in_cpu_cores":       "test5", // 核心数
-				"built_in_cpu_model_name":  "test6", // 型号
-				"built_in_cpu_cache_size":  "test7", // 缓存大小
-			},
-		}},
-		"disk": []map[string]interface{}{{
-			"uuid":      uuid.NewV4().String(),
-			"info_uuid": "built_in_disk",
-			"status":    1,
-			"data": map[string]interface{}{
-				"built_in_disk_device_name":  "test1", // 设备名称
-				"built_in_disk_mount_point":  "test2", // 挂载地址
-				"built_in_disk_fstype":       "test3", // 文件系统
-				"built_in_disk_total_size":   "test4", // 磁盘总大小
-				"built_in_disk_free_size":    "test5", // 剩余磁盘大小
-				"built_in_disk_used_size":    "test6", // 已使用磁盘大小
-				"built_in_disk_used_percent": "test7", // 已使用磁盘大小占比
-			},
-		}},
-		"net": []map[string]interface{}{{
-			"uuid":      "d8205faa-a71e-480a-b852-6543c11bbdb63",
-			"info_uuid": "built_in_net",
-			"status":    1,
-			"data": map[string]interface{}{
-				"built_in_net_index": "test1", // 索引
-				"built_in_net_name":  "test2", // 网卡名称
-				"built_in_net_mac":   "test3", // mac地址
-				"built_in_net_ip":    "test4", // ip地址
-			},
-		}, {
-			"uuid":      "d8205faa-a71e-480a-b852-6543c11bbdb64",
-			"info_uuid": "built_in_net",
-			"status":    1,
-			"data": map[string]interface{}{
-				"built_in_net_index": "test11", // 索引
-				"built_in_net_name":  "test22", // 网卡名称
-				"built_in_net_mac":   "test33", // mac地址
-				"built_in_net_ip":    "test44", // ip地址
-			},
-		}},
-	}
+	data["info"], _ = getHostInfo()
+	data["gpu"], _ = getGPUInfo()
+	data["memory"], _ = getMemory()
+	data["cpu"], _ = getCPUInfo()
+	data["disk"], _ = getDiskInfo()
+	data["net"], _ = getNetInfo()
+
+	//data := map[string]interface{}{
+	//	"info": map[string]interface{}{
+	//		"uuid":      "d8205faa-a71e-480a-b852-6543c11bbdb6",
+	//		"info_uuid": "built_in_idc_host",
+	//		"status":    1,
+	//		"data": map[string]interface{}{
+	//			"built_in_hostname":              "test1", // 主机名
+	//			"built_in_host_platform":         "test2", // 系统
+	//			"built_in_host_platform_version": "test3", // 系统版本
+	//			"built_in_kernel_version":        "test3", // 内核版本
+	//			"built_in_kernel_arch":           "test3", // 处理器架构
+	//			"built_in_fan_count":             "test3", // 风扇数量
+	//			"built_in_ssh_port":              "test3", // sshd端口
+	//			"built_in_cpu_count":             "test3", // CPU物理个数
+	//			"built_in_cpu_core_count":        "test3", // CPU核数
+	//		},
+	//	},
+	//	"gpu": []map[string]interface{}{{
+	//		"uuid":      "d8205faa-a71e-480a-b852-6543c11bbdb62",
+	//		"info_uuid": "built_in_gpu",
+	//		"status":    1,
+	//		"data": map[string]interface{}{
+	//			"built_in_gpu_uuid":          "test1",
+	//			"built_in_gpu_name":          "test2",
+	//			"built_in_gpu_version":       "test3",
+	//			"built_in_performance_state": "test4",
+	//			"built_in_gpu_memory":        "test5",
+	//			"built_in_power_waste":       "test6",
+	//			"built_in_power_limit":       "test7",
+	//		},
+	//	}},
+	//	"memory": []map[string]interface{}{{
+	//		"uuid":      uuid.NewV4().String(),
+	//		"info_uuid": "built_in_memory",
+	//		"status":    1,
+	//		"data": map[string]interface{}{
+	//			"built_in_memory_sn":           "test1",
+	//			"built_in_memory_size":         "test2",
+	//			"built_in_memory_slot":         "test3",
+	//			"built_in_memory_type":         "test4",
+	//			"built_in_memory_manufacturer": "test5",
+	//		},
+	//	}},
+	//	"cpu": []map[string]interface{}{{
+	//		"uuid":      uuid.NewV4().String(),
+	//		"info_uuid": "built_in_cpu",
+	//		"status":    1,
+	//		"data": map[string]interface{}{
+	//			"built_in_cpu_vendor_id":   "test1", // CPU制造商
+	//			"built_in_cpu_family":      "test2", // 系列
+	//			"built_in_cpu_model":       "test3", // 其系列中的哪一代的代号
+	//			"built_in_cpu_physical_id": "test4", // 编号
+	//			"built_in_cpu_cores":       "test5", // 核心数
+	//			"built_in_cpu_model_name":  "test6", // 型号
+	//			"built_in_cpu_cache_size":  "test7", // 缓存大小
+	//		},
+	//	}},
+	//	"disk": []map[string]interface{}{{
+	//		"uuid":      uuid.NewV4().String(),
+	//		"info_uuid": "built_in_disk",
+	//		"status":    1,
+	//		"data": map[string]interface{}{
+	//			"built_in_disk_device_name":  "test1", // 设备名称
+	//			"built_in_disk_mount_point":  "test2", // 挂载地址
+	//			"built_in_disk_fstype":       "test3", // 文件系统
+	//			"built_in_disk_total_size":   "test4", // 磁盘总大小
+	//			"built_in_disk_free_size":    "test5", // 剩余磁盘大小
+	//			"built_in_disk_used_size":    "test6", // 已使用磁盘大小
+	//			"built_in_disk_used_percent": "test7", // 已使用磁盘大小占比
+	//		},
+	//	}},
+	//	"net": []map[string]interface{}{{
+	//		"uuid":      "d8205faa-a71e-480a-b852-6543c11bbdb63",
+	//		"info_uuid": "built_in_net",
+	//		"status":    1,
+	//		"data": map[string]interface{}{
+	//			"built_in_net_index": "test1", // 索引
+	//			"built_in_net_name":  "test2", // 网卡名称
+	//			"built_in_net_mac":   "test3", // mac地址
+	//			"built_in_net_ip":    "test4", // ip地址
+	//		},
+	//	}, {
+	//		"uuid":      "d8205faa-a71e-480a-b852-6543c11bbdb64",
+	//		"info_uuid": "built_in_net",
+	//		"status":    1,
+	//		"data": map[string]interface{}{
+	//			"built_in_net_index": "test11", // 索引
+	//			"built_in_net_name":  "test22", // 网卡名称
+	//			"built_in_net_mac":   "test33", // mac地址
+	//			"built_in_net_ip":    "test44", // ip地址
+	//		},
+	//	}},
+	//}
 
 	dataBytes, err = json.Marshal(data)
 	if err != nil {
