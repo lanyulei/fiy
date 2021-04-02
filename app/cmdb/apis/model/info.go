@@ -143,7 +143,11 @@ func GetRelatedModelFields(c *gin.Context) {
 	)
 
 	modelID = c.Param("id")
-	dataID = c.Param("data_id")
+	dataID = c.DefaultQuery("data_id", "")
+	if dataID == "" {
+		app.Error(c, -1, err, "data_id参数不能为空")
+		return
+	}
 
 	// 查询关联的模型ID
 	err = orm.Eloquent.Model(&model.InfoRelatedType{}).
