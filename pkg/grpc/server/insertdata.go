@@ -6,8 +6,7 @@ import (
 	"fiy/app/cmdb/models/resource"
 	orm "fiy/common/global"
 	"fiy/common/log"
-
-	"gorm.io/gorm/clause"
+	"reflect"
 )
 
 /*
@@ -121,8 +120,14 @@ func insertData(data string) (err error) {
 	var (
 		result          map[string]interface{}
 		hostInfo        resource.Data
-		dataList        []resource.Data
 		dataRelatedList []resource.DataRelated
+		hostInfoCount   int64
+		uuidList        []struct {
+			Uuid      string `json:"uuid"`
+			UuidCount int    `json:"uuid_count"`
+		}
+		insertDataList []resource.Data
+		updateDataList []resource.Data
 	)
 
 	result, err = formatData(data)
@@ -131,17 +136,37 @@ func insertData(data string) (err error) {
 		return
 	}
 
+	// 查询数据是否存在
+	err = orm.Eloquent.Model(&resource.Data{}).
+		Where("uuid = ?", result["info"].(*resource.Data).Uuid).
+		Count(&hostInfoCount).Error
+	if err != nil {
+		log.Error("查询主机信息失败，", err)
+		return
+	}
+
 	tx := orm.Eloquent.Begin()
 
-	err = tx.Model(&resource.Data{}).
-		Clauses(clause.OnConflict{
-			Columns:   []clause.Column{{Name: "uuid"}},
-			DoUpdates: clause.AssignmentColumns([]string{"info_id", "status", "data"}),
-		}).Create(result["info"].(*resource.Data)).Error
-	if err != nil {
-		tx.Rollback()
-		log.Error("同步数据失败，", err)
-		return
+	if hostInfoCount > 0 {
+		// update
+		err = tx.Model(&resource.Data{}).
+			Where("uuid = ?", result["info"].(*resource.Data).Uuid).
+			Updates(map[string]interface{}{
+				"data": result["info"].(*resource.Data).Data,
+			}).Error
+		if err != nil {
+			tx.Rollback()
+			log.Error("更新主机基础信息失败，", err)
+			return
+		}
+	} else {
+		// insert
+		err = tx.Create(result["info"].(*resource.Data)).Error
+		if err != nil {
+			tx.Rollback()
+			log.Error("新建主机基础信息失败，", err)
+			return
+		}
 	}
 
 	// 查询ID
@@ -158,57 +183,97 @@ func insertData(data string) (err error) {
 		hostInfo = *result["info"].(*resource.Data)
 	}
 
+	dataUuids := make([]string, 0)
 	for k, d := range result {
 		if k != "info" {
+			for _, z := range *d.(*[]resource.Data) {
+				dataUuids = append(dataUuids, z.Uuid)
+			}
+
+			// 验证uuid是否存在
 			err = tx.Model(&resource.Data{}).
-				Clauses(clause.OnConflict{
-					Columns:   []clause.Column{{Name: "uuid"}},
-					DoUpdates: clause.AssignmentColumns([]string{"info_id", "status", "data"}),
-				}).Create(d).Error
+				Where("uuid in ?", dataUuids).
+				Select("uuid, count(uuid) as uuid_count").
+				Group("uuid").
+				Find(&uuidList).Error
 			if err != nil {
+				log.Error("UUID数据统计失败，", err)
 				tx.Rollback()
-				log.Error("同步数据失败，", err)
 				return
 			}
 
-			dataUuids := make([]string, 0)
-			for _, z := range *d.(*[]resource.Data) {
-				if z.Id == 0 {
-					dataUuids = append(dataUuids, z.Uuid)
-				} else {
-					dataRelatedList = append(dataRelatedList, resource.DataRelated{
-						Source:       hostInfo.Id,
-						Target:       z.Id,
-						SourceInfoId: hostInfo.InfoId,
-						TargetInfoId: z.InfoId,
-					})
+			uuidMap := make(map[string]interface{})
+			for _, u := range uuidList {
+				if u.UuidCount > 0 {
+					uuidMap[u.Uuid] = u.UuidCount
 				}
 			}
-			err = orm.Eloquent.Where("uuid in ?", dataUuids).Find(&dataList).Error
-			if err != nil {
-				log.Error("查询数据列表失败，", err)
-				tx.Rollback()
-				return
-			}
 
-			for _, z := range dataList {
-				dataRelatedList = append(dataRelatedList, resource.DataRelated{
-					Source:       hostInfo.Id,
-					Target:       z.Id,
-					SourceInfoId: hostInfo.InfoId,
-					TargetInfoId: z.InfoId,
-				})
+			for _, t := range *d.(*[]resource.Data) {
+				if _, ok := uuidMap[t.Uuid]; ok {
+					// update
+					updateDataList = append(updateDataList, t)
+				} else {
+					// insert
+					insertDataList = append(insertDataList, t)
+				}
 			}
 		}
 	}
-	if len(dataRelatedList) > 0 {
-		err = tx.Clauses(clause.OnConflict{
-			Columns:   []clause.Column{{Name: "source"}, {Name: "target"}},
-			DoUpdates: clause.AssignmentColumns([]string{"source", "target", "source_info_id", "target_info_id"}),
-		}).Create(&dataRelatedList).Error
+
+	// insert
+	if len(insertDataList) > 0 {
+		err = tx.Create(&insertDataList).Error
 		if err != nil {
-			log.Error("创建数据关联失败")
+			log.Error("插入数据失败，", err)
 			tx.Rollback()
+			return
+		}
+	}
+
+	// update
+	for _, d := range updateDataList {
+		// 查询数据，判断数据是否有变更
+		var tmpData resource.Data
+		err = tx.Model(&tmpData).Where("uuid = ?", d.Uuid).Find(&tmpData).Error
+		if err != nil {
+			log.Error("查询数据失败，", err)
+			tx.Rollback()
+			return
+		}
+
+		var (
+			oldMapData map[string]interface{}
+			newMapData map[string]interface{}
+		)
+
+		_ = json.Unmarshal(tmpData.Data, &oldMapData)
+		_ = json.Unmarshal(d.Data, &newMapData)
+
+		if !reflect.DeepEqual(oldMapData, newMapData) {
+			err = tx.Model(&resource.Data{}).Where("uuid = ?", d.Uuid).Update("data", d.Data).Error
+			if err != nil {
+				log.Error("更新数据失败", err)
+				tx.Rollback()
+				return
+			}
+		}
+	}
+
+	for _, i := range insertDataList {
+		dataRelatedList = append(dataRelatedList, resource.DataRelated{
+			Source:       hostInfo.Id,
+			Target:       i.Id,
+			SourceInfoId: hostInfo.InfoId,
+			TargetInfoId: i.InfoId,
+		})
+	}
+
+	if len(dataRelatedList) > 0 {
+		err = tx.Create(&dataRelatedList).Error
+		if err != nil {
+			tx.Rollback()
+			log.Error("创建数据关联失败，", err)
 			return
 		}
 	}

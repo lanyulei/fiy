@@ -13,7 +13,7 @@ import (
   @Author : lanyulei
 */
 
-func RunClient(address string, interval int) {
+func (r *rpcClient) RunClient(address string, interval int) {
 	// 定时收集上报数据，每隔5分钟上报一次数据
 	td := time.Duration(interval) * time.Minute
 	t := time.NewTicker(td)
@@ -36,7 +36,7 @@ func RunClient(address string, interval int) {
 
 			// Contact the server and print out its response.
 			log.Info("开始收集资源数据...")
-			data, err := IntegrateData()
+			data, err := r.IntegrateData()
 			if err != nil {
 				return
 			}
@@ -46,7 +46,7 @@ func RunClient(address string, interval int) {
 			log.Info("开始上报资源数据...")
 			_, err = c.GetHostInfo(ctx, &pb.HostInfoRequest{Data: data})
 			if err != nil {
-				log.Fatalf("收集资源数据失败: %v", err)
+				log.Fatalf("开始上报资源数据: %v", err)
 				return
 			}
 		}()

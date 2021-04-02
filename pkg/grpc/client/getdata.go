@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"encoding/json"
 	"fiy/common/log"
+	"fiy/tools"
 	"fmt"
 	"io"
 	"io/ioutil"
@@ -24,8 +25,18 @@ import (
   @Author : lanyulei
 */
 
+type rpcClient struct {
+	UUIDPath string
+}
+
+func NewRpcClient(uuidString string) *rpcClient {
+	return &rpcClient{
+		UUIDPath: uuidString,
+	}
+}
+
 // 执行命令
-func runCommand(timeout int, command string, args ...string) (out string, err error) {
+func (r *rpcClient) runCommand(timeout int, command string, args ...string) (out string, err error) {
 	var (
 		stdout io.ReadCloser
 	)
@@ -74,23 +85,23 @@ func runCommand(timeout int, command string, args ...string) (out string, err er
 }
 
 // 获取uuid
-func getUUID() (uuidString string, err error) {
+func (r *rpcClient) getUUID() (uuidString string, err error) {
 	var (
 		content []byte
 		file    *os.File
 	)
 
-	_, err = os.Stat("./.uuid") //os.Stat获取文件信息
+	_, err = os.Stat(r.UUIDPath) //os.Stat获取文件信息
 	if err != nil {
 		if !os.IsExist(err) {
 			// 文件不存在
-			file, err = os.Create("./.uuid")
+			file, err = os.Create(r.UUIDPath)
 			if err != nil {
 				fmt.Println("错误，", err)
 				return
 			}
 			defer file.Close()
-			err = ioutil.WriteFile("./.uuid", []byte(uuid.NewV4().String()), 0666)
+			err = ioutil.WriteFile(r.UUIDPath, []byte(tools.Strip(uuid.NewV4().String())), 0666)
 			if err != nil {
 				fmt.Println("错误，", err)
 				return
@@ -99,17 +110,17 @@ func getUUID() (uuidString string, err error) {
 	}
 
 	// err == nil 文件存在
-	content, err = ioutil.ReadFile("./.uuid")
+	content, err = ioutil.ReadFile(r.UUIDPath)
 	if err != nil {
 		fmt.Println("错误，", err)
 		return
 	}
-	uuidString = string(content)
+	uuidString = tools.Strip(string(content))
 	return
 }
 
 // 获取系统相关信息
-func getHostInfo() (result map[string]interface{}, err error) {
+func (r *rpcClient) getHostInfo() (result map[string]interface{}, err error) {
 	var (
 		out              []byte
 		fanCount         string
@@ -172,7 +183,7 @@ func getHostInfo() (result map[string]interface{}, err error) {
 		cpuCoreCount = string(out)
 	}
 
-	uuidValue, err = getUUID()
+	uuidValue, err = r.getUUID()
 	if err != nil {
 		log.Error("获取UUID失败，", err)
 		return
@@ -199,15 +210,15 @@ func getHostInfo() (result map[string]interface{}, err error) {
 }
 
 // 获取GPU相关信息
-func getGPUInfo() (result []map[string]interface{}, err error) {
+func (r *rpcClient) getGPUInfo() (result []map[string]interface{}, err error) {
 	var uuidValue string
-	uuidValue, err = getUUID()
+	uuidValue, err = r.getUUID()
 	if err != nil {
 		log.Error("获取UUID失败，", err)
 		return
 	}
 
-	s, err := runCommand(3, "bash",
+	s, err := r.runCommand(3, "bash",
 		"-c",
 		"nvidia-smi --query-gpu=uuid,gpu_name,driver_version,pstate,memory.total,power.draw,power.limit --format=csv")
 	if err != nil {
@@ -242,13 +253,13 @@ func getGPUInfo() (result []map[string]interface{}, err error) {
 }
 
 // 获取内存相关信息
-func getMemory() (result []map[string]interface{}, err error) {
+func (r *rpcClient) getMemory() (result []map[string]interface{}, err error) {
 	var (
 		dmi       *dmidecode.Decoder
 		uuidValue string
 	)
 
-	uuidValue, err = getUUID()
+	uuidValue, err = r.getUUID()
 	if err != nil {
 		log.Error("获取UUID失败，", err)
 		return
@@ -287,13 +298,13 @@ func getMemory() (result []map[string]interface{}, err error) {
 }
 
 // 获取CPU相关信息
-func getCPUInfo() (result []map[string]interface{}, err error) {
+func (r *rpcClient) getCPUInfo() (result []map[string]interface{}, err error) {
 	var (
 		cpuInfos  []cpu.InfoStat
 		uuidValue string
 	)
 
-	uuidValue, err = getUUID()
+	uuidValue, err = r.getUUID()
 	if err != nil {
 		log.Error("获取UUID失败，", err)
 		return
@@ -325,14 +336,14 @@ func getCPUInfo() (result []map[string]interface{}, err error) {
 }
 
 // 获取磁盘相关信息
-func getDiskInfo() (result []map[string]interface{}, err error) {
+func (r *rpcClient) getDiskInfo() (result []map[string]interface{}, err error) {
 	var (
 		infos     []disk.PartitionStat
 		diskInfo  *disk.UsageStat
 		uuidValue string
 	)
 
-	uuidValue, err = getUUID()
+	uuidValue, err = r.getUUID()
 	if err != nil {
 		log.Error("获取UUID失败，", err)
 		return
@@ -381,12 +392,12 @@ func getDiskInfo() (result []map[string]interface{}, err error) {
 }
 
 // 获取网卡信息
-func getNetInfo() (result []map[string]interface{}, err error) {
+func (r *rpcClient) getNetInfo() (result []map[string]interface{}, err error) {
 	var (
 		interfaces []net.InterfaceStat
 		uuidValue  string
 	)
-	uuidValue, err = getUUID()
+	uuidValue, err = r.getUUID()
 	if err != nil {
 		log.Error("获取UUID失败，", err)
 		return
@@ -422,17 +433,17 @@ func getNetInfo() (result []map[string]interface{}, err error) {
 }
 
 // 整合数据
-func IntegrateData() (dataString string, err error) {
+func (r *rpcClient) IntegrateData() (dataString string, err error) {
 	var dataBytes []byte
 
 	data := make(map[string]interface{})
 
-	data["info"], _ = getHostInfo()
-	data["gpu"], _ = getGPUInfo()
-	data["memory"], _ = getMemory()
-	data["cpu"], _ = getCPUInfo()
-	data["disk"], _ = getDiskInfo()
-	data["net"], _ = getNetInfo()
+	data["info"], _ = r.getHostInfo()
+	data["gpu"], _ = r.getGPUInfo()
+	data["memory"], _ = r.getMemory()
+	data["cpu"], _ = r.getCPUInfo()
+	data["disk"], _ = r.getDiskInfo()
+	data["net"], _ = r.getNetInfo()
 
 	//data := map[string]interface{}{
 	//	"info": map[string]interface{}{
