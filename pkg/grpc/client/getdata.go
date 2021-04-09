@@ -29,9 +29,9 @@ type rpcClient struct {
 	UUIDPath string
 }
 
-func NewRpcClient(uuidString string) *rpcClient {
+func NewRpcClient(uuidPath string) *rpcClient {
 	return &rpcClient{
-		UUIDPath: uuidString,
+		UUIDPath: uuidPath,
 	}
 }
 
