@@ -27,6 +27,14 @@ func CreateModelField(c *gin.Context) {
 		return
 	}
 
+	if fieldValue.Identifies == "id" ||
+		fieldValue.Identifies == "uuid" ||
+		fieldValue.Identifies == "info_id" ||
+		fieldValue.Identifies == "related_id" {
+		app.Error(c, -1, err, "id、info_id、uuid 和 related_id 是预留的字段标识，请选择其他的字段标识")
+		return
+	}
+
 	tx := orm.Eloquent.Begin()
 
 	// 创建字段

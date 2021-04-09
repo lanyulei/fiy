@@ -15,6 +15,7 @@ import (
 var (
 	server   string
 	interval int
+	uuidPath string
 	StartCmd = &cobra.Command{
 		Use:          "agent",
 		Short:        "Start agent",
@@ -32,6 +33,7 @@ var (
 func init() {
 	StartCmd.PersistentFlags().StringVarP(&server, "server", "s", "localhost:50051", "Server address, example: localhost:50051")
 	StartCmd.PersistentFlags().IntVarP(&interval, "interval", "i", 5, "Resource reporting interval, unit: minutes, default: 5 minutes")
+	StartCmd.PersistentFlags().StringVarP(&uuidPath, "uuid", "u", "/opt/universe/.uuid", "UUID file path，default: /opt/universe/.uuid")
 }
 
 func setup() {
@@ -45,7 +47,8 @@ func run() (err error) {
 	fmt.Printf("-  Server: %s/ \r\n", server)
 	fmt.Printf("%s Enter Control + C Shutdown Agent \r\n", tools.GetCurrentTimeStr())
 
-	client.RunClient(server, interval)
+	r := client.NewRpcClient(uuidPath)
+	r.RunClient(server, interval)
 
 	return nil
 }

@@ -50,3 +50,21 @@ func DataRelated(c *gin.Context) {
 
 	app.OK(c, "", "")
 }
+
+// 删除资产关联
+func DeleteDataRelated(c *gin.Context) {
+	var (
+		err       error
+		relatedID string
+	)
+
+	relatedID = c.Param("id")
+
+	err = orm.Eloquent.Delete(&resource.DataRelated{}, relatedID).Error
+	if err != nil {
+		app.Error(c, -1, err, "删除数据关联失败")
+		return
+	}
+
+	app.OK(c, "", "")
+}

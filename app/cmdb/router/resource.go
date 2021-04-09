@@ -33,5 +33,7 @@ func RegisterCmdbResourceRouter(v1 *gin.RouterGroup, authMiddleware *jwt.GinJWTM
 
 		r.POST("/data-related", resource.DataRelated)        // 添加数据关联
 		r.GET("/node-model-data", resource.GetNodeModelData) // 查询节点对应的数据
+
+		r.DELETE("/delete-data-related/:id", resource.DeleteDataRelated) // 删除资源关联
 	}
 }

@@ -1,14 +1,13 @@
 package model
 
 import (
+	"encoding/json"
 	"fiy/app/cmdb/models/model"
 	"fiy/app/cmdb/models/resource"
 	"fiy/common/actions"
 	orm "fiy/common/global"
 	"fiy/tools/app"
 	"fmt"
-
-	"gorm.io/datatypes"
 
 	"github.com/gin-gonic/gin"
 )
@@ -143,7 +142,11 @@ func GetRelatedModelFields(c *gin.Context) {
 	)
 
 	modelID = c.Param("id")
-	dataID = c.Param("data_id")
+	dataID = c.DefaultQuery("data_id", "")
+	if dataID == "" {
+		app.Error(c, -1, nil, "参数data_id不能为空")
+		return
+	}
 
 	// 查询关联的模型ID
 	err = orm.Eloquent.Model(&model.InfoRelatedType{}).
@@ -174,23 +177,34 @@ func GetRelatedModelFields(c *gin.Context) {
 			return
 		}
 
-		// 查询关联的数据ID
-		dataIDs := make([]int, 0)
+		var (
+			datas []struct {
+				resource.Data
+				RelatedID int `json:"related_id"`
+			}
+		)
+		dataList := make([]map[string]interface{}, 0)
 		err = orm.Eloquent.Model(&resource.DataRelated{}).
-			Where("source = ? and target_info_id = ?", dataID, f.Id).
-			Pluck("target", &dataIDs).Error
+			Joins("left join cmdb_resource_data as d on cmdb_resource_data_related.target = d.id").
+			Select("d.*, cmdb_resource_data_related.id as related_id").
+			Where("cmdb_resource_data_related.source = ? and cmdb_resource_data_related.target_info_id = ?", dataID, f.Id).
+			Find(&datas).Error
 		if err != nil {
 			app.Error(c, -1, err, "查询关联数据ID失败")
 			return
 		}
 
-		var dataList []datatypes.JSON
-		err = orm.Eloquent.Model(&resource.Data{}).
-			Where("id in ?", dataIDs).
-			Pluck("data", &dataList).Error
-		if err != nil {
-			app.Error(c, -1, err, "查询关联数据失败")
-			return
+		for _, d := range datas {
+			var dataJsonMap map[string]interface{}
+			err = json.Unmarshal(d.Data.Data, &dataJsonMap)
+			if err != nil {
+				app.Error(c, -1, err, "反序列化失败")
+				return
+			}
+			dataJsonMap["id"] = d.Id                // 数据ID
+			dataJsonMap["info_id"] = d.InfoId       // 模型ID
+			dataJsonMap["related_id"] = d.RelatedID // 关联ID
+			dataList = append(dataList, dataJsonMap)
 		}
 
 		dataMap[f.Identifies] = dataList
