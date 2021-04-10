@@ -8,8 +8,9 @@ import (
 	"fiy/common/pagination"
 	"fiy/tools/app"
 	"fmt"
-	uuid "github.com/satori/go.uuid"
 	"strconv"
+
+	uuid "github.com/satori/go.uuid"
 
 	"github.com/gin-gonic/gin"
 )
@@ -102,7 +103,7 @@ func CreateData(c *gin.Context) {
 		"资源",
 		"资源数据",
 		"新建",
-		fmt.Sprintf("新建资源数据 <%d>", data.Id),
+		fmt.Sprintf("新建资源数据 \"%d\"", data.Id),
 		map[string]interface{}{},
 		data)
 	if err != nil {

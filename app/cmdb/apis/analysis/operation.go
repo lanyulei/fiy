@@ -22,9 +22,6 @@ func Operation(c *gin.Context) {
 		modelCount      int64
 		clusterTplCount int64
 		svcTplCount     int64
-		//resources       []map[string]interface{}
-		//clouds          []map[string]interface{}
-		//operation       []analysis.Audit
 	)
 
 	// 业务总数
@@ -58,10 +55,14 @@ func Operation(c *gin.Context) {
 		return
 	}
 
-	app.OK(c, map[string]interface{}{
+	result := map[string]interface{}{
 		"biz_count":         bizCount,
 		"model_count":       modelCount,
 		"cluster_tpl_count": clusterTplCount,
 		"svc_tpl_count":     svcTplCount,
-	}, "")
+	}
+
+	// 所有模型的资源统计
+
+	app.OK(c, result, "")
 }
