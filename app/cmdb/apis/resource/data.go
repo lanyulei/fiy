@@ -10,6 +10,8 @@ import (
 	"fmt"
 	"strconv"
 
+	"gorm.io/datatypes"
+
 	uuid "github.com/satori/go.uuid"
 
 	"github.com/gin-gonic/gin"
@@ -353,4 +355,40 @@ func GetNodeModelData(c *gin.Context) {
 	}
 
 	app.OK(c, modelList, "")
+}
+
+// 导出数据
+func ExportData(c *gin.Context) {
+	var (
+		err       error
+		infoID    string
+		fields    []model.Fields
+		tHeader   []string
+		filterVal []string
+		dataList  []datatypes.JSON
+	)
+
+	infoID = c.Param("id")
+	err = orm.Eloquent.Model(&model.Fields{}).Where("info_id = ?", infoID).Find(&fields).Error
+	if err != nil {
+		app.Error(c, -1, err, "查询表头失败")
+		return
+	}
+
+	for _, f := range fields {
+		tHeader = append(tHeader, f.Name)
+		filterVal = append(filterVal, f.Identifies)
+	}
+
+	err = orm.Eloquent.Model(&resource.Data{}).Where("info_id = ?", infoID).Pluck("data", &dataList).Error
+	if err != nil {
+		app.Error(c, -1, err, "查询表头标识失败")
+		return
+	}
+
+	app.OK(c, map[string]interface{}{
+		"tHeader":   tHeader,
+		"filterVal": filterVal,
+		"dataList":  dataList,
+	}, "")
 }
