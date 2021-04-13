@@ -36,5 +36,7 @@ func RegisterCmdbResourceRouter(v1 *gin.RouterGroup, authMiddleware *jwt.GinJWTM
 
 		r.DELETE("/delete-data-related/:id", resource.DeleteDataRelated) // 删除资源关联
 		r.GET("/export-data/:id", resource.ExportData)                   // 导出资源
+		r.POST("/import-data/:id", resource.ImportData)                  // 导入资源
+
 	}
 }

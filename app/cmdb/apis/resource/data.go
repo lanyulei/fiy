@@ -1,6 +1,7 @@
 package resource
 
 import (
+	"errors"
 	"fiy/app/cmdb/models/model"
 	"fiy/app/cmdb/models/resource"
 	"fiy/common/actions"
@@ -8,6 +9,8 @@ import (
 	"fiy/common/pagination"
 	"fiy/tools/app"
 	"fmt"
+	"io/ioutil"
+	"mime/multipart"
 	"strconv"
 
 	"gorm.io/datatypes"
@@ -391,4 +394,23 @@ func ExportData(c *gin.Context) {
 		"filterVal": filterVal,
 		"dataList":  dataList,
 	}, "")
+}
+
+// 导入数据
+func ImportData(c *gin.Context) {
+	var (
+		file multipart.File
+	)
+	_, _ = c.GetPostForm("status")
+
+	files, err := c.FormFile("file")
+	if err != nil {
+		app.Error(c, 200, errors.New(""), "图片不能为空")
+		return
+	}
+	file, _ = files.Open()
+	content, err := ioutil.ReadAll(file)
+	fmt.Println(content)
+
+	app.OK(c, "", "")
 }
