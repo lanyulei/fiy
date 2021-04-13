@@ -1,7 +1,6 @@
 package resource
 
 import (
-	"errors"
 	"fiy/app/cmdb/models/model"
 	"fiy/app/cmdb/models/resource"
 	"fiy/common/actions"
@@ -9,8 +8,6 @@ import (
 	"fiy/common/pagination"
 	"fiy/tools/app"
 	"fmt"
-	"io/ioutil"
-	"mime/multipart"
 	"strconv"
 
 	"gorm.io/datatypes"
@@ -111,6 +108,52 @@ func CreateData(c *gin.Context) {
 		fmt.Sprintf("新建资源数据 \"%d\"", data.Id),
 		map[string]interface{}{},
 		data)
+	if err != nil {
+		tx.Rollback()
+		app.Error(c, -1, err, "添加操作审计失败")
+		return
+	}
+
+	tx.Commit()
+
+	app.OK(c, nil, "")
+}
+
+// 批量新建数据
+func BatchCreateData(c *gin.Context) {
+	var (
+		err  error
+		data []*resource.Data
+	)
+
+	err = c.ShouldBind(&data)
+	if err != nil {
+		app.Error(c, -1, err, "参数绑定失败")
+		return
+	}
+
+	for _, d := range data {
+		d.Uuid = uuid.NewV4().String()
+	}
+
+	tx := orm.Eloquent.Begin()
+
+	err = tx.Create(&data).Error
+	if err != nil {
+		tx.Rollback()
+		app.Error(c, -1, err, "批量新建资源数据失败")
+		return
+	}
+
+	// 添加操作审计
+	err = actions.AddAudit(c,
+		tx,
+		"资源",
+		"资源数据",
+		"新建",
+		fmt.Sprintf("批量新建资源数据"),
+		map[string]interface{}{},
+		nil)
 	if err != nil {
 		tx.Rollback()
 		app.Error(c, -1, err, "添加操作审计失败")
@@ -394,23 +437,4 @@ func ExportData(c *gin.Context) {
 		"filterVal": filterVal,
 		"dataList":  dataList,
 	}, "")
-}
-
-// 导入数据
-func ImportData(c *gin.Context) {
-	var (
-		file multipart.File
-	)
-	_, _ = c.GetPostForm("status")
-
-	files, err := c.FormFile("file")
-	if err != nil {
-		app.Error(c, 200, errors.New(""), "图片不能为空")
-		return
-	}
-	file, _ = files.Open()
-	content, err := ioutil.ReadAll(file)
-	fmt.Println(content)
-
-	app.OK(c, "", "")
 }

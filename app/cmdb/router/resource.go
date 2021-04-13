@@ -16,6 +16,7 @@ func RegisterCmdbResourceRouter(v1 *gin.RouterGroup, authMiddleware *jwt.GinJWTM
 	r := v1.Group("/cmdb/resource").Use(authMiddleware.MiddlewareFunc()).Use(middleware.AuthCheckRole())
 	{
 		r.POST("", resource.CreateData)               // 新建资源数据
+		r.POST("/batch", resource.BatchCreateData)    // 批量新建资源数据
 		r.GET("/data/:id", resource.DataList)         // 资源数据列表
 		r.DELETE("/data/:id", resource.DeleteData)    // 删除资源数据
 		r.PUT("/data/:id", resource.EditData)         // 编辑资源数据
@@ -36,7 +37,5 @@ func RegisterCmdbResourceRouter(v1 *gin.RouterGroup, authMiddleware *jwt.GinJWTM
 
 		r.DELETE("/delete-data-related/:id", resource.DeleteDataRelated) // 删除资源关联
 		r.GET("/export-data/:id", resource.ExportData)                   // 导出资源
-		r.POST("/import-data/:id", resource.ImportData)                  // 导入资源
-
 	}
 }
