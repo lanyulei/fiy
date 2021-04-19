@@ -164,6 +164,12 @@ INSERT INTO sys_menu VALUES (507, 'ModelConfigurationFields', '模型字段', 'g
 INSERT INTO sys_menu VALUES (508, 'ResourceList', '资源列表', 'guide', '/cmdb/resource/:classify/list', '/0/484/494/508', 'C', '', '', 494, 0, '', '/cmdb/resource/list', 11, '1', '1', '1', '1', '2021-01-31 01:51:45', '2021-03-28 21:18:54', null);
 INSERT INTO sys_menu VALUES (509, 'ResourceDetails', '资源详情', 'guide', '/cmdb/resource/details', '/0/484/494/509', 'C', '', '', 494, 0, '', '/cmdb/resource/details', 12, '1', '1', '1', '1', '2021-02-05 13:04:12', '2021-03-28 21:15:14', null);
 INSERT INTO sys_menu VALUES (510, 'BusinessSvcTplManager', '服务模板管理', 'guide', '/cmdb/business/svc-tpl-manager', '/0/484/486/510', 'C', '', '', 486, 0, '', '/cmdb/business/service-template-manager', 11, '1', '1', '1', '1', '2021-02-11 22:59:43', '2021-02-11 22:59:49', null);
+INSERT INTO sys_menu VALUES (511, 'K8s', '集群管理', 'tree-table', '/k8s', '/0/511', 'M', '', '', 0, 0, '', 'Layout', 2, '0', '1', '1', '1', '2021-04-19 23:41:30', '2021-04-20 00:23:26', null);
+INSERT INTO sys_menu VALUES (512, 'K8sProject', '项目管理', 'list', '/k8s/project/index', '/0/511/512', 'C', '', '', 511, 0, '', '/k8s/project/index', 0, '0', '1', '1', '1', '2021-04-20 00:03:33', '2021-04-20 00:18:05', null);
+INSERT INTO sys_menu VALUES (513, 'K8sVersion', '版本管理', 'education', '/k8s/version/index', '/0/511/513', 'C', '', '', 511, 0, '', '/k8s/version/index', 1, '0', '1', '1', '1', '2021-04-20 00:07:26', '2021-04-20 00:18:40', null);
+INSERT INTO sys_menu VALUES (514, 'K8sSystemSettings', '系统设置', 'system', '/k8s/settings/index', '/0/511/514', 'C', '', '', 511, 0, '', '/k8s/settings/index', 2, '0', '1', '1', '1', '2021-04-20 00:12:35', '2021-04-20 00:18:51', null);
+INSERT INTO sys_menu VALUES (515, 'K8sProjectCluster', '集群管理', 'network', '/k8s/project/cluster/index', '/0/511/512/515', 'C', '', '', 512, 0, '', '/k8s/project/cluster/index', 0, '1', '1', '1', '1', '2021-04-20 00:15:31', '2021-04-20 00:18:18', null);
+INSERT INTO sys_menu VALUES (516, 'K8sProjectClusterDetails', '集群详情', 'log', '/k8s/project/cluster/info', '/0/511/512/516', 'C', '', '', 512, 0, '', '/k8s/project/cluster/info', 1, '1', '1', '1', '1', '2021-04-20 00:16:57', '2021-04-20 00:18:29', null);
 COMMIT;
 
 -- 数据完成 ;
