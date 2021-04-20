@@ -1,6 +1,6 @@
 -- 开始初始化数据 ;
 BEGIN;
-INSERT INTO sys_menu VALUES (2, 'Upms', '系统管理', 'example', '/upms', '/0/2', 'M', '无', '', 0, 1, '', 'Layout', 2, '0', '1', '1', '0', '2020-04-11 15:52:48', '2021-01-15 11:51:13', null);
+INSERT INTO sys_menu VALUES (2, 'Upms', '系统管理', 'example', '/upms', '/0/2', 'M', '无', '', 0, 1, '', 'Layout', 5, '0', '1', '1', '0', '2020-04-11 15:52:48', '2021-01-15 11:51:13', null);
 INSERT INTO sys_menu VALUES (3, 'Sysuser', '用户管理', 'user', 'sysuser', '/0/2/3', 'C', '无', 'system:sysuser:list', 2, null, null, '/sysuser/index', 1, '0', '1', '1', '0', '2020-04-11 15:52:48', '2020-04-12 11:10:42', null);
 INSERT INTO sys_menu VALUES (43, '', '新增用户', '', '/api/v1/sysuser', '/0/2/3/43', 'F', 'POST', 'system:sysuser:add', 3, null, null, null, 0, '0', '1', '1', '0', '2020-04-11 15:52:48', null, null);
 INSERT INTO sys_menu VALUES (44, '', '查询用户', '', '/api/v1/sysuser', '/0/2/3/44', 'F', 'GET', 'system:sysuser:query', 3, null, null, null, 0, '0', '1', '1', '0', '2020-04-11 15:52:48', null, null);
@@ -12,7 +12,7 @@ INSERT INTO sys_menu VALUES (56, 'Dept', '部门管理', 'tree', 'dept', '/0/2/5
 INSERT INTO sys_menu VALUES (57, 'post', '岗位管理', 'pass', 'post', '/0/2/57', 'C', '无', 'system:syspost:list', 2, 0, '', '/post/index', 5, '0', '1', '1', '0', '2020-04-11 15:52:48', '2020-04-12 11:16:53', null);
 INSERT INTO sys_menu VALUES (58, 'Dict', '字典管理', 'education', 'dict', '/0/2/58', 'C', '无', 'system:sysdicttype:list', 2, 0, '', '/dict/index', 6, '0', '1', '1', '0', '2020-04-11 15:52:48', '2020-04-12 11:17:04', null);
 INSERT INTO sys_menu VALUES (59, 'DictData', '字典数据', 'education', 'dict/data/:dictId', '/0/2/59', 'C', '无', 'system:sysdictdata:list', 2, 0, '', '/dict/data', 100, '1', '1', '1', '0', '2020-04-11 15:52:48', '2020-04-12 11:17:25', null);
-INSERT INTO sys_menu VALUES (60, 'Tools', '系统工具', 'component', '/tools', '/0/60', 'M', '无', '', 0, 0, '', 'Layout', 3, '0', '1', '1', '0', '2020-04-11 15:52:48', null, null);
+INSERT INTO sys_menu VALUES (60, 'Tools', '系统工具', 'component', '/tools', '/0/60', 'M', '无', '', 0, 0, '', 'Layout', 10, '0', '1', '1', '0', '2020-04-11 15:52:48', null, null);
 INSERT INTO sys_menu VALUES (61, 'Swagger', '系统接口', 'guide', 'swagger', '/0/60/61', 'C', '无', '', 60, 0, '', '/tools/swagger/index', 1, '0', '1', '1', '0', '2020-04-11 15:52:48', null, null);
 INSERT INTO sys_menu VALUES (62, 'Config', '参数设置', 'list', '/config', '/0/2/62', 'C', '无', 'system:sysconfig:list', 2, 0, '', '/config/index', 7, '0', '1', '1', '0', '2020-04-11 15:52:48', '2020-04-12 11:17:16', null);
 INSERT INTO sys_menu VALUES (63, '', '接口权限', 'bug', '', '/0/63', 'M', '', '', 0, 0, '', '', 99, '1', '1', '1', '0', '2020-04-11 15:52:48', '2020-04-12 16:39:32', null);
