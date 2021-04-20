@@ -3,6 +3,7 @@ package router
 import (
 	adminRouter "fiy/app/admin/router"
 	cmdbRouter "fiy/app/cmdb/router"
+	k8sRouter "fiy/app/k8s/router"
 	"mime"
 
 	"fiy/app/admin/apis/monitor"
@@ -121,4 +122,7 @@ func sysCheckRoleRouterInit(r *gin.RouterGroup, authMiddleware *jwt.GinJWTMiddle
 	cmdbRouter.RegisterCmdbResourceRouter(v1, authMiddleware)
 	cmdbRouter.RegisterCmdbBusinessRouter(v1, authMiddleware)
 	cmdbRouter.RegisterCmdbAnalysisRouter(v1, authMiddleware)
+
+	// cluster
+	k8sRouter.RegisterK8sProjectRouter(v1, authMiddleware)
 }
