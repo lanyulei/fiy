@@ -1,6 +1,7 @@
 package resource
 
 import (
+	"encoding/json"
 	"fiy/app/cmdb/models/model"
 	"fiy/app/cmdb/models/resource"
 	"fiy/common/actions"
@@ -9,6 +10,7 @@ import (
 	"fiy/tools/app"
 	"fmt"
 	"strconv"
+	"strings"
 
 	"gorm.io/datatypes"
 
@@ -24,29 +26,52 @@ import (
 // 获取数据列表
 func DataList(c *gin.Context) {
 	var (
-		err        error
-		dataList   []*resource.Data
-		result     interface{}
-		modelID    string
-		value      string
-		identifies string
-		status     string
-		nodeID     string
-		dataIDs    []int
+		err             error
+		dataList        []*resource.Data
+		result          interface{}
+		modelID         string
+		searchType      string
+		searchClassify  string
+		searchString    string
+		searchList      []map[string]interface{}
+		status          string
+		nodeID          string
+		dataIDs         []int
+		searchWhereList []string
 	)
 
 	modelID = c.Param("id")
 
 	db := orm.Eloquent.Model(&resource.Data{}).Where("info_id = ?", modelID)
 
-	value = c.DefaultQuery("value", "")
-	identifies = c.DefaultQuery("identifies", "")
+	searchType = c.DefaultQuery("search_type", "")
+	searchClassify = c.DefaultQuery("search_classiy", "")
+	searchString = c.DefaultQuery("search_list", "")
+	err = json.Unmarshal([]byte(searchString), &searchList)
+	if err != nil {
+		app.Error(c, -1, err, "参数异常")
+		return
+	}
+
+	if len(searchList) > 0 {
+		for _, v := range searchList {
+			if v["identifies"] != "" && v["value"] != "" {
+				if searchClassify == "1" {
+					searchWhereList = append(searchWhereList, fmt.Sprintf("data->'$.%v' = '%v'", v["identifies"], v["value"]))
+				} else if searchClassify == "2" {
+					searchWhereList = append(searchWhereList, fmt.Sprintf("data->'$.%v' like '%%%v%%'", v["identifies"], v["value"]))
+				}
+			}
+		}
+		if searchType == "1" { // 与
+			db = db.Where(strings.Join(searchWhereList, " and "))
+		} else if searchType == "2" {
+			db = db.Where(fmt.Sprintf("(%v)", strings.Join(searchWhereList, " or ")))
+		}
+	}
+
 	status = c.DefaultQuery("status", "")
 	nodeID = c.DefaultQuery("nodeID", "")
-
-	if identifies != "" && value != "" {
-		db = db.Where(fmt.Sprintf("data->'$.%s' like '%%%s%%'", identifies, value))
-	}
 
 	if status != "" {
 		db = db.Where("status = ?", status)
