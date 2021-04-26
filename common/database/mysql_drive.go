@@ -26,7 +26,7 @@ type Mysql struct {
 // Setup 配置步骤
 func (e *Mysql) Setup() {
 	global.Source = e.GetConnect()
-	log.Info(tools.Green(global.Source))
+	//log.Info(tools.Green(global.Source))
 	db, err := sql.Open("mysql", global.Source)
 	if err != nil {
 		log.Fatal(tools.Red(e.GetDriver()+" connect error :"), err)
