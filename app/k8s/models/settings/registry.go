@@ -12,8 +12,8 @@ import (
 type Registry struct {
 	Id           int    `gorm:"column:id; primary_key;AUTO_INCREMENT" json:"id"`
 	IP           string `gorm:"column:ip; type:varchar(128);" json:"ip" binding:"required"`
-	Protocol     string `gorm:"column:protocol; type:varchar(45);" json:"protocol"`
-	Architecture string `gorm:"column:architecture; type:varchar(45);" json:"architecture"`
+	Protocol     string `gorm:"column:protocol; type:varchar(45);" json:"protocol" binding:"required"`
+	Architecture string `gorm:"column:architecture; type:varchar(45);" json:"architecture" binding:"required"`
 	models.BaseModel
 }
 

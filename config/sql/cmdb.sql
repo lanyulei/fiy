@@ -1,6 +1,6 @@
 -- 开始初始化数据 ;
 BEGIN;
--- 内置字段 ;
+-- 内置数据 ;
 INSERT INTO cmdb_model_fields VALUES (3, 'built_in_host_innerip', '内网IP', 'string', 0, 0, 1, 0, '', '{"is_edit": true, "regular": "^((1?\\\\d{1,2}|2[0-4]\\\\d|25[0-5])[.]){3}(1?\\\\d{1,2}|2[0-4]\\\\d|25[0-5])(,((1?\\\\d{1,2}|2[0-4]\\\\d|25[0-5])[.]){3}(1?\\\\d{1,2}|2[0-4]\\\\d|25[0-5]))*$", "enum_list": [{"uuid": "", "value": ""}], "list_value": [{"value": ""}]}', 1, 1, 1, 2, '2021-01-31 00:04:08', '2021-02-04 12:12:51', null);
 INSERT INTO cmdb_model_fields VALUES (4, 'built_in_host_outerip', '外网IP', 'string', 0, 0, 0, 0, '', '{"is_edit": true, "regular": "^((1?\\\\d{1,2}|2[0-4]\\\\d|25[0-5])[.]){3}(1?\\\\d{1,2}|2[0-4]\\\\d|25[0-5])(,((1?\\\\d{1,2}|2[0-4]\\\\d|25[0-5])[.]){3}(1?\\\\d{1,2}|2[0-4]\\\\d|25[0-5]))*$", "enum_list": [{"uuid": "", "value": ""}], "list_value": [{"value": ""}]}', 1, 1, 1, 3, '2021-01-31 00:05:29', '2021-02-04 12:13:02', null);
 INSERT INTO cmdb_model_fields VALUES (5, 'built_in_operator', '主要维护人', 'user', 0, 0, 0, 0, '', '{"is_edit": true, "enum_list": [{"uuid": "", "value": ""}], "list_value": [{"value": ""}]}', 1, 1, 1, 4, '2021-01-31 00:07:30', '2021-02-04 12:13:06', null);

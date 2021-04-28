@@ -126,4 +126,5 @@ func sysCheckRoleRouterInit(r *gin.RouterGroup, authMiddleware *jwt.GinJWTMiddle
 	// cluster
 	k8sRouter.RegisterK8sProjectRouter(v1, authMiddleware)
 	k8sRouter.RegisterK8sVersionRouter(v1, authMiddleware)
+	k8sRouter.RegisterK8sSettingsRouter(v1, authMiddleware)
 }
