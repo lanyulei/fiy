@@ -15,10 +15,10 @@ import (
 
 func init() {
 	_, fileName, _, _ := runtime.Caller(0)
-	migration.Migrate.SetVersion(migration.GetFilename(fileName), _1611888450342Migrate)
+	migration.Migrate.SetVersion(migration.GetFilename(fileName), _1611888450342CmdbMigrate)
 }
 
-func _1611888450342Migrate(db *gorm.DB, version string) (err error) {
+func _1611888450342CmdbMigrate(db *gorm.DB, version string) (err error) {
 	return db.Transaction(func(tx *gorm.DB) error {
 
 		relatedTypeList := []model.RelatedType{
