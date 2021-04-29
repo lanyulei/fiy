@@ -168,8 +168,8 @@ INSERT INTO sys_menu VALUES (511, 'K8s', '集群管理', 'tree-table', '/k8s', '
 INSERT INTO sys_menu VALUES (512, 'K8sProject', '项目管理', 'list', '/k8s/project/index', '/0/511/512', 'C', '', '', 511, 0, '', '/k8s/project/index', 0, '0', '1', '1', '1', '2021-04-20 00:03:33', '2021-04-20 00:18:05', null);
 INSERT INTO sys_menu VALUES (513, 'K8sVersion', '版本管理', 'education', '/k8s/version/index', '/0/511/513', 'C', '', '', 511, 0, '', '/k8s/version/index', 1, '0', '1', '1', '1', '2021-04-20 00:07:26', '2021-04-20 00:18:40', null);
 INSERT INTO sys_menu VALUES (514, 'K8sSystemSettings', '系统设置', 'system', '/k8s/settings/index', '/0/511/514', 'C', '', '', 511, 0, '', '/k8s/settings/index', 2, '0', '1', '1', '1', '2021-04-20 00:12:35', '2021-04-20 00:18:51', null);
-INSERT INTO sys_menu VALUES (515, 'K8sProjectCluster', '集群管理', 'network', '/k8s/project/cluster/index', '/0/511/512/515', 'C', '', '', 512, 0, '', '/k8s/project/cluster/index', 0, '1', '1', '1', '1', '2021-04-20 00:15:31', '2021-04-20 00:18:18', null);
-INSERT INTO sys_menu VALUES (516, 'K8sProjectClusterDetails', '集群详情', 'log', '/k8s/project/cluster/info', '/0/511/512/516', 'C', '', '', 512, 0, '', '/k8s/project/cluster/info', 1, '1', '1', '1', '1', '2021-04-20 00:16:57', '2021-04-20 00:18:29', null);
+INSERT INTO `sys_menu` VALUES (515, 'K8sProjectCluster', '集群管理', 'network', '/k8s/project/cluster/index', '/0/511/515', 'C', '', '', 511, 0, '', '/k8s/project/cluster/index', 99, '1', '1', '1', '1', '2021-04-20 00:15:31', '2021-04-29 11:51:57', NULL);
+INSERT INTO `sys_menu` VALUES (516, 'K8sProjectClusterDetails', '集群详情', 'log', '/k8s/project/cluster/info', '/0/511/516', 'C', '', '', 511, 0, '', '/k8s/project/cluster/info', 99, '1', '1', '1', '1', '2021-04-20 00:16:57', '2021-04-29 11:52:03', NULL);
 COMMIT;
 
 -- 数据完成 ;
