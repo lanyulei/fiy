@@ -1,6 +1,6 @@
 -- 开始初始化数据 ;
 BEGIN;
-INSERT INTO sys_menu VALUES (2, 'Upms', '系统管理', 'example', '/upms', '/0/2', 'M', '无', '', 0, 1, '', 'Layout', 5, '0', '1', '1', '0', '2020-04-11 15:52:48', '2021-01-15 11:51:13', null);
+INSERT INTO sys_menu VALUES (2, 'Upms', '系统管理', 'example', '/upms', '/0/2', 'M', '无', '', 0, 1, '', 'Layout', 5, '0', '1', '1', '0', '2020-04-11 15:52:48', '2021-04-19 23:43:46', null);
 INSERT INTO sys_menu VALUES (3, 'Sysuser', '用户管理', 'user', 'sysuser', '/0/2/3', 'C', '无', 'system:sysuser:list', 2, null, null, '/sysuser/index', 1, '0', '1', '1', '0', '2020-04-11 15:52:48', '2020-04-12 11:10:42', null);
 INSERT INTO sys_menu VALUES (43, '', '新增用户', '', '/api/v1/sysuser', '/0/2/3/43', 'F', 'POST', 'system:sysuser:add', 3, null, null, null, 0, '0', '1', '1', '0', '2020-04-11 15:52:48', null, null);
 INSERT INTO sys_menu VALUES (44, '', '查询用户', '', '/api/v1/sysuser', '/0/2/3/44', 'F', 'GET', 'system:sysuser:query', 3, null, null, null, 0, '0', '1', '1', '0', '2020-04-11 15:52:48', null, null);
@@ -12,7 +12,7 @@ INSERT INTO sys_menu VALUES (56, 'Dept', '部门管理', 'tree', 'dept', '/0/2/5
 INSERT INTO sys_menu VALUES (57, 'post', '岗位管理', 'pass', 'post', '/0/2/57', 'C', '无', 'system:syspost:list', 2, 0, '', '/post/index', 5, '0', '1', '1', '0', '2020-04-11 15:52:48', '2020-04-12 11:16:53', null);
 INSERT INTO sys_menu VALUES (58, 'Dict', '字典管理', 'education', 'dict', '/0/2/58', 'C', '无', 'system:sysdicttype:list', 2, 0, '', '/dict/index', 6, '0', '1', '1', '0', '2020-04-11 15:52:48', '2020-04-12 11:17:04', null);
 INSERT INTO sys_menu VALUES (59, 'DictData', '字典数据', 'education', 'dict/data/:dictId', '/0/2/59', 'C', '无', 'system:sysdictdata:list', 2, 0, '', '/dict/data', 100, '1', '1', '1', '0', '2020-04-11 15:52:48', '2020-04-12 11:17:25', null);
-INSERT INTO sys_menu VALUES (60, 'Tools', '系统工具', 'component', '/tools', '/0/60', 'M', '无', '', 0, 0, '', 'Layout', 10, '0', '1', '1', '0', '2020-04-11 15:52:48', null, null);
+INSERT INTO sys_menu VALUES (60, 'Tools', '系统工具', 'component', '/tools', '/0/60', 'M', '无', '', 0, 0, '', 'Layout', 10, '0', '1', '1', '0', '2020-04-11 15:52:48', '2021-04-19 23:43:52', null);
 INSERT INTO sys_menu VALUES (61, 'Swagger', '系统接口', 'guide', 'swagger', '/0/60/61', 'C', '无', '', 60, 0, '', '/tools/swagger/index', 1, '0', '1', '1', '0', '2020-04-11 15:52:48', null, null);
 INSERT INTO sys_menu VALUES (62, 'Config', '参数设置', 'list', '/config', '/0/2/62', 'C', '无', 'system:sysconfig:list', 2, 0, '', '/config/index', 7, '0', '1', '1', '0', '2020-04-11 15:52:48', '2020-04-12 11:17:16', null);
 INSERT INTO sys_menu VALUES (63, '', '接口权限', 'bug', '', '/0/63', 'M', '', '', 0, 0, '', '', 99, '1', '1', '1', '0', '2020-04-11 15:52:48', '2020-04-12 16:39:32', null);
@@ -37,7 +37,7 @@ INSERT INTO sys_menu VALUES (82, '', '获取角色信息', 'bug', '/api/v1/role/
 INSERT INTO sys_menu VALUES (83, '', '创建角色', 'bug', '/api/v1/role', '/0/63/201/83', 'A', 'POST', null, 201, null, null, null, 0, '1', '1', '1', '0', '2020-04-11 15:52:48', null, null);
 INSERT INTO sys_menu VALUES (84, '', '修改角色', 'bug', '/api/v1/role', '/0/63/201/84', 'A', 'PUT', null, 201, null, null, null, 0, '1', '1', '1', '0', '2020-04-11 15:52:48', null, null);
 INSERT INTO sys_menu VALUES (85, '', '删除角色', 'bug', '/api/v1/role/:id', '/0/63/201/85', 'A', 'DELETE', null, 201, null, null, null, 0, '1', '1', '1', '0', '2020-04-11 15:52:48', null, null);
-INSERT INTO sys_menu VALUES (86, '', '参数列表', 'bug', '/api/v1/config', '/0/63/202/86', 'A', 'GET', null, 202, null, null, null, 0, '1', '1', '1', '0', '2020-04-11 15:52:48', '2021-03-27 12:41:01', null);
+INSERT INTO sys_menu VALUES (86, '', '参数列表', 'bug', '/api/v1/config', '/0/63/202/86', 'A', 'GET', null, 202, null, null, null, 0, '1', '1', '1', '0', '2020-04-11 15:52:48', '2021-04-11 00:32:28', null);
 INSERT INTO sys_menu VALUES (87, '', '根据id获取参数', 'bug', '/api/v1/config/:id', '/0/63/202/87', 'A', 'GET', null, 202, null, null, null, 0, '1', '1', '1', '0', '2020-04-11 15:52:48', null, null);
 INSERT INTO sys_menu VALUES (89, '', '创建参数', 'bug', '/api/v1/config', '/0/63/202/89', 'A', 'POST', null, 202, null, null, null, 0, '1', '1', '1', '0', '2020-04-11 15:52:48', null, null);
 INSERT INTO sys_menu VALUES (90, '', '修改参数', 'bug', '/api/v1/config', '/0/63/202/90', 'A', 'PUT', null, 202, null, null, null, 0, '1', '1', '1', '0', '2020-04-11 15:52:48', null, null);
@@ -157,19 +157,11 @@ INSERT INTO sys_menu VALUES (498, 'ModelTopology', '模型关系', 'example', '/
 INSERT INTO sys_menu VALUES (499, 'ModelAssociation', '关联类型', 'clipboard', '/cmdb/model/association', '/0/484/496/499', 'C', '', '', 496, 0, '', '/cmdb/model/association', 3, '0', '1', '', '1', '2021-01-14 12:19:40', '2021-01-14 12:19:40', null);
 INSERT INTO sys_menu VALUES (500, 'CmdbOperationalAnalysis', '运营分析', 'server', '/cmdb/operational/analysis', '/0/484/500', 'M', '', '', 484, 0, '', '/menu-nesting/index', 5, '0', '1', '1', '1', '2021-01-14 12:30:04', '2021-01-14 12:30:36', null);
 INSERT INTO sys_menu VALUES (501, 'AnalysisAudit', '操作审计', 'form', '/cmdb/analysis/audit', '/0/484/500/501', 'C', '', '', 500, 0, '', '/cmdb/analysis/audit', 1, '0', '1', '', '1', '2021-01-14 12:32:12', '2021-01-14 12:32:12', null);
--- INSERT INTO sys_menu VALUES (502, 'AnalysisOperation', '运营统计', 'chart', '/cmdb/analysis/operation', '/0/484/500/502', 'C', '', '', 500, 0, '', '/cmdb/analysis/operation', 2, '0', '1', '', '1', '2021-01-14 12:33:22', '2021-01-14 12:33:22', null);
 INSERT INTO sys_menu VALUES (503, 'ResourceCloudAccount', '云账户', 'people', '/cmdb/resource/cloud-account', '/0/484/494/503', 'C', '', '', 494, 0, '', '/cmdb/resource/cloud-account', 2, '0', '1', '', '1', '2021-01-14 12:37:38', '2021-01-14 12:37:38', null);
 INSERT INTO sys_menu VALUES (505, 'ResourceCloudDiscovery', '云资源同步', 'upload', '/cmdb/resource/cloud-discovery', '/0/484/494/505', 'C', '', '', 494, 0, '', '/cmdb/resource/cloud-discovery', 4, '0', '1', '1', '1', '2021-01-14 12:40:55', '2021-03-29 23:08:06', null);
 INSERT INTO sys_menu VALUES (507, 'ModelConfigurationFields', '模型字段', 'guide', '/cmdb/model/model-fields', '/0/484/496/507', 'C', '', '', 496, 0, '', '/cmdb/model/model-fields', 4, '1', '1', '', '1', '2021-01-18 22:22:31', '2021-01-18 22:22:31', null);
 INSERT INTO sys_menu VALUES (508, 'ResourceList', '资源列表', 'guide', '/cmdb/resource/:classify/list', '/0/484/494/508', 'C', '', '', 494, 0, '', '/cmdb/resource/list', 11, '1', '1', '1', '1', '2021-01-31 01:51:45', '2021-03-28 21:18:54', null);
 INSERT INTO sys_menu VALUES (509, 'ResourceDetails', '资源详情', 'guide', '/cmdb/resource/details', '/0/484/494/509', 'C', '', '', 494, 0, '', '/cmdb/resource/details', 12, '1', '1', '1', '1', '2021-02-05 13:04:12', '2021-03-28 21:15:14', null);
 INSERT INTO sys_menu VALUES (510, 'BusinessSvcTplManager', '服务模板管理', 'guide', '/cmdb/business/svc-tpl-manager', '/0/484/486/510', 'C', '', '', 486, 0, '', '/cmdb/business/service-template-manager', 11, '1', '1', '1', '1', '2021-02-11 22:59:43', '2021-02-11 22:59:49', null);
-INSERT INTO sys_menu VALUES (511, 'K8s', '集群管理', 'tree-table', '/k8s', '/0/511', 'M', '', '', 0, 0, '', 'Layout', 2, '0', '1', '1', '1', '2021-04-19 23:41:30', '2021-04-20 00:23:26', null);
-INSERT INTO sys_menu VALUES (512, 'K8sProject', '项目管理', 'list', '/k8s/project/index', '/0/511/512', 'C', '', '', 511, 0, '', '/k8s/project/index', 0, '0', '1', '1', '1', '2021-04-20 00:03:33', '2021-04-20 00:18:05', null);
-INSERT INTO sys_menu VALUES (513, 'K8sVersion', '版本管理', 'education', '/k8s/version/index', '/0/511/513', 'C', '', '', 511, 0, '', '/k8s/version/index', 1, '0', '1', '1', '1', '2021-04-20 00:07:26', '2021-04-20 00:18:40', null);
-INSERT INTO sys_menu VALUES (514, 'K8sSystemSettings', '系统设置', 'system', '/k8s/settings/index', '/0/511/514', 'C', '', '', 511, 0, '', '/k8s/settings/index', 2, '0', '1', '1', '1', '2021-04-20 00:12:35', '2021-04-20 00:18:51', null);
-INSERT INTO `sys_menu` VALUES (515, 'K8sProjectCluster', '集群管理', 'network', '/k8s/project/cluster/index', '/0/511/515', 'C', '', '', 511, 0, '', '/k8s/project/cluster/index', 99, '1', '1', '1', '1', '2021-04-20 00:15:31', '2021-04-29 11:51:57', NULL);
-INSERT INTO `sys_menu` VALUES (516, 'K8sProjectClusterDetails', '集群详情', 'log', '/k8s/project/cluster/info', '/0/511/516', 'C', '', '', 511, 0, '', '/k8s/project/cluster/info', 99, '1', '1', '1', '1', '2021-04-20 00:16:57', '2021-04-29 11:52:03', NULL);
 COMMIT;
-
 -- 数据完成 ;
