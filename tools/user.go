@@ -22,7 +22,6 @@ func GetUserIdUint(c *gin.Context) uint {
 	if data["identity"] != nil {
 		return uint((data["identity"]).(float64))
 	}
-	fmt.Println(GetCurrentTimeStr() + " [WARING] " + c.Request.Method + " " + c.Request.URL.Path + " GetUserId 缺少identity")
 	return 0
 }
 
@@ -31,7 +30,6 @@ func GetUserId(c *gin.Context) int {
 	if data["identity"] != nil {
 		return int((data["identity"]).(float64))
 	}
-	fmt.Println(GetCurrentTimeStr() + " [WARING] " + c.Request.Method + " " + c.Request.URL.Path + " GetUserId 缺少identity")
 	return 0
 }
 
@@ -40,7 +38,6 @@ func GetUserIdStr(c *gin.Context) string {
 	if data["identity"] != nil {
 		return Int64ToString(int64((data["identity"]).(float64)))
 	}
-	fmt.Println(GetCurrentTimeStr() + " [WARING] " + c.Request.Method + " " + c.Request.URL.Path + " GetUserIdStr 缺少identity")
 	return ""
 }
 
@@ -49,7 +46,6 @@ func GetUserName(c *gin.Context) string {
 	if data["nice"] != nil {
 		return (data["nice"]).(string)
 	}
-	fmt.Println(GetCurrentTimeStr() + " [WARING] " + c.Request.Method + " " + c.Request.URL.Path + " GetUserName 缺少nice")
 	return ""
 }
 

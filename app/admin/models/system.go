@@ -28,7 +28,7 @@ func (s *SysSetting) Get() (create SysSetting, err error) {
 
 //修改
 func (s *SysSetting) Update() (update SysSetting, err error) {
-	if err = orm.Eloquent.Table("sys_setting").Model(&update).Updates(&s).Error; err != nil {
+	if err = orm.Eloquent.Table("sys_setting").Where("1 = 1").Model(&update).Updates(&s).Error; err != nil {
 		return
 	}
 	return
