@@ -2,7 +2,6 @@ package cmd
 
 import (
 	"errors"
-	"fiy/cmd/agent"
 	"fiy/cmd/api"
 	"fiy/cmd/config"
 	"fiy/cmd/migrate"
@@ -43,7 +42,6 @@ func init() {
 	rootCmd.AddCommand(migrate.StartCmd)
 	rootCmd.AddCommand(version.StartCmd)
 	rootCmd.AddCommand(config.StartCmd)
-	rootCmd.AddCommand(agent.StartCmd)
 }
 
 //Execute : apply commands

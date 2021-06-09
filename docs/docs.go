@@ -22,7 +22,7 @@ var doc = `{
         "contact": {},
         "license": {
             "name": "MIT",
-            "url": "https://github.com/wenjianzhang/go-admin/blob/master/LICENSE.md"
+            "url": "https://github.com/lanyulei/fiy/blob/master/LICENSE"
         },
         "version": "{{.Version}}"
     },
