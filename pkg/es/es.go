@@ -66,12 +66,10 @@ func Init() {
 
 //搜索
 func (e EsClientType) Query() (searchResult *elastic.SearchResult, err error) {
-	// 创建term查询条件，用于精确查询
-	wildcardQuery := elastic.NewQueryStringQuery("asdgas")
-
+	queryString := elastic.NewQueryStringQuery("cf0c9862-e290-4*")
 	searchResult, err = e.EsClient.Search().
 		Index(viper.GetString("settings.es.index")). // 设置索引名
-		Query(wildcardQuery).                        // 设置查询条件
+		Query(queryString).                          // 设置查询条件
 		From(0).                                     // 设置分页参数 - 起始偏移量，从第0行记录开始
 		Size(10).                                    // 设置分页参数 - 每页大小
 		Pretty(true).                                // 查询结果返回可读性较好的JSON格式
