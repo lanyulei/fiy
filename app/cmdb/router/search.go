@@ -15,6 +15,6 @@ import (
 func RegisterCmdbSearchRouter(v1 *gin.RouterGroup, authMiddleware *jwt.GinJWTMiddleware) {
 	r := v1.Group("/cmdb/search").Use(authMiddleware.MiddlewareFunc()).Use(middleware.AuthCheckRole())
 	{
-		r.POST("", search.GetData) // 新建资源数据
+		r.GET("", search.GetData) // 统一搜索
 	}
 }

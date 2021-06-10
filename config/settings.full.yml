@@ -53,3 +53,10 @@ settings:
     dbname: dbname
     # 代码生成是使用前端代码存放位置，需要指定到src文件夹，相对路径
     frontpath: ../fiy-ui/src
+  sync:
+    cloud: 5
+  es:
+    host: http://127.0.0.1:9200
+    user:
+    password:
+    index: cmdb_resource_data

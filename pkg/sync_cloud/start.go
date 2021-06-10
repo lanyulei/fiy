@@ -138,7 +138,7 @@ func Start() (err error) {
 		t := time.NewTicker(td)
 		defer t.Stop()
 
-		log.Info("开始同步云资源数据...")
+		log.Info("Start syncing cloud resource data...")
 		for {
 			<-t.C
 			err = syncCloud()

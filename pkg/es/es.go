@@ -2,10 +2,12 @@ package es
 
 import (
 	"context"
-	"fmt"
+	fiyLog "fiy/common/log"
 	"log"
 	"os"
 	"time"
+
+	"github.com/spf13/viper"
 
 	"github.com/olivere/elastic/v7"
 )
@@ -14,42 +16,72 @@ import (
   @Author : lanyulei
 */
 
-type Es struct {
-	Client *elastic.Client
-	Ctx    context.Context
+type EsClientType struct {
+	EsClient *elastic.Client
 }
 
-func (e *Es) client() {
+var EsClient EsClientType //连接类型
+
+func Init() {
+	//es 配置
 	var (
-		err error
+		err            error
+		host           = viper.GetString("settings.es.host")
+		esClientParams []elastic.ClientOptionFunc
 	)
 
-	// 创建Client, 连接ES
-	e.Client, err = elastic.NewClient(
-		// elasticsearch 服务地址，多个服务地址使用逗号分隔
-		elastic.SetURL("http://127.0.0.1:9200", "http://127.0.0.1:9201"),
-		// 基于http base auth验证机制的账号和密码
-		elastic.SetBasicAuth("user", "secret"),
-		// 启用gzip压缩
+	esClientParams = []elastic.ClientOptionFunc{
+		elastic.SetURL(host),
+		elastic.SetSniff(false),
+		elastic.SetHealthcheckInterval(10 * time.Second),
 		elastic.SetGzip(true),
-		// 设置监控检查时间间隔
-		elastic.SetHealthcheckInterval(10*time.Second),
-		// 设置错误日志输出
 		elastic.SetErrorLog(log.New(os.Stderr, "ELASTIC ", log.LstdFlags)),
-		// 设置info日志输出
-		elastic.SetInfoLog(log.New(os.Stdout, "", log.LstdFlags)))
-
-	if err != nil {
-		// Handle error
-		fmt.Printf("连接失败: %v\n", err)
-	} else {
-		fmt.Println("连接成功")
+		elastic.SetInfoLog(log.New(os.Stdout, "", log.LstdFlags)),
 	}
 
-	// 执行ES请求需要提供一个上下文对象
-	e.Ctx = context.Background()
+	if viper.GetString("settings.es.user") != "" && viper.GetString("settings.es.password") != "" {
+		esClientParams = append(esClientParams, elastic.SetBasicAuth(viper.GetString("settings.es.user"), viper.GetString("settings.es.password")))
+	}
+
+	EsClient.EsClient, err = elastic.NewClient(esClientParams...)
+
+	if err != nil {
+		fiyLog.Fatal(err)
+	}
+
+	info, code, err := EsClient.EsClient.Ping(host).Do(context.Background())
+	if err != nil {
+		fiyLog.Fatal(err)
+	}
+
+	fiyLog.Infof("Elasticsearch returned with code %d and version %s\n", code, info.Version.Number)
+
+	esVersion, err := EsClient.EsClient.ElasticsearchVersion(host)
+	if err != nil {
+		fiyLog.Fatal(err)
+	}
+	fiyLog.Infof("Elasticsearch version %s\n", esVersion)
+	fiyLog.Info("connect es success，", EsClient.EsClient)
 }
 
-func (e *Es) Get() {
+//搜索
+func (e EsClientType) Query() (searchResult *elastic.SearchResult, err error) {
+	// 创建term查询条件，用于精确查询
+	wildcardQuery := elastic.NewQueryStringQuery("asdgas")
 
+	searchResult, err = e.EsClient.Search().
+		Index(viper.GetString("settings.es.index")). // 设置索引名
+		Query(wildcardQuery).                        // 设置查询条件
+		From(0).                                     // 设置分页参数 - 起始偏移量，从第0行记录开始
+		Size(10).                                    // 设置分页参数 - 每页大小
+		Pretty(true).                                // 查询结果返回可读性较好的JSON格式
+		Do(context.Background())                     // 执行请求
+
+	if err != nil {
+		fiyLog.Errorf("查询资源数据失败，", err)
+		return
+	}
+
+	fiyLog.Infof("查询消耗时间 %d ms, 结果总数: %d\n", searchResult.TookInMillis, searchResult.TotalHits())
+	return
 }

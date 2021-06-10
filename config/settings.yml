@@ -44,3 +44,8 @@ settings:
     frontpath: ../fiy-ui/src
   sync:
     cloud: 5
+  es:
+    host: http://127.0.0.1:9200
+    user:
+    password:
+    index: cmdb_resource_data

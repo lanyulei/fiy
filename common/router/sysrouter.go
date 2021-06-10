@@ -121,4 +121,5 @@ func sysCheckRoleRouterInit(r *gin.RouterGroup, authMiddleware *jwt.GinJWTMiddle
 	cmdbRouter.RegisterCmdbResourceRouter(v1, authMiddleware)
 	cmdbRouter.RegisterCmdbBusinessRouter(v1, authMiddleware)
 	cmdbRouter.RegisterCmdbAnalysisRouter(v1, authMiddleware)
+	cmdbRouter.RegisterCmdbSearchRouter(v1, authMiddleware)
 }

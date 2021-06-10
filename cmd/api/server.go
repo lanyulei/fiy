@@ -2,7 +2,7 @@ package api
 
 import (
 	"context"
-	router "fiy/common/router"
+	"fiy/common/router"
 	"fiy/pkg/sync_cloud"
 	"fiy/tools/trace"
 	"fmt"
@@ -19,6 +19,7 @@ import (
 	"fiy/common/global"
 	"fiy/common/log"
 	myCasbin "fiy/pkg/casbin"
+	"fiy/pkg/es"
 	"fiy/pkg/logger"
 	"fiy/tools"
 	"fiy/tools/config"
@@ -90,6 +91,9 @@ func run() error {
 		//监控
 		AppRouters = append(AppRouters, router.Monitor)
 	}
+
+	// Es 连接
+	es.Init()
 
 	// 同步云资源
 	go func() {
