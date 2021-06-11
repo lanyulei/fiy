@@ -3,6 +3,7 @@ package es
 import (
 	"context"
 	fiyLog "fiy/common/log"
+	"fmt"
 	"log"
 	"os"
 	"time"
@@ -65,8 +66,9 @@ func Init() {
 }
 
 //搜索
-func (e EsClientType) Query() (searchResult *elastic.SearchResult, err error) {
-	queryString := elastic.NewQueryStringQuery("cf0c9862-e290-4*")
+func (e EsClientType) Query(value interface{}) (searchResult *elastic.SearchResult, err error) {
+	queryString := elastic.NewQueryStringQuery(fmt.Sprintf("*%v*", value))
+
 	searchResult, err = e.EsClient.Search().
 		Index(viper.GetString("settings.es.index")). // 设置索引名
 		Query(queryString).                          // 设置查询条件
