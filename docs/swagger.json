@@ -1,14 +1,14 @@
 {
     "swagger": "2.0",
     "info": {
-        "description": "基于Gin + Vue + Element UI的前后端分离权限管理系统的接口文档\n添加qq群: 74520518 进入技术交流群 请备注，谢谢！",
-        "title": "go-admin API",
+        "description": "fiy CMDB",
+        "title": "fiy API",
         "contact": {},
         "license": {
             "name": "MIT",
-            "url": "https://github.com/go-admin-team/go-admin/blob/master/LICENSE.md"
+            "url": "https://github.com/lanyulei/fiy/blob/master/LICENSE"
         },
-        "version": "1.0.1"
+        "version": "1.0.0"
     },
     "paths": {
         "/api/v1/config": {

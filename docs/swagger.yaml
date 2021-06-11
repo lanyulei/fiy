@@ -785,8 +785,8 @@ info:
     添加qq群: 74520518 进入技术交流群 请备注，谢谢！
   license:
     name: MIT
-    url: https://github.com/wenjianzhang/go-admin/blob/master/LICENSE.md
-  title: go-admin API
+    url: https://github.com/lanyulei/fiy/blob/master/LICENSE
+  title: fiy API
   version: 1.0.1
 paths:
   /api/v1/config:

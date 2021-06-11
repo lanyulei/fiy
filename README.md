@@ -56,8 +56,6 @@
 
 基于casbin的RBAC权限控制，借鉴了go-admin项目的前端权限管理，可以在页面对API、菜单、页面按钮等操作，进行灵活且简单的配置。
 
-演示demo: [http://fdevops.com:8001/#/dashboard](http://fdevops.com:8001/#/dashboard)
-
 ### 系统工具
 
 当前服务监控及系统配置。
