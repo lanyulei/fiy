@@ -66,14 +66,14 @@ func Init() {
 }
 
 //搜索
-func (e EsClientType) Query(value interface{}) (searchResult *elastic.SearchResult, err error) {
+func (e EsClientType) Query(value interface{}, page int, limit int) (searchResult *elastic.SearchResult, err error) {
 	queryString := elastic.NewQueryStringQuery(fmt.Sprintf("*%v*", value))
 
 	searchResult, err = e.EsClient.Search().
 		Index(viper.GetString("settings.es.index")). // 设置索引名
 		Query(queryString).                          // 设置查询条件
-		From(0).                                     // 设置分页参数 - 起始偏移量，从第0行记录开始
-		Size(10).                                    // 设置分页参数 - 每页大小
+		From(page).                                  // 设置分页参数 - 起始偏移量，从第0行记录开始
+		Size(limit).                                 // 设置分页参数 - 每页大小
 		Pretty(true).                                // 查询结果返回可读性较好的JSON格式
 		Do(context.Background())                     // 执行请求
 

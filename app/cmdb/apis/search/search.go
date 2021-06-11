@@ -1,10 +1,9 @@
 package search
 
 import (
-	"fiy/app/cmdb/models/resource"
 	"fiy/pkg/es"
 	"fiy/tools/app"
-	"reflect"
+	"strconv"
 
 	"github.com/olivere/elastic/v7"
 
@@ -19,8 +18,10 @@ func GetData(c *gin.Context) {
 	var (
 		err          error
 		searchResult *elastic.SearchResult
-		list         []resource.Data
+		list         []interface{}
 		searchValue  interface{}
+		page         int
+		limit        int
 	)
 
 	searchValue = c.DefaultQuery("value", "")
@@ -29,17 +30,18 @@ func GetData(c *gin.Context) {
 		return
 	}
 
-	searchResult, err = es.EsClient.Query(searchValue)
+	page, _ = strconv.Atoi(c.DefaultQuery("page", "0"))
+	limit, _ = strconv.Atoi(c.DefaultQuery("limit", "10"))
+
+	searchResult, err = es.EsClient.Query(searchValue, page, limit)
 	if err != nil {
-		app.Error(c, -1, err, "分页查询关联类型列表失败")
+		app.Error(c, -1, err, "搜索数据失败")
 		return
 	}
 
 	if searchResult.TotalHits() > 0 {
-		for _, item := range searchResult.Each(reflect.TypeOf(resource.Data{})) {
-			if t, ok := item.(resource.Data); ok {
-				list = append(list, t)
-			}
+		for _, item := range searchResult.Hits.Hits {
+			list = append(list, item.Source)
 		}
 	}
 
