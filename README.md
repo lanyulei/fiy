@@ -33,6 +33,8 @@
 
 很多功能是参照蓝鲸CMDB，代码实现及数据结构设计完全自主，若是觉得跟蓝鲸CMDB有点类似，还请勿喷。
 
+前端UI：https://github.com/lanyulei/fiy-ui
+
 ### 资源管理
 
 * 统一搜索，使用 canal 同步MySQL数据到ES，通过ES进行全局数据搜索功能。
