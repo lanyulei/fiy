@@ -463,3 +463,61 @@ func ExportData(c *gin.Context) {
 		"dataList":  dataList,
 	}, "")
 }
+
+// 资源关联绑定
+func AddRelatedData(c *gin.Context) {
+	var (
+		err    error
+		params struct {
+			Source       int   `json:"source"`
+			Target       []int `json:"target"`
+			SourceInfoId int   `json:"source_info_id"`
+			TargetInfoId int   `json:"target_info_id"`
+		}
+		currentRelatedList []resource.DataRelated
+		relatedParams      []resource.DataRelated
+	)
+
+	err = c.ShouldBind(&params)
+	if err != nil {
+		app.Error(c, -1, err, "参数绑定失败")
+		return
+	}
+
+	// 查询现有的数据关联
+	err = orm.Eloquent.Model(&resource.DataRelated{}).
+		Where("source = ? and source_info_id = ?", params.Source, params.SourceInfoId).
+		Find(&currentRelatedList).Error
+	if err != nil {
+		app.Error(c, -1, err, "查询现有的数据关联")
+		return
+	}
+targetContinue:
+	for _, target := range params.Target {
+		for _, currentRelated := range currentRelatedList {
+			if currentRelated.Source == params.Source &&
+				currentRelated.Target == target &&
+				currentRelated.SourceInfoId == params.SourceInfoId &&
+				currentRelated.TargetInfoId == params.TargetInfoId {
+				continue targetContinue
+			}
+		}
+		relatedParams = append(relatedParams, resource.DataRelated{
+			Source:       params.Source,
+			Target:       target,
+			SourceInfoId: params.SourceInfoId,
+			TargetInfoId: params.TargetInfoId,
+		})
+	}
+
+	if len(relatedParams) > 0 {
+		// 若么有关联则直接新建关联
+		err = orm.Eloquent.Create(&relatedParams).Error
+		if err != nil {
+			app.Error(c, -1, err, "创建资源关联失败")
+			return
+		}
+	}
+
+	app.OK(c, nil, "success")
+}
