@@ -44,9 +44,10 @@ func DataList(c *gin.Context) {
 
 	db := orm.Eloquent.Model(&resource.Data{}).Where("info_id = ?", modelID)
 
-	searchType = c.DefaultQuery("search_type", "")
-	searchClassify = c.DefaultQuery("search_classiy", "")
-	searchString = c.DefaultQuery("search_list", "")
+	searchType = c.DefaultQuery("search_type", "1")
+	searchClassify = c.DefaultQuery("search_classiy", "2")
+	searchString = c.DefaultQuery("search_list", "[]")
+
 	err = json.Unmarshal([]byte(searchString), &searchList)
 	if err != nil {
 		app.Error(c, -1, err, "参数异常")

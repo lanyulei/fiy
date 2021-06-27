@@ -7,6 +7,7 @@ import (
 	"fiy/app/cmdb/models/resource"
 	orm "fiy/common/global"
 	"fiy/tools/app"
+
 	uuid "github.com/satori/go.uuid"
 
 	"github.com/gin-gonic/gin"
@@ -163,10 +164,11 @@ func AddBusinessNode(c *gin.Context) {
 
 	// 新建数据
 	resourceData := &resource.Data{
-		Uuid:   uuid.NewV4().String(),
-		InfoId: modelInfo.Id,
-		Status: 0,
-		Data:   data,
+		Uuid:     uuid.NewV4().String(),
+		InfoId:   modelInfo.Id,
+		InfoName: modelInfo.Name,
+		Status:   0,
+		Data:     data,
 	}
 	err = tx.Create(resourceData).Error
 	if err != nil {
@@ -202,6 +204,39 @@ func AddBusinessNode(c *gin.Context) {
 	}
 
 	tx.Commit()
+
+	app.OK(c, nil, "")
+}
+
+// 删除节点
+func DeleteBusinessNode(c *gin.Context) {
+	var (
+		err          error
+		nodeID       string
+		relatedCount int64
+	)
+
+	nodeID = c.Param("id")
+
+	// 判断是否有关联数据
+	err = orm.Eloquent.Model(&resource.DataRelated{}).
+		Where("source = ?", nodeID).
+		Count(&relatedCount).Error
+	if err != nil {
+		app.Error(c, -1, err, "查询树节点关联数据失败")
+		return
+	}
+
+	if relatedCount > 0 {
+		app.Error(c, -1, nil, "当前树节点存在关联关系，无法直接删除，请确认")
+		return
+	}
+
+	err = orm.Eloquent.Model(&resource.Data{}).Delete(&resource.Data{}, nodeID).Error
+	if err != nil {
+		app.Error(c, -1, err, "删除节点失败")
+		return
+	}
 
 	app.OK(c, nil, "")
 }
