@@ -37,5 +37,6 @@ $(function(){
 
 func HelloWorld(c *gin.Context) {
 	// c.Header("Content-Type", "text/html; charset=utf-8")
+	// c.String(200, INDEX)
 	c.HTML(http.StatusOK, "index.html", gin.H{})
 }
