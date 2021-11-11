@@ -1,7 +1,7 @@
 #!/bin/bash
 #=============================================================================
 #
-# Author: jiangboyang0930
+# Author: Jiang-boyang
 #
 # id : AL1009
 #
@@ -84,7 +84,7 @@ function prepare_check {
           1. MySQL >= 5.7
           2. Go >= 1.14
           3. Redis 最新版本即可
-          4. node >= v12 （稳定版本）
+          4. node >= v12.x （稳定版本）
           5. npm >= v6.14.8
           6. ElasticSearch >= 6.5
 
@@ -127,14 +127,14 @@ function init(){
 }
 
 function config_mysql {
-    echo_green "\n>>> $(gettext '需注意: MySQL和Redis是必须配置正确的')"
+    echo_green "\n>>> $(gettext '需注意: MySQL、ES、Redis是必须配置正确的')"
     read_from_input confirm "$(gettext '请确认是否安装MySQL')?" "y/n" "y"
 
     if [[ "${confirm}" == "y" ]]; then
         echo ""
         echo "请在此处暂停一下，将数据库配置信息，写入到配置文件中，${BASE_DIR}/build/config/settings.yml，<settings.database> 下面数据库相关配置。"
     else
-        echo_red "未安装Mysql结束此次编译"
+        echo_red "未安装MySQL结束此次编译"
         exit 1
     fi
 }
@@ -148,6 +148,19 @@ function config_redis {
         echo "请在此处暂停一下，将 Redis 配置信息，写入到配置文件中，${BASE_DIR}/build/config/settings.yml，<settings.redis> 下面是Redis相关配置，若是不知道如何配置URL，可自行百度一下。"
     else
         echo_red "未安装Redis结束此次编译"
+        exit 1
+    fi
+}
+
+function config_es {
+    echo_green "\n>>> $(gettext '回车前请确保你已经安装了ElasticSearch,且启动服务')"
+    read_from_input confirm "$(gettext '请确认是否安装ElasticSearch')?" "y/n" "y"
+
+    if [[ "${confirm}" == "y" ]]; then
+        echo ""
+        echo "请在此处暂停一下，将数据库配置信息，写入到配置文件中，${BASE_DIR}/build/config/settings.yml，<settings.database> 下面数据库相关配置。"
+    else
+        echo_red "未安装ElasticSearch结束此次编译"
         exit 1
     fi
 }
@@ -166,6 +179,7 @@ function get_variables {
 
     config_mysql
     config_redis
+    config_es
     echo_done
 
 }
@@ -205,7 +219,7 @@ function install_front {
     echo_green "\n>>> $(gettext '开始安装前端依赖...')"
     cnpm_base_dir=$(dirname $(dirname $(which npm)))
     npm install -g cnpm --registry=https://registry.npm.taobao.org --prefix ${cnpm_base_dir}
-    cd fiy-ui && cnpm install && npm run build:prod
+    cd fiy-ui && cnpm install && npm run build:prod && cp -r dist/* ../build/
     echo_green "\n>>> $(gettext '前端程序编译成功...')"
 }
 
