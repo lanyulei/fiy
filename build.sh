@@ -206,7 +206,7 @@ function install_front {
     cnpm_base_dir=$(dirname $(dirname $(which npm)))
     npm install -g cnpm --registry=https://registry.npm.taobao.org --prefix ${cnpm_base_dir}
     cd fiy-ui && cnpm install && npm run build:prod
-
+    echo_green "\n>>> $(gettext '前端程序编译成功...')"
 }
 
 function install_backend {
