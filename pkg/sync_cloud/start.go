@@ -9,6 +9,7 @@ import (
 	"fiy/common/log"
 
 	"fiy/pkg/sync_cloud/aliyun"
+	"fiy/pkg/sync_cloud/tencent"
 
 	"fiy/app/cmdb/models/resource"
 	orm "fiy/common/global"
@@ -85,7 +86,8 @@ func syncCloud() (err error) {
 
 			var err error
 
-			if t.AccountType == "aliyun" {
+			switch t.AccountType {
+			case "aliyun":
 				regionList := make([]string, 0)
 				err = json.Unmarshal(t.Region, &regionList)
 
@@ -104,8 +106,7 @@ func syncCloud() (err error) {
 						Status: true,
 					}
 				}
-
-			} else if t.AccountType == "baidu" {
+			case "baidu":
 				regionList := make([]string, 0)
 				err = json.Unmarshal(t.Region, &regionList)
 
@@ -116,6 +117,25 @@ func syncCloud() (err error) {
 
 				if err != nil {
 					errValue := fmt.Sprintf("同步百度云资源失败，%v", err)
+					log.Error(errValue)
+					panic(errValue)
+				} else {
+					c <- syncStatus{
+						ID:     t.Id,
+						Status: true,
+					}
+				}
+			case "tencent":
+				regionList := make([]string, 0)
+				err = json.Unmarshal(t.Region, &regionList)
+
+				tencentYunClient := tencent.NewTencentCloud(t.AccountSecret, t.AccountKey, regionList)
+				if t.ResourceType == 1 { // 查询云主机资产
+					err = tencentYunClient.CvmList(t.ResourceModel)
+				}
+
+				if err != nil {
+					errValue := fmt.Sprintf("同步腾讯云资源失败，%v", err)
 					log.Error(errValue)
 					panic(errValue)
 				} else {
