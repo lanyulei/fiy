@@ -231,7 +231,8 @@ function install_backend {
         exit 1
     fi
     cp -r ${BASE_DIR}/fiy ${BASE_DIR}/build/
-    cd ${BASE_DIR}/build 
+    cd ${BASE_DIR}/build
+    ./fiy migrate -c config/settings.yml
     cd - &>/dev/null
     echo_green "\n>>> $(gettext '后端程序编译成功，本次安装结束...')"
 }
