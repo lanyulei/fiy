@@ -83,10 +83,9 @@ function prepare_check {
           1. git 最新版本即可
           1. MySQL >= 5.7
           2. Go >= 1.14
-          3. Redis 最新版本即可
-          4. node >= v12.x （稳定版本）
-          5. npm >= v6.14.8
-          6. ElasticSearch >= 6.5
+          3. node >= v12.x （稳定版本）
+          4. npm >= v6.14.8
+          5. ElasticSearch >= 6.5
 
 EOF
     check_soft git
@@ -127,7 +126,7 @@ function init(){
 }
 
 function config_mysql {
-    echo_green "\n>>> $(gettext '需注意: MySQL、ES、Redis是必须配置正确的')"
+    echo_green "\n>>> $(gettext '需注意: MySQL、ES是必须配置正确的')"
     read_from_input confirm "$(gettext '请确认是否安装MySQL')?" "y/n" "y"
 
     if [[ "${confirm}" == "y" ]]; then
@@ -135,19 +134,6 @@ function config_mysql {
         echo "请在此处暂停一下，将数据库配置信息，写入到配置文件中，${BASE_DIR}/build/config/settings.yml，<settings.database> 下面数据库相关配置。"
     else
         echo_red "未安装MySQL结束此次编译"
-        exit 1
-    fi
-}
-
-function config_redis {
-    echo_green "\n>>> $(gettext '回车前请确保你已经安装了Redis,且启动服务')"
-    read_from_input confirm "$(gettext '请确认是否安装Redis')?" "y/n" "y"
-
-    if [[ "${confirm}" == "y" ]]; then
-        echo ""
-        echo "请在此处暂停一下，将 Redis 配置信息，写入到配置文件中，${BASE_DIR}/build/config/settings.yml，<settings.redis> 下面是Redis相关配置，若是不知道如何配置URL，可自行百度一下。"
-    else
-        echo_red "未安装Redis结束此次编译"
         exit 1
     fi
 }
@@ -178,7 +164,6 @@ function get_variables {
     fi
 
     config_mysql
-    config_redis
     config_es
     echo_done
 
