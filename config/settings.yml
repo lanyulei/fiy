@@ -45,6 +45,7 @@ settings:
   sync:
     cloud: 5
   es:
+    enabled: false
     host: http://127.0.0.1:9200
     user:
     password:
