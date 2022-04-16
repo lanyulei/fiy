@@ -58,9 +58,9 @@ function read_from_input() {
 
 function usage {
     cat << EOF
-  echo -e "\nUsage: $0 (install|start|stop)"    
-    echo "Examle:     
-    bash $0 install 
+  Usage: $0 (install|start|stop)
+  Examle:
+    bash $0 install
 EOF
 }
 
@@ -103,8 +103,8 @@ function isDirExist {
 function mk_fiy_dir {
     echo "检查创建确认 build 以及子目录是否存在"
     isDirExist "${BASE_DIR}/build/log"
-    isDirExist "${BASE_DIR}/build/template"
     isDirExist "${BASE_DIR}/build/config"
+    isDirExist "${BASE_DIR}/build/static/ui"
 }
 
 function init(){
@@ -219,7 +219,7 @@ function install_front {
     echo_green "\n>>> $(gettext '开始安装前端依赖...')"
     cnpm_base_dir=$(dirname $(dirname $(which npm)))
     npm install -g cnpm --registry=https://registry.npm.taobao.org --prefix ${cnpm_base_dir}
-    cd fiy-ui && cnpm install && npm run build:prod && cp -r dist/* ../build/
+    cd fiy-ui && cnpm install && npm run build:prod && cp -r dist/* ../build/static/ui/
     echo_green "\n>>> $(gettext '前端程序编译成功...')"
 }
 

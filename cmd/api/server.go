@@ -93,7 +93,9 @@ func run() error {
 	}
 
 	// Es 连接
-	es.Init()
+	if viper.GetBool("settings.es.enabled") {
+		es.Init()
+	}
 
 	// 同步云资源
 	go func() {

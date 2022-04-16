@@ -1,14 +1,12 @@
 package router
 
 import (
-	adminRouter "fiy/app/admin/router"
-	cmdbRouter "fiy/app/cmdb/router"
-	"mime"
-
 	"fiy/app/admin/apis/monitor"
 	"fiy/app/admin/apis/system"
 	"fiy/app/admin/apis/system/dict"
 	. "fiy/app/admin/apis/tools"
+	adminRouter "fiy/app/admin/router"
+	cmdbRouter "fiy/app/cmdb/router"
 	"fiy/common/middleware/handler"
 	_ "fiy/docs"
 	jwt "fiy/pkg/jwtauth"
@@ -39,15 +37,13 @@ func sysBaseRouter(r *gin.RouterGroup) {
 	go ws.WebsocketManager.SendService()
 	go ws.WebsocketManager.SendAllService()
 
-	r.GET("/", system.HelloWorld)
+	r.GET("/", system.Index)
 	r.GET("/info", handler.Ping)
 }
 
 func sysStaticFileRouter(r *gin.RouterGroup, g *gin.Engine) {
-	_ = mime.AddExtensionType(".js", "application/javascript")
-	r.Static("/static", "./static")
-	r.Static("/form-generator", "./static/form-generator")
-	g.LoadHTMLGlob("static/index.html")
+	r.Static("/static", "./static/ui/static")
+	g.LoadHTMLGlob("static/ui/index.html")
 }
 
 func sysSwaggerRouter(r *gin.RouterGroup) {
