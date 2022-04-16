@@ -23,7 +23,7 @@ func InitSysRouter(r *gin.Engine, authMiddleware *jwt.GinJWTMiddleware) *gin.Rou
 	g := r.Group("")
 	sysBaseRouter(g)
 	// 静态文件
-	sysStaticFileRouter(g)
+	sysStaticFileRouter(g, r)
 	// swagger；注意：生产环境可以注释掉
 	sysSwaggerRouter(g)
 	// 无需认证
@@ -43,10 +43,11 @@ func sysBaseRouter(r *gin.RouterGroup) {
 	r.GET("/info", handler.Ping)
 }
 
-func sysStaticFileRouter(r *gin.RouterGroup) {
+func sysStaticFileRouter(r *gin.RouterGroup, g *gin.Engine) {
 	_ = mime.AddExtensionType(".js", "application/javascript")
 	r.Static("/static", "./static")
 	r.Static("/form-generator", "./static/form-generator")
+	g.LoadHTMLGlob("static/index.html")
 }
 
 func sysSwaggerRouter(r *gin.RouterGroup) {
