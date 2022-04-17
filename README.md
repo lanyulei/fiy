@@ -27,9 +27,13 @@
 
 等等，还有更多更详细的功能，可进行演示站点试用了解。
 
-演示站点：http://fdevops.com:8060
+演示站点：[http://fdevops.com:8060](http://fdevops.com:8060)
 
-账号密码：admin/123456
+```
+演示站点默认账号密码：admin / 123456
+```
+
+部署文档：[https://www.fdevops.com/2022/04/16/go-cmdb-31077](https://www.fdevops.com/2022/04/16/go-cmdb-31077)
 
 很多功能是参照蓝鲸CMDB，代码实现及数据结构设计完全自主，若是觉得跟蓝鲸CMDB有点类似，还请勿喷。
 
