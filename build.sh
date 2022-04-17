@@ -194,7 +194,8 @@ function install_front {
         echo_green "\n>>> $(gettext '请稍等，正在删除 fiy-ui ...')"
         rm -rf ${BASE_DIR}/fiy-ui
     fi
-    git clone $ui_address 
+
+    git clone $ui_address
 
     if [ "$?" -ne 0 ];then
         echo_red "克隆代码失败，请检查git地址: ${ui_address}或者网络质量"
@@ -211,7 +212,7 @@ function install_front {
 function install_backend {
     echo_green "\n>>> $(gettext '开始编译后端程序...')"
 
-    cd ${BASE_DIR} 
+    cd ${BASE_DIR}
     if [ "$(uname)" == "Darwin" ];then
         CGO_ENABLED=0 GOOS=darwin GOARCH=amd64 go build -o fiy main.go
         result=$?
@@ -246,7 +247,7 @@ function install_app() {
 
 function start_backend {
     cd ${BASE_DIR}/build
-    ./fiy server -c=config/settings.yml 
+    ./fiy server -c=config/settings.yml
 }
 
 function main {
