@@ -121,7 +121,7 @@ INSERT INTO sys_menu VALUES (253, '', '角色数据权限', '', '/api/v1/roledat
 INSERT INTO sys_menu VALUES (254, '', '部门树接口【数据权限】', '', '/api/v1/roleDeptTreeselect/:id', '/0/63/256/254', 'A', 'GET', '', 256, 0, '', '', 0, '1', '1', '1', '0', '2020-04-11 15:52:48', null, null);
 INSERT INTO sys_menu VALUES (255, '', '部门树【用户列表】', '', '/api/v1/deptTree', '/0/63/256/255', 'A', 'GET', '', 256, 0, '', '', 0, '1', '1', '1', '0', '2020-04-11 15:52:48', null, null);
 INSERT INTO sys_menu VALUES (256, '', '必开接口', '', '', '/0/63/256', 'M', 'GET', '', 63, 0, '', '', 0, '1', '1', '', '0', '2020-04-11 15:52:48', null, null);
-INSERT INTO sys_menu VALUES (257, '', '通过key获取参数', 'bug', '/api/v1/configKey/:id', '/0/63/256/257', 'A', 'GET', '', 256, 0, '', '', 1, '1', '1', '1', '0', '2020-04-11 15:52:48', null, null);
+INSERT INTO sys_menu VALUES (257, '', '通过key获取参数', 'bug', '/api/v1/configKey', '/0/63/256/257', 'A', 'POST', '', 256, 0, '', '', 1, '1', '1', '1', '0', '2020-04-11 15:52:48', null, null);
 INSERT INTO sys_menu VALUES (258, '', '退出登录', '', '/api/v1/logout', '/0/63/256/258', 'A', 'POST', '', 256, 0, '', '', 0, '1', '1', '1', '0', '2020-04-11 15:52:48', null, null);
 INSERT INTO sys_menu VALUES (259, '', '头像上传', '', '/api/v1/user/avatar', '/0/63/256/267/259', 'A', 'POST', '', 267, 0, '', '', 0, '1', '1', '1', '0', '2020-04-11 15:52:48', '2020-05-03 20:50:05', null);
 INSERT INTO sys_menu VALUES (260, '', '修改密码', '', '/api/v1/user/pwd', '/0/63/256/260', 'A', 'PUT', '', 256, 0, '', '', 0, '1', '1', '', '0', '2020-04-11 15:52:48', null, null);
